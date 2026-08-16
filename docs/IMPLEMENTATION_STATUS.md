@@ -147,18 +147,18 @@ Pages/routes exist for Home, Play, Watch, Community, Requests, Ride, FundMe, Eve
 - geo-cell columns/indexes exist; large-scale proximity query optimization can be extended before city-scale data becomes large.
 - location retention requires a scheduled hard-delete job.
 
-## First-push / deployment gates still outstanding
+## First-release foundation verification
 
-The source tree now includes an npm-generated `package-lock.json`, and the dependency-backed source gate was run successfully on the networked Windows development machine before canonical cleanup. The canonical tree must still be rerun after final source changes.
+The canonical source tree includes an npm-generated `package-lock.json` and the Prisma-generated `20260816141614_init` migration. The migration was reviewed as forward-only SQL, applied to clean Railway PostgreSQL over private networking, and verified as up to date. Repeated migration deploy reported no pending migrations.
 
-The remaining first-push blockers are:
+The first-release foundation gates are:
 
-1. zero high-severity findings from `npm run security:check` after deliberate dependency updates;
-2. a real Prisma-generated initial migration created against PostgreSQL;
-3. a final clean `npm run release:check`;
+1. zero vulnerabilities from `npm run security:check` after deliberate dependency updates;
+2. a committed Prisma-generated initial migration applied to PostgreSQL;
+3. a clean `npm run release:check`;
 4. `npm run deploy:preflight` with zero blockers.
 
-The initial migration must not be fabricated. The dependency lockfile must only be changed by npm.
+The initial migration is immutable after deployment. Future schema changes require new migrations, and the dependency lockfile must only be changed by npm.
 
 ## Source verification policy
 

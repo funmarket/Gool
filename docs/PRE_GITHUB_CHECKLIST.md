@@ -1,6 +1,6 @@
-# GOOL Pre-GitHub Gate
+# GOOL First-Release Gate
 
-Do not make the first GitHub push until this checklist is green from the canonical `GOOL/` source tree.
+Keep this checklist green from the canonical `GOOL/` source tree before every release.
 
 ## Repository baseline already established
 
@@ -14,11 +14,11 @@ Do not make the first GitHub push until this checklist is green from the canonic
 - Telegram webhook registration is repeatable through `npm run telegram:webhook:register`.
 - `npm run deploy:preflight` fails closed on missing first-release artifacts/environment.
 
-## Remaining first-push blockers
+## Completed foundation gates
 
 ### 1. Dependency security audit
 
-`npm run security:check` must report no high-severity findings. The latest local audit identified the direct remediation path below; apply these as reviewed package updates rather than using a forced audit rewrite:
+`npm run security:check` reports zero vulnerabilities after the reviewed direct dependency updates below:
 
 ```bash
 npm install --save-dev --save-exact concurrently@10.0.5
@@ -28,15 +28,15 @@ npm -w @gool/database install --save --save-exact @prisma/client@6.19.3
 npm run security:check
 ```
 
-The Prisma CLI and client stay on the same version. Review the resulting `package.json`/`package-lock.json` diff and rerun every source/build gate. Do not use `npm audit fix --force`.
+The Prisma CLI and client stay on the same version. Do not use `npm audit fix --force`.
 
 ### 2. Real initial Prisma migration
 
-Create Railway/local PostgreSQL, set `DATABASE_URL` and `DIRECT_DATABASE_URL`, then generate and validate the migration with Prisma. Do not hand-author a baseline migration.
+The Prisma-generated `20260816141614_init` migration is committed. It was applied to clean Railway PostgreSQL over private networking, `prisma migrate status` reported the database up to date, and a repeated deploy reported no pending migrations.
 
-### 3. Final clean-install gate
+### 3. Clean-install gate
 
-After the dependency and migration work:
+After any release change:
 
 ```bash
 npm run release:check
@@ -53,4 +53,4 @@ Once the dependency graph is security-clean and PostgreSQL is available, set bot
 npm run bootstrap:first-release
 ```
 
-Review and commit the generated `packages/database/prisma/migrations/<timestamp>_init/migration.sql` before the first push. Bootstrap uses the committed lockfile through `npm ci` and does not rewrite dependency resolution.
+Bootstrap validates the committed migration chain, uses the committed lockfile through `npm ci`, and does not rewrite dependency resolution.
