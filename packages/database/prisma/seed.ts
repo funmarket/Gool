@@ -1,0 +1,132 @@
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+async function main() {
+  const user = await prisma.user.upsert({
+    where: { telegramUserId: '100000001' },
+    update: {},
+    create: {
+      telegramUserId: '100000001',
+      username: 'gool_dev',
+      firstName: 'GOOL',
+      lastName: 'Dev',
+      profile: {
+        create: { skillLevel: 'INTERMEDIATE', skillRating: 62, preferredPositions: ['CM', 'DM'] },
+      },
+      preference: { create: {} },
+    },
+  });
+  const community = await prisma.community.upsert({
+    where: { slug: 'gool-central' },
+    update: {},
+    create: {
+      slug: 'gool-central',
+      name: 'GOOL Central',
+      description: 'Demo football community for local development.',
+      city: 'Demo City',
+      visibility: 'PUBLIC',
+      createdByUserId: user.id,
+    },
+  });
+  await prisma.membership.upsert({
+    where: { communityId_userId: { communityId: community.id, userId: user.id } },
+    update: { role: 'OWNER', status: 'ACTIVE' },
+    create: { communityId: community.id, userId: user.id, role: 'OWNER' },
+  });
+  await prisma.userPreference.update({
+    where: { userId: user.id },
+    data: { activeCommunityId: community.id },
+  });
+  await prisma.communityPaymentDefault.upsert({
+    where: { communityId_method: { communityId: community.id, method: 'CASH' } },
+    update: { enabled: true, sortOrder: 0 },
+    create: { communityId: community.id, method: 'CASH', enabled: true, sortOrder: 0 },
+  });
+  await prisma.digitalProduct.upsert({
+    where: { communityId_sku: { communityId: community.id, sku: 'SUPPORTER_BADGE' } },
+    update: {
+      title: 'GOOL Supporter Badge',
+      description: 'Digital supporter badge for this GOOL community.',
+      starsAmount: 100,
+      active: true,
+    },
+    create: {
+      communityId: community.id,
+      sku: 'SUPPORTER_BADGE',
+      title: 'GOOL Supporter Badge',
+      description: 'Digital supporter badge for this GOOL community.',
+      starsAmount: 100,
+      active: true,
+    },
+  });
+  const barca = await prisma.footballClub.upsert({
+    where: { slug: 'fc-barcelona' },
+    update: {},
+    create: { name: 'FC Barcelona', slug: 'fc-barcelona', countryCode: 'ES' },
+  });
+  const real = await prisma.footballClub.upsert({
+    where: { slug: 'real-madrid' },
+    update: {},
+    create: { name: 'Real Madrid', slug: 'real-madrid', countryCode: 'ES' },
+  });
+  const play = await prisma.event.create({
+    data: {
+      communityId: community.id,
+      createdByUserId: user.id,
+      type: 'PLAY',
+      title: 'Friday 7v7',
+      description: 'Friendly pickup match.',
+      startsAt: new Date(Date.now() + 2 * 24 * 60 * 60_000),
+      endsAt: new Date(Date.now() + 2 * 24 * 60 * 60_000 + 90 * 60_000),
+      timezone: 'UTC',
+      venueName: 'Central Pitch',
+      capacity: 14,
+      waitlistEnabled: true,
+      cashRsvpPolicy: 'CONFIRM_IMMEDIATELY',
+      playDetails: {
+        create: {
+          pitchType: 'SEVEN_A_SIDE',
+          skillLevel: 'MIXED',
+          format: 'SEVEN_V_SEVEN',
+          entryFeeMinor: 15000n,
+          currency: 'TND',
+          paymentRequired: true,
+        },
+      },
+      paymentMethods: { create: { method: 'CASH', enabled: true, sortOrder: 0 } },
+      chatRoom: {
+        create: {
+          opensAt: new Date(Date.now() + 24 * 60 * 60_000),
+          closesAt: new Date(Date.now() + 3 * 24 * 60 * 60_000),
+        },
+      },
+    },
+  });
+  await prisma.event.create({
+    data: {
+      communityId: community.id,
+      createdByUserId: user.id,
+      type: 'WATCH',
+      title: 'Clásico watch night',
+      startsAt: new Date(Date.now() + 4 * 24 * 60 * 60_000),
+      timezone: 'UTC',
+      venueName: 'GOOL Fan Hub',
+      capacity: 80,
+      watchDetails: { create: { homeClubId: barca.id, awayClubId: real.id } },
+      chatRoom: {
+        create: {
+          opensAt: new Date(Date.now() + 3 * 24 * 60 * 60_000),
+          closesAt: new Date(Date.now() + 5 * 24 * 60 * 60_000),
+        },
+      },
+    },
+  });
+  console.log(`Seeded ${community.name}; play event ${play.id}`);
+}
+main()
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  })
+  .finally(async () => prisma.$disconnect());

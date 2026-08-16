@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gool
+    ports:
+      - '5432:5432'
+    volumes:
+      - gool_pg:/var/lib/postgresql/data
+volumes:
+  gool_pg:

@@ -1,0 +1,127 @@
+# GOOL API
+
+All first-party authenticated endpoints are under `/api/v1`. Provider callbacks are outside that namespace.
+
+Authentication header:
+
+```text
+Authorization: tma <Telegram initData>
+```
+
+Error envelope:
+
+```json
+{
+  "error": {
+    "code": "EVENT_FULL",
+    "message": "This match is currently full.",
+    "requestId": "..."
+  }
+}
+```
+
+## Identity
+
+- `GET /api/v1/me`
+- `PATCH /api/v1/me/profile`
+
+## Communities
+
+- `GET /api/v1/communities`
+- `POST /api/v1/communities`
+- `POST /api/v1/communities/join`
+- `POST /api/v1/communities/join/invite`
+- `POST /api/v1/communities/:communityId/switch`
+- `GET /api/v1/communities/:communityId`
+- `GET/PATCH /api/v1/communities/:communityId/payment-defaults`
+- `GET /api/v1/communities/:communityId/members`
+- `PATCH /api/v1/communities/:communityId/members/:membershipId`
+- `POST /api/v1/communities/:communityId/ownership/transfer`
+- `GET/POST /api/v1/communities/:communityId/invites`
+- `DELETE /api/v1/communities/:communityId/invites/:inviteId`
+
+## Events / RSVP
+
+- `GET /api/v1/events`
+- `POST /api/v1/events`
+- `GET /api/v1/events/:eventId`
+- `PATCH /api/v1/events/:eventId`
+- `POST /api/v1/events/:eventId/cancel`
+- `POST /api/v1/events/:eventId/rsvp`
+- `DELETE /api/v1/events/:eventId/rsvp`
+
+Admin Event cancellation is exposed through `/api/v1/admin/events/:eventId`.
+
+## Requests
+
+- `GET /api/v1/requests`
+- `POST /api/v1/requests`
+- `POST /api/v1/requests/:requestId/claims`
+- `DELETE /api/v1/requests/:requestId/claims/me`
+
+## Rides
+
+- `GET /api/v1/rides`
+- `POST /api/v1/rides/offers`
+- `POST /api/v1/rides/requests`
+- `POST /api/v1/rides/offers/:offerId/matches`
+- `PATCH /api/v1/rides/offers/:offerId/status`
+- `PATCH /api/v1/rides/offers/:offerId/matches/:matchId`
+- `POST /api/v1/rides/offers/:offerId/location`
+- `POST /api/v1/rides/offers/:offerId/ratings`
+
+## FundMe
+
+- `GET /api/v1/fundraisers`
+- `POST /api/v1/fundraisers`
+- `POST /api/v1/fundraisers/:fundraiserId/contributions` (`Idempotency-Key` required)
+
+## Play
+
+- `GET /api/v1/play/events/:eventId/teams/randomize`
+- `GET /api/v1/play/events/:eventId/formations`
+- `POST /api/v1/play/events/:eventId/formations`
+- `PUT /api/v1/play/events/:eventId/formations/:formationId`
+- `POST /api/v1/play/events/:eventId/formations/:formationId/publish`
+
+## Watch
+
+- `GET /api/v1/watch/clubs`
+- `GET/POST /api/v1/watch/hubs`
+- `POST /api/v1/watch/events/:eventId/check-in`
+- `GET /api/v1/watch/events/:eventId/deals`
+- `POST /api/v1/watch/deals`
+
+## Chat
+
+- `GET /api/v1/chat/events/:eventId`
+- `POST /api/v1/chat/events/:eventId`
+- `DELETE /api/v1/chat/events/:eventId/messages/:messageId`
+
+Messages are currently delivered via polling; collection paging uses an opaque cursor.
+
+## Payments
+
+- `GET /api/v1/payments/digital/products?communityId=...`
+- `PUT /api/v1/payments/digital/products/supporter-badge`
+- `POST /api/v1/payments/digital/stars` (`Idempotency-Key` required)
+- `GET /api/v1/payments/:paymentIntentId`
+- `POST /api/v1/payments/:paymentIntentId/cancel`
+- `POST /api/v1/payments/:paymentIntentId/cash/confirm`
+- `POST /api/v1/payments/:paymentIntentId/cash/void`
+- `POST /api/v1/payments/:paymentIntentId/stars/refund`
+
+## Admin
+
+- `GET /api/v1/admin/communities`
+- `GET /api/v1/admin/communities/:communityId/dashboard`
+- `GET /api/v1/admin/communities/:communityId/payments`
+- `GET /api/v1/admin/communities/:communityId/audit`
+- `PATCH /api/v1/admin/communities/:communityId/members/:membershipId/ban`
+- `DELETE /api/v1/admin/events/:eventId` (cancel, not physical delete)
+
+## Webhooks
+
+- `POST /webhooks/telegram`
+
+The Telegram webhook is authenticated with `X-Telegram-Bot-Api-Secret-Token`.

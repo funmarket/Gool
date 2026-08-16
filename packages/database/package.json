@@ -1,0 +1,30 @@
+{
+  "name": "@gool/database",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/client.js",
+  "types": "dist/client.d.ts",
+  "exports": {
+    ".": "./dist/client.js"
+  },
+  "scripts": {
+    "validate": "prisma validate",
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "migration:check": "prisma migrate status",
+    "seed": "prisma db seed",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.0",
+    "prisma": "6.19.3",
+    "tsx": "4.20.5",
+    "typescript": "5.9.2"
+  }
+}

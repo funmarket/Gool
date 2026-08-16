@@ -1,0 +1,127 @@
+import { buildDatabase } from '../infrastructure/database/prisma.js';
+import { PrismaUnitOfWork } from '../infrastructure/database/unit-of-work.js';
+import { InMemoryRateLimitStore } from '../infrastructure/rate-limit/rate-limit-store.js';
+import { HttpTelegramBotApi } from '../infrastructure/telegram/bot-api.js';
+
+import { PrismaIdentityRepository } from '../modules/identity/infrastructure/prisma-identity.repository.js';
+import { IdentityService } from '../modules/identity/application/identity.service.js';
+import { PrismaCommunityRepository } from '../modules/communities/infrastructure/prisma-community.repository.js';
+import { PrismaMembershipAccessRepository } from '../modules/communities/infrastructure/prisma-membership-access.repository.js';
+import { CommunityService } from '../modules/communities/application/community.service.js';
+import {
+  PrismaEventRepository,
+  PrismaRsvpRepository,
+} from '../modules/events/infrastructure/prisma-event.repository.js';
+import { EventService } from '../modules/events/application/event.service.js';
+import { RsvpService } from '../modules/events/application/rsvp.service.js';
+import { PrismaPaymentRepository } from '../modules/payments/infrastructure/prisma-payment.repository.js';
+import { PaymentService } from '../modules/payments/application/payment.service.js';
+import { PrismaRequestRepository } from '../modules/requests/infrastructure/prisma-request.repository.js';
+import { RequestService } from '../modules/requests/application/request.service.js';
+import { PrismaRideRepository } from '../modules/rides/infrastructure/prisma-ride.repository.js';
+import { RideService } from '../modules/rides/application/ride.service.js';
+import { PrismaFundraiserRepository } from '../modules/fundraising/infrastructure/prisma-fundraiser.repository.js';
+import { FundraiserService } from '../modules/fundraising/application/fundraiser.service.js';
+import { PrismaWatchRepository } from '../modules/watch/infrastructure/prisma-watch.repository.js';
+import { WatchService } from '../modules/watch/application/watch.service.js';
+import { PrismaPlayRepository } from '../modules/play/infrastructure/prisma-play.repository.js';
+import { PlayService } from '../modules/play/application/play.service.js';
+import { PrismaChatRepository } from '../modules/chat/infrastructure/prisma-chat.repository.js';
+import { ChatService } from '../modules/chat/application/chat.service.js';
+import { PrismaAdminReadRepository } from '../modules/admin/infrastructure/prisma-admin-read.repository.js';
+import { AdminService } from '../modules/admin/application/admin.service.js';
+
+export function buildContainer() {
+  const db = buildDatabase();
+  const uow = new PrismaUnitOfWork(db);
+  const rateLimitStore = new InMemoryRateLimitStore();
+  const telegram = new HttpTelegramBotApi();
+
+  const identityRepository = new PrismaIdentityRepository(db);
+  const identity = new IdentityService(identityRepository);
+
+  const communityRepository = new PrismaCommunityRepository(db);
+  const membershipAccessRepository = new PrismaMembershipAccessRepository(db);
+  const communities = new CommunityService(communityRepository, membershipAccessRepository);
+
+  const paymentRepository = new PrismaPaymentRepository(db);
+
+  const eventRepository = new PrismaEventRepository(db);
+  const rsvpRepository = new PrismaRsvpRepository();
+  const rsvps = new RsvpService(rsvpRepository, paymentRepository, uow);
+  const events = new EventService(eventRepository, rsvps, communities, paymentRepository, uow);
+
+  const requestRepository = new PrismaRequestRepository(db);
+  const requests = new RequestService(requestRepository, communities);
+
+  const rideRepository = new PrismaRideRepository(db);
+  const rides = new RideService(rideRepository, communities, paymentRepository, uow);
+
+  const fundraiserRepository = new PrismaFundraiserRepository(db);
+  const fundraising = new FundraiserService(
+    fundraiserRepository,
+    communities,
+    paymentRepository,
+    uow,
+  );
+
+  const payments = new PaymentService(
+    paymentRepository,
+    communities,
+    telegram,
+    uow,
+    rsvpRepository,
+    rideRepository,
+    fundraiserRepository,
+  );
+
+  const watchRepository = new PrismaWatchRepository(db);
+  const watch = new WatchService(watchRepository, communities);
+
+  const playRepository = new PrismaPlayRepository(db);
+  const play = new PlayService(playRepository, communities);
+
+  const chatRepository = new PrismaChatRepository(db);
+  const chat = new ChatService(chatRepository, communities);
+
+  const adminReadRepository = new PrismaAdminReadRepository(db);
+  const admin = new AdminService(adminReadRepository, communities, events);
+
+  return {
+    db,
+    uow,
+    rateLimitStore,
+    telegram,
+    repositories: {
+      identity: identityRepository,
+      communities: communityRepository,
+      membershipAccess: membershipAccessRepository,
+      events: eventRepository,
+      rsvps: rsvpRepository,
+      payments: paymentRepository,
+      requests: requestRepository,
+      rides: rideRepository,
+      fundraising: fundraiserRepository,
+      watch: watchRepository,
+      play: playRepository,
+      chat: chatRepository,
+      adminRead: adminReadRepository,
+    },
+    services: {
+      identity,
+      communities,
+      events,
+      rsvps,
+      payments,
+      requests,
+      rides,
+      fundraising,
+      watch,
+      play,
+      chat,
+      admin,
+    },
+  };
+}
+
+export type AppContainer = ReturnType<typeof buildContainer>;

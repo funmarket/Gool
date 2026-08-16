@@ -1,0 +1,1119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+enum CommunityVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum CommunityRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum MembershipStatus {
+  ACTIVE
+  BANNED
+  LEFT
+}
+
+enum ThemeOverride {
+  TELEGRAM
+  LIGHT
+  DARK
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  MIXED
+}
+
+enum PlayerPosition {
+  GK
+  CB
+  FB
+  WB
+  DM
+  CM
+  AM
+  W
+  ST
+  ANY
+}
+
+enum EventType {
+  PLAY
+  WATCH
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  COMPLETED
+}
+
+enum PitchType {
+  FIVE_A_SIDE
+  SEVEN_A_SIDE
+  ELEVEN_A_SIDE
+  FUTSAL
+  STREET
+  OTHER
+}
+
+enum MatchFormat {
+  FIVE_V_FIVE
+  SEVEN_V_SEVEN
+  ELEVEN_V_ELEVEN
+}
+
+enum RsvpStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  WAITLISTED
+  CANCELLED
+  ATTENDED
+  NO_SHOW
+  REFUNDED
+}
+
+enum CashRsvpPolicy {
+  CONFIRM_IMMEDIATELY
+  REQUIRE_CASH_CONFIRMATION
+}
+
+enum RequestKind {
+  PLAYER
+  POSITION
+  EQUIPMENT
+  HELP
+  OTHER
+}
+
+enum RequestStatus {
+  OPEN
+  PARTIAL
+  CLAIMED
+  EXPIRED
+  CANCELLED
+}
+
+enum RequestClaimStatus {
+  ACTIVE
+  WITHDRAWN
+  FULFILLED
+}
+
+enum RideOfferStatus {
+  OPEN
+  FULL
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+enum RideRequestStatus {
+  OPEN
+  MATCHED
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+enum RideMatchStatus {
+  REQUESTED
+  ACCEPTED
+  DECLINED
+  CANCELLED
+  COMPLETED
+}
+
+enum CostSplitMode {
+  FREE
+  FIXED
+}
+
+enum FundPurpose {
+  PITCH_FEES
+  EQUIPMENT
+  TRAVEL
+  TIFO
+  COMMUNITY
+  OTHER
+}
+
+enum FundStatus {
+  OPEN
+  FUNDED
+  CLOSED
+  CANCELLED
+}
+
+enum ContributionStatus {
+  PLEDGED
+  AWAITING_PAYMENT
+  PAID
+  REFUNDED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  TELEGRAM_STARS
+}
+
+enum PaymentPurpose {
+  EVENT_FEE
+  RIDE_SHARE
+  FUND_CONTRIBUTION
+  DIGITAL_PRODUCT
+}
+
+enum PaymentStatus {
+  CREATED
+  AWAITING_PAYMENT
+  AWAITING_CASH
+  PROCESSING
+  PAID
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentAttemptStatus {
+  CREATED
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentProvider {
+  TELEGRAM
+}
+
+enum WebhookStatus {
+  RECEIVED
+  PROCESSED
+  IGNORED
+  FAILED
+}
+
+enum DigitalProductSku {
+  SUPPORTER_BADGE
+}
+
+enum TeamSide {
+  A
+  B
+}
+
+model User {
+  id             String    @id @default(cuid())
+  telegramUserId String    @unique @db.VarChar(32)
+  username       String?   @db.VarChar(64)
+  firstName      String?   @db.VarChar(120)
+  lastName       String?   @db.VarChar(120)
+  photoUrl       String?
+  languageCode   String?   @db.VarChar(16)
+  isPremium      Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  profile                 PlayerProfile?
+  preference              UserPreference?
+  memberships             Membership[]
+  createdCommunities      Community[]          @relation("CommunityCreator")
+  createdInvites          CommunityInvite[]    @relation("InviteCreator")
+  createdEvents           Event[]              @relation("EventCreator")
+  rsvps                   EventRsvp[]
+  createdRequests         Request[]            @relation("RequestCreator")
+  requestClaims           RequestClaim[]
+  rideOffers              RideOffer[]          @relation("RideDriver")
+  rideRequests            RideRequest[]        @relation("RideRequester")
+  rideMatches             RideMatch[]          @relation("RideMatchRider")
+  rideLocationPings       RideLocationPing[]
+  rideRatingsGiven        RideRating[]         @relation("RideRatingRater")
+  rideRatingsReceived     RideRating[]         @relation("RideRatingRatee")
+  fundraisers             Fundraiser[]         @relation("FundOrganizer")
+  fundContributions       FundContribution[]
+  paymentIntents          PaymentIntent[]
+  cashSettlementsReceived CashSettlement[]     @relation("CashReceiver")
+  cashSettlementsVoided   CashSettlement[]     @relation("CashVoider")
+  formations              Formation[]          @relation("FormationCreator")
+  formationSlots          FormationSlot[]
+  fanHubs                 FanHub[]             @relation("FanHubCreator")
+  venueDeals              VenueDeal[]          @relation("VenueDealCreator")
+  checkIns                CheckIn[]
+  eventChatMessages       EventChatMessage[]
+  digitalEntitlements     DigitalEntitlement[]
+  auditLogs               AuditLog[]           @relation("AuditActor")
+  idempotencyRecords      IdempotencyRecord[]
+
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+model PlayerProfile {
+  userId             String           @id
+  skillLevel         SkillLevel       @default(MIXED)
+  skillRating        Int              @default(50)
+  preferredPositions PlayerPosition[] @default([])
+  favoriteClubId     String?
+  bio                String?          @db.VarChar(280)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  favoriteClub FootballClub? @relation(fields: [favoriteClubId], references: [id], onDelete: SetNull)
+
+  @@index([skillLevel, skillRating])
+  @@index([favoriteClubId])
+}
+
+model UserPreference {
+  userId            String        @id
+  activeCommunityId String?
+  themeOverride     ThemeOverride @default(TELEGRAM)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activeCommunity Community? @relation("ActiveCommunity", fields: [activeCommunityId], references: [id], onDelete: SetNull)
+
+  @@index([activeCommunityId])
+}
+
+model FootballClub {
+  id                String   @id @default(cuid())
+  name              String   @db.VarChar(120)
+  slug              String   @unique @db.VarChar(120)
+  countryCode       String?  @db.VarChar(2)
+  logoUrl           String?
+  externalReference String?  @db.VarChar(160)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  playerProfiles  PlayerProfile[]
+  watchHomeEvents WatchEventDetails[] @relation("WatchHomeClub")
+  watchAwayEvents WatchEventDetails[] @relation("WatchAwayClub")
+  fanHubLinks     FanHubClub[]
+
+  @@index([countryCode, name])
+}
+
+model Community {
+  id              String              @id @default(cuid())
+  slug            String              @unique @db.VarChar(48)
+  name            String              @db.VarChar(80)
+  description     String?             @db.VarChar(280)
+  avatarUrl       String?
+  coverUrl        String?
+  city            String?             @db.VarChar(100)
+  visibility      CommunityVisibility @default(PUBLIC)
+  createdByUserId String
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  deletedAt       DateTime?
+
+  createdBy           User                      @relation("CommunityCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  memberships         Membership[]
+  invites             CommunityInvite[]
+  events              Event[]
+  requests            Request[]
+  rideOffers          RideOffer[]
+  rideRequests        RideRequest[]
+  fundraisers         Fundraiser[]
+  fanHubs             FanHub[]
+  venueDeals          VenueDeal[]
+  paymentIntents      PaymentIntent[]
+  paymentDefaults     CommunityPaymentDefault[]
+  activeForUsers      UserPreference[]          @relation("ActiveCommunity")
+  digitalProducts     DigitalProduct[]
+  digitalEntitlements DigitalEntitlement[]
+  auditLogs           AuditLog[]
+
+  @@index([createdByUserId])
+  @@index([visibility, createdAt])
+  @@index([deletedAt])
+}
+
+model Membership {
+  id          String           @id @default(cuid())
+  communityId String
+  userId      String
+  role        CommunityRole    @default(MEMBER)
+  status      MembershipStatus @default(ACTIVE)
+  joinedAt    DateTime         @default(now())
+  leftAt      DateTime?
+  updatedAt   DateTime         @updatedAt
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([communityId, userId])
+  @@index([userId, status])
+  @@index([communityId, role, status])
+}
+
+model CommunityInvite {
+  id              String        @id @default(cuid())
+  communityId     String
+  createdByUserId String
+  codeHash        String        @unique @db.VarChar(128)
+  codePrefix      String        @db.VarChar(12)
+  role            CommunityRole @default(MEMBER)
+  maxUses         Int?
+  useCount        Int           @default(0)
+  expiresAt       DateTime?
+  revokedAt       DateTime?
+  createdAt       DateTime      @default(now())
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  createdBy User      @relation("InviteCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@index([communityId, expiresAt])
+  @@index([createdByUserId])
+}
+
+model Event {
+  id              String         @id @default(cuid())
+  communityId     String
+  createdByUserId String
+  type            EventType
+  status          EventStatus    @default(PUBLISHED)
+  title           String         @db.VarChar(120)
+  description     String?        @db.VarChar(1200)
+  startsAt        DateTime
+  endsAt          DateTime?
+  timezone        String         @default("UTC") @db.VarChar(80)
+  venueName       String?        @db.VarChar(120)
+  address         String?        @db.VarChar(240)
+  latitude        Decimal?       @db.Decimal(10, 7)
+  longitude       Decimal?       @db.Decimal(10, 7)
+  geoCell         String?        @db.VarChar(32)
+  capacity        Int?
+  waitlistEnabled Boolean        @default(true)
+  cashRsvpPolicy  CashRsvpPolicy @default(CONFIRM_IMMEDIATELY)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?
+
+  community      Community            @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  createdBy      User                 @relation("EventCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  playDetails    PlayEventDetails?
+  watchDetails   WatchEventDetails?
+  rsvps          EventRsvp[]
+  requests       Request[]
+  rideOffers     RideOffer[]
+  rideRequests   RideRequest[]
+  fundraisers    Fundraiser[]
+  paymentMethods EventPaymentMethod[]
+  chatRoom       EventChatRoom?
+  checkIns       CheckIn[]
+  venueDeals     VenueDeal[]
+
+  @@unique([id, communityId])
+  @@index([communityId, startsAt, id])
+  @@index([communityId, type, status, startsAt])
+  @@index([createdByUserId])
+  @@index([geoCell, startsAt])
+  @@index([deletedAt])
+}
+
+model PlayEventDetails {
+  eventId         String      @id
+  pitchType       PitchType
+  skillLevel      SkillLevel  @default(MIXED)
+  format          MatchFormat
+  entryFeeMinor   BigInt      @default(0)
+  currency        String      @default("TND") @db.VarChar(3)
+  paymentRequired Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  event      Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  formations Formation[]
+}
+
+model WatchEventDetails {
+  eventId    String   @id
+  homeClubId String?
+  awayClubId String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  event    Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  homeClub FootballClub? @relation("WatchHomeClub", fields: [homeClubId], references: [id], onDelete: SetNull)
+  awayClub FootballClub? @relation("WatchAwayClub", fields: [awayClubId], references: [id], onDelete: SetNull)
+
+  @@index([homeClubId])
+  @@index([awayClubId])
+}
+
+model EventRsvp {
+  id                     String         @id @default(cuid())
+  eventId                String
+  userId                 String
+  status                 RsvpStatus     @default(CONFIRMED)
+  preferredPaymentMethod PaymentMethod?
+  waitlistSequence       BigInt?
+  seatHoldExpiresAt      DateTime?
+  checkedInAt            DateTime?
+  paymentIntentId        String?        @unique
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+
+  event         Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paymentIntent PaymentIntent? @relation("EventRsvpPayment", fields: [paymentIntentId], references: [id], onDelete: SetNull)
+
+  @@unique([eventId, userId])
+  @@index([eventId, status, waitlistSequence])
+  @@index([userId, status])
+  @@index([seatHoldExpiresAt])
+}
+
+model Request {
+  id              String          @id @default(cuid())
+  communityId     String
+  eventId         String?
+  createdByUserId String
+  kind            RequestKind
+  title           String          @db.VarChar(120)
+  details         String?         @db.VarChar(800)
+  position        PlayerPosition?
+  quantity        Int             @default(1)
+  status          RequestStatus   @default(OPEN)
+  expiresAt       DateTime
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime?
+
+  community Community      @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  event     Event?         @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  createdBy User           @relation("RequestCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  claims    RequestClaim[]
+
+  @@index([communityId, status, expiresAt])
+  @@index([eventId, status, expiresAt])
+  @@index([createdByUserId])
+  @@index([kind, position, status])
+  @@index([deletedAt])
+}
+
+model RequestClaim {
+  id        String             @id @default(cuid())
+  requestId String
+  userId    String
+  quantity  Int                @default(1)
+  status    RequestClaimStatus @default(ACTIVE)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  request Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([requestId, userId])
+  @@index([requestId, status])
+  @@index([userId, status])
+}
+
+model RideOffer {
+  id                   String          @id @default(cuid())
+  communityId          String
+  eventId              String?
+  driverUserId         String
+  title                String          @db.VarChar(120)
+  originLabel          String          @db.VarChar(180)
+  originLatitude       Decimal         @db.Decimal(10, 7)
+  originLongitude      Decimal         @db.Decimal(10, 7)
+  originGeoCell        String?         @db.VarChar(32)
+  destinationLabel     String          @db.VarChar(180)
+  destinationLatitude  Decimal         @db.Decimal(10, 7)
+  destinationLongitude Decimal         @db.Decimal(10, 7)
+  departureAt          DateTime
+  seatsTotal           Int
+  costSplitMode        CostSplitMode   @default(FREE)
+  seatPriceMinor       BigInt          @default(0)
+  currency             String          @default("TND") @db.VarChar(3)
+  status               RideOfferStatus @default(OPEN)
+  liveTrackingEnabled  Boolean         @default(false)
+  note                 String?         @db.VarChar(500)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  deletedAt            DateTime?
+
+  community      Community                @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  event          Event?                   @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  driver         User                     @relation("RideDriver", fields: [driverUserId], references: [id], onDelete: Restrict)
+  matches        RideMatch[]
+  locationPings  RideLocationPing[]
+  ratings        RideRating[]
+  paymentMethods RideOfferPaymentMethod[]
+
+  @@index([communityId, status, departureAt])
+  @@index([eventId, status, departureAt])
+  @@index([driverUserId])
+  @@index([originGeoCell, departureAt])
+  @@index([deletedAt])
+}
+
+model RideRequest {
+  id                 String            @id @default(cuid())
+  communityId        String
+  eventId            String?
+  requesterUserId    String
+  title              String            @db.VarChar(120)
+  pickupLabel        String            @db.VarChar(180)
+  pickupLatitude     Decimal           @db.Decimal(10, 7)
+  pickupLongitude    Decimal           @db.Decimal(10, 7)
+  pickupGeoCell      String?           @db.VarChar(32)
+  seatsNeeded        Int
+  desiredDepartureAt DateTime
+  status             RideRequestStatus @default(OPEN)
+  note               String?           @db.VarChar(500)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  deletedAt          DateTime?
+
+  community Community   @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  event     Event?      @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  requester User        @relation("RideRequester", fields: [requesterUserId], references: [id], onDelete: Restrict)
+  matches   RideMatch[]
+
+  @@index([communityId, status, desiredDepartureAt])
+  @@index([eventId, status, desiredDepartureAt])
+  @@index([requesterUserId])
+  @@index([pickupGeoCell, desiredDepartureAt])
+  @@index([deletedAt])
+}
+
+model RideMatch {
+  id               String          @id @default(cuid())
+  rideOfferId      String
+  rideRequestId    String?
+  riderUserId      String
+  seats            Int
+  status           RideMatchStatus @default(REQUESTED)
+  quotedShareMinor BigInt          @default(0)
+  paymentIntentId  String?         @unique
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  offer         RideOffer      @relation(fields: [rideOfferId], references: [id], onDelete: Cascade)
+  request       RideRequest?   @relation(fields: [rideRequestId], references: [id], onDelete: SetNull)
+  rider         User           @relation("RideMatchRider", fields: [riderUserId], references: [id], onDelete: Restrict)
+  paymentIntent PaymentIntent? @relation("RideMatchPayment", fields: [paymentIntentId], references: [id], onDelete: SetNull)
+
+  @@unique([rideOfferId, riderUserId])
+  @@index([rideOfferId, status])
+  @@index([rideRequestId, status])
+  @@index([riderUserId])
+}
+
+model RideLocationPing {
+  id                   String   @id @default(cuid())
+  rideOfferId          String
+  userId               String
+  latitude             Decimal  @db.Decimal(10, 7)
+  longitude            Decimal  @db.Decimal(10, 7)
+  accuracyMeters       Float?
+  heading              Float?
+  speedMetersPerSecond Float?
+  capturedAt           DateTime @default(now())
+  expiresAt            DateTime
+
+  offer RideOffer @relation(fields: [rideOfferId], references: [id], onDelete: Cascade)
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([rideOfferId, capturedAt])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model RideRating {
+  id          String   @id @default(cuid())
+  rideOfferId String
+  raterUserId String
+  rateeUserId String
+  score       Int
+  comment     String?  @db.VarChar(300)
+  createdAt   DateTime @default(now())
+
+  offer RideOffer @relation(fields: [rideOfferId], references: [id], onDelete: Cascade)
+  rater User      @relation("RideRatingRater", fields: [raterUserId], references: [id], onDelete: Cascade)
+  ratee User      @relation("RideRatingRatee", fields: [rateeUserId], references: [id], onDelete: Cascade)
+
+  @@unique([rideOfferId, raterUserId, rateeUserId])
+  @@index([raterUserId])
+  @@index([rateeUserId, createdAt])
+}
+
+model Fundraiser {
+  id              String      @id @default(cuid())
+  communityId     String
+  eventId         String?
+  organizerUserId String
+  purpose         FundPurpose
+  status          FundStatus  @default(OPEN)
+  title           String      @db.VarChar(120)
+  description     String?     @db.VarChar(1000)
+  goalMinor       BigInt
+  currency        String      @default("TND") @db.VarChar(3)
+  deadline        DateTime?
+  allowAnonymous  Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deletedAt       DateTime?
+
+  community      Community                 @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  event          Event?                    @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  organizer      User                      @relation("FundOrganizer", fields: [organizerUserId], references: [id], onDelete: Restrict)
+  contributions  FundContribution[]
+  paymentMethods FundraiserPaymentMethod[]
+
+  @@index([communityId, status, createdAt])
+  @@index([eventId, status])
+  @@index([organizerUserId])
+  @@index([deletedAt])
+}
+
+model FundContribution {
+  id                String             @id @default(cuid())
+  fundraiserId      String
+  contributorUserId String
+  paymentIntentId   String?            @unique
+  idempotencyKey    String             @db.VarChar(180)
+  amountMinor       BigInt
+  status            ContributionStatus @default(PLEDGED)
+  anonymous         Boolean            @default(false)
+  message           String?            @db.VarChar(280)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  paidAt            DateTime?
+  refundedAt        DateTime?
+
+  fundraiser    Fundraiser     @relation(fields: [fundraiserId], references: [id], onDelete: Cascade)
+  contributor   User           @relation(fields: [contributorUserId], references: [id], onDelete: Restrict)
+  paymentIntent PaymentIntent? @relation("FundContributionPayment", fields: [paymentIntentId], references: [id], onDelete: SetNull)
+
+  @@unique([fundraiserId, contributorUserId, idempotencyKey])
+  @@index([fundraiserId, status, createdAt])
+  @@index([contributorUserId, createdAt])
+}
+
+model PaymentIntent {
+  id             String         @id @default(cuid())
+  userId         String
+  communityId    String?
+  purpose        PaymentPurpose
+  amountMinor    BigInt
+  currency       String         @db.VarChar(8)
+  selectedMethod PaymentMethod?
+  status         PaymentStatus  @default(CREATED)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  expiresAt      DateTime?
+  paidAt         DateTime?
+  cancelledAt    DateTime?
+  refundedAt     DateTime?
+
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Restrict)
+  community           Community?           @relation(fields: [communityId], references: [id], onDelete: SetNull)
+  attempts            PaymentAttempt[]
+  cashSettlement      CashSettlement?
+  telegramStarPayment TelegramStarPayment?
+  eventRsvp           EventRsvp?           @relation("EventRsvpPayment")
+  rideMatch           RideMatch?           @relation("RideMatchPayment")
+  fundContribution    FundContribution?    @relation("FundContributionPayment")
+  digitalEntitlement  DigitalEntitlement?
+
+  @@index([userId, status, createdAt])
+  @@index([communityId, purpose, status, createdAt])
+  @@index([selectedMethod, status, createdAt])
+}
+
+model PaymentAttempt {
+  id                   String               @id @default(cuid())
+  paymentIntentId      String
+  method               PaymentMethod
+  provider             PaymentProvider
+  status               PaymentAttemptStatus @default(CREATED)
+  idempotencyKey       String               @unique @db.VarChar(180)
+  providerCheckoutId   String?              @db.VarChar(200)
+  providerPaymentId    String?              @db.VarChar(200)
+  providerAmountAtomic String?              @db.VarChar(120)
+  providerCurrency     String?              @db.VarChar(16)
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  completedAt          DateTime?
+
+  paymentIntent PaymentIntent @relation(fields: [paymentIntentId], references: [id], onDelete: Restrict)
+
+  @@index([paymentIntentId, status, createdAt])
+  @@index([provider, providerPaymentId])
+}
+
+model CashSettlement {
+  id               String    @id @default(cuid())
+  paymentIntentId  String    @unique
+  receivedByUserId String
+  amountMinor      BigInt
+  currency         String    @db.VarChar(8)
+  receivedAt       DateTime  @default(now())
+  note             String?   @db.VarChar(500)
+  createdAt        DateTime  @default(now())
+  voidedAt         DateTime?
+  voidedByUserId   String?
+
+  paymentIntent PaymentIntent @relation(fields: [paymentIntentId], references: [id], onDelete: Restrict)
+  receivedBy    User          @relation("CashReceiver", fields: [receivedByUserId], references: [id], onDelete: Restrict)
+  voidedBy      User?         @relation("CashVoider", fields: [voidedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([receivedByUserId, receivedAt])
+  @@index([voidedByUserId])
+}
+
+model TelegramStarPayment {
+  id                      String    @id @default(cuid())
+  paymentIntentId         String    @unique
+  telegramPaymentChargeId String    @unique @db.VarChar(200)
+  providerPaymentChargeId String?   @db.VarChar(200)
+  invoicePayload          String    @unique @db.VarChar(200)
+  starsAmount             Int
+  createdAt               DateTime  @default(now())
+  refundedAt              DateTime?
+
+  paymentIntent PaymentIntent @relation(fields: [paymentIntentId], references: [id], onDelete: Restrict)
+}
+
+model ProviderWebhookEvent {
+  id              String          @id @default(cuid())
+  provider        PaymentProvider
+  providerEventId String          @db.VarChar(200)
+  payloadHash     String          @db.VarChar(128)
+  status          WebhookStatus   @default(RECEIVED)
+  receivedAt      DateTime        @default(now())
+  processedAt     DateTime?
+  failureReason   String?         @db.VarChar(500)
+
+  @@unique([provider, providerEventId])
+  @@index([provider, status, receivedAt])
+}
+
+model CommunityPaymentDefault {
+  id          String        @id @default(cuid())
+  communityId String
+  method      PaymentMethod
+  enabled     Boolean       @default(true)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@unique([communityId, method])
+  @@index([communityId, enabled, sortOrder])
+}
+
+model EventPaymentMethod {
+  id        String        @id @default(cuid())
+  eventId   String
+  method    PaymentMethod
+  enabled   Boolean       @default(true)
+  sortOrder Int           @default(0)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, method])
+  @@index([eventId, enabled, sortOrder])
+}
+
+model RideOfferPaymentMethod {
+  id          String        @id @default(cuid())
+  rideOfferId String
+  method      PaymentMethod
+  enabled     Boolean       @default(true)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  offer RideOffer @relation(fields: [rideOfferId], references: [id], onDelete: Cascade)
+
+  @@unique([rideOfferId, method])
+  @@index([rideOfferId, enabled, sortOrder])
+}
+
+model FundraiserPaymentMethod {
+  id           String        @id @default(cuid())
+  fundraiserId String
+  method       PaymentMethod
+  enabled      Boolean       @default(true)
+  sortOrder    Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  fundraiser Fundraiser @relation(fields: [fundraiserId], references: [id], onDelete: Cascade)
+
+  @@unique([fundraiserId, method])
+  @@index([fundraiserId, enabled, sortOrder])
+}
+
+model DigitalProduct {
+  id          String            @id @default(cuid())
+  communityId String
+  sku         DigitalProductSku
+  title       String            @db.VarChar(120)
+  description String?           @db.VarChar(500)
+  starsAmount Int
+  active      Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  community    Community            @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  entitlements DigitalEntitlement[]
+
+  @@unique([communityId, sku])
+  @@index([active, sku])
+}
+
+model DigitalEntitlement {
+  id              String            @id @default(cuid())
+  communityId     String
+  userId          String
+  productId       String
+  paymentIntentId String            @unique
+  sku             DigitalProductSku
+  grantedAt       DateTime          @default(now())
+  revokedAt       DateTime?
+
+  community     Community      @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product       DigitalProduct @relation(fields: [productId], references: [id], onDelete: Restrict)
+  paymentIntent PaymentIntent  @relation(fields: [paymentIntentId], references: [id], onDelete: Restrict)
+
+  @@unique([communityId, userId, sku])
+  @@index([userId, revokedAt])
+  @@index([productId])
+}
+
+model Formation {
+  id              String      @id @default(cuid())
+  playEventId     String
+  createdByUserId String
+  name            String      @db.VarChar(80)
+  format          MatchFormat
+  published       Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deletedAt       DateTime?
+
+  playEvent PlayEventDetails @relation(fields: [playEventId], references: [eventId], onDelete: Cascade)
+  createdBy User             @relation("FormationCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  slots     FormationSlot[]
+
+  @@index([playEventId, updatedAt])
+  @@index([createdByUserId])
+  @@index([deletedAt])
+}
+
+model FormationSlot {
+  id          String         @id @default(cuid())
+  formationId String
+  userId      String?
+  team        TeamSide
+  position    PlayerPosition
+  label       String         @db.VarChar(32)
+  x           Float
+  y           Float
+
+  formation Formation @relation(fields: [formationId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([formationId, team])
+  @@index([userId])
+}
+
+model FanHub {
+  id              String    @id @default(cuid())
+  communityId     String?
+  createdByUserId String
+  name            String    @db.VarChar(120)
+  venueName       String    @db.VarChar(120)
+  address         String?   @db.VarChar(240)
+  latitude        Decimal   @db.Decimal(10, 7)
+  longitude       Decimal   @db.Decimal(10, 7)
+  geoCell         String?   @db.VarChar(32)
+  verified        Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  community Community?   @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  createdBy User         @relation("FanHubCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  clubs     FanHubClub[]
+  deals     VenueDeal[]
+  checkIns  CheckIn[]
+
+  @@index([communityId, verified])
+  @@index([createdByUserId])
+  @@index([geoCell])
+  @@index([deletedAt])
+}
+
+model FanHubClub {
+  fanHubId String
+  clubId   String
+
+  fanHub FanHub       @relation(fields: [fanHubId], references: [id], onDelete: Cascade)
+  club   FootballClub @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@id([fanHubId, clubId])
+  @@index([clubId, fanHubId])
+}
+
+model VenueDeal {
+  id              String    @id @default(cuid())
+  fanHubId        String
+  communityId     String
+  eventId         String?
+  createdByUserId String
+  title           String    @db.VarChar(120)
+  description     String?   @db.VarChar(500)
+  redemptionCode  String?   @db.VarChar(80)
+  requiresCheckIn Boolean   @default(true)
+  startsAt        DateTime?
+  endsAt          DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  fanHub    FanHub    @relation(fields: [fanHubId], references: [id], onDelete: Cascade)
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  event     Event?    @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  createdBy User      @relation("VenueDealCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@index([fanHubId, startsAt, endsAt])
+  @@index([communityId, eventId])
+  @@index([eventId])
+  @@index([createdByUserId])
+  @@index([deletedAt])
+}
+
+model CheckIn {
+  id        String   @id @default(cuid())
+  eventId   String
+  userId    String
+  fanHubId  String?
+  latitude  Decimal  @db.Decimal(10, 7)
+  longitude Decimal  @db.Decimal(10, 7)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event  Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fanHub FanHub? @relation(fields: [fanHubId], references: [id], onDelete: SetNull)
+
+  @@unique([eventId, userId])
+  @@index([eventId, createdAt])
+  @@index([userId])
+  @@index([fanHubId])
+}
+
+model EventChatRoom {
+  id        String   @id @default(cuid())
+  eventId   String   @unique
+  opensAt   DateTime
+  closesAt  DateTime
+  createdAt DateTime @default(now())
+
+  event    Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  messages EventChatMessage[]
+
+  @@index([closesAt])
+}
+
+model EventChatMessage {
+  id        String    @id @default(cuid())
+  roomId    String
+  userId    String
+  body      String    @db.VarChar(1200)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  room EventChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([roomId, createdAt, id])
+  @@index([userId])
+  @@index([deletedAt])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  communityId String?
+  action      String   @db.VarChar(80)
+  entityType  String   @db.VarChar(80)
+  entityId    String   @db.VarChar(120)
+  beforeJson  Json?
+  afterJson   Json?
+  requestId   String   @db.VarChar(160)
+  createdAt   DateTime @default(now())
+
+  actor     User?      @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  community Community? @relation(fields: [communityId], references: [id], onDelete: SetNull)
+
+  @@index([communityId, createdAt, id])
+  @@index([entityType, entityId, createdAt])
+  @@index([actorUserId, createdAt])
+}
+
+model OutboxEvent {
+  id            String    @id @default(cuid())
+  eventType     String    @db.VarChar(120)
+  aggregateType String    @db.VarChar(80)
+  aggregateId   String    @db.VarChar(120)
+  payload       Json
+  createdAt     DateTime  @default(now())
+  publishedAt   DateTime?
+  attemptCount  Int       @default(0)
+  lastError     String?   @db.VarChar(1000)
+
+  @@index([publishedAt, createdAt])
+}
+
+model IdempotencyRecord {
+  id           String   @id @default(cuid())
+  userId       String
+  scope        String   @db.VarChar(120)
+  key          String   @db.VarChar(180)
+  requestHash  String   @db.VarChar(128)
+  responseCode Int?
+  responseJson Json?
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, scope, key])
+  @@index([expiresAt])
+}
