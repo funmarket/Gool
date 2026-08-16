@@ -6,6 +6,12 @@ import { useCommunity } from '../providers/CommunityProvider';
 import type { CursorPage, EventItem, FundPage, RequestPage, RideListResponse } from '../types/domain';
 import { EventCard } from '../components/EventCard';
 
+/**
+ * VISUAL REFERENCE ONLY.
+ * Current local HomePage data/state/routes are authoritative and must be traced before porting this styling.
+ * Do not replace the current local AppHeader or BottomNav from this branch.
+ * Do not add MapPanel or any map dependency.
+ */
 export function HomePage() {
   const navigate = useNavigate();
   const { active } = useCommunity();
@@ -16,6 +22,7 @@ export function HomePage() {
   const funds = useQuery({ queryKey: ['funds', id], queryFn: () => get<FundPage>(`/api/v1/fundraisers?communityId=${id}`), enabled: !!id });
   const rideCount = (rides.data?.offers.length || 0) + (rides.data?.requests.length || 0);
 
+  // These four are the one and only Home action group. Do not recreate a second "Community Actions" group.
   const quick = [
     { label: 'Teams', note: 'Manage squads', icon: Users, to: '/teams' },
     { label: 'Requests', note: `${requests.data?.items.length || 0} open`, icon: Flag, to: '/requests' },
@@ -60,7 +67,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Community Actions was intentionally removed: it duplicated Quick Actions. */}
+      {/* INTENTIONAL: no Community Actions section. It duplicated Teams / Requests / Ride / FundMe. */}
 
       <section className="mt-8">
         <div className="mb-3 flex items-end justify-between">
@@ -68,7 +75,7 @@ export function HomePage() {
         </div>
         <div className="vintage-empty px-5 py-5">
           <strong className="block text-sm text-white">Trending feed connects here.</strong>
-          <p className="mt-1 text-xs leading-5">Do not hardcode editorial cards. Codex/local implementation should connect HOOMA's server-side football-data feed here and render normalized LIVE_MATCH, UPCOMING_MATCH, RESULT, TABLE and TOP_SCORER items in a horizontally swipeable HOOMA-native feed. No auto-scroll.</p>
+          <p className="mt-1 text-xs leading-5">Never hardcode demo news, scores, players, views or editorial cards. The local implementation should consume HOOMA's server-side normalized football feed and render LIVE_MATCH, UPCOMING_MATCH, RESULT, TABLE and TOP_SCORER cards horizontally. User swipe only; no auto-scroll.</p>
         </div>
       </section>
     </div>
