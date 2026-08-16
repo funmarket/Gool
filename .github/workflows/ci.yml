@@ -25,7 +25,6 @@ jobs:
       TELEGRAM_BOT_TOKEN: ci-placeholder
       TELEGRAM_WEBHOOK_SECRET: ci-placeholder
       DEV_AUTH_BYPASS: 'false'
-      NODE_ENV: test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -40,8 +39,12 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+        env:
+          NODE_ENV: test
       - run: npm run format:check
       - run: npm run build
+        env:
+          NODE_ENV: production
       - run: npm run security:check
       - run: npm run db:migrate:deploy
       - run: npm run db:migration:check
