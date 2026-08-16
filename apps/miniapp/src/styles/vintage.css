@@ -1,0 +1,18 @@
+/* HOOMA vintage football UI: programme paper, collector tickets, lime + aged gold. */
+:root{--hv-ink:#050604;--hv-card:#0b0d0a;--hv-cream:#e7d8b5;--hv-gold:#d2a62d;--hv-lime:#b9ef00;--hv-muted:#a8a194}
+.vintage-page{position:relative;isolation:isolate}.vintage-page:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.18;background-image:radial-gradient(rgba(255,255,255,.18) .55px,transparent .7px),radial-gradient(rgba(210,166,45,.13) .55px,transparent .7px);background-position:0 0,9px 11px;background-size:17px 17px,23px 23px;mix-blend-mode:screen}
+.vintage-display{font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.015em;color:var(--hv-cream);text-shadow:0 1px rgba(255,255,255,.08)}
+.vintage-kicker{font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--hv-lime)}
+.vintage-rule{border-color:rgba(210,166,45,.38)}
+.vintage-paper{position:relative;background:linear-gradient(135deg,#eadbb8,#cbb381);color:#17130b;border:1px solid #8d6b20;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25),0 12px 30px rgba(0,0,0,.35)}
+.vintage-paper:after,.vintage-ticket:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.12;background-image:radial-gradient(#17130b .5px,transparent .7px);background-size:8px 8px}
+.vintage-panel{background:linear-gradient(145deg,rgba(15,18,13,.98),rgba(5,6,4,.98));border:1px solid rgba(210,166,45,.42);box-shadow:inset 0 0 24px rgba(210,166,45,.035),0 16px 36px rgba(0,0,0,.34)}
+.vintage-cta{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:58px;padding:0 24px;background:linear-gradient(135deg,#c8f33b,#9dcc00);color:#101405;border:1px solid #d9ff54;border-radius:12px;font-weight:950;text-transform:uppercase;letter-spacing:.025em;box-shadow:inset 0 0 0 2px rgba(31,42,3,.18),0 0 22px rgba(185,239,0,.14)}
+.vintage-cta:after{content:"";position:absolute;inset:0;opacity:.13;background-image:radial-gradient(#111 .55px,transparent .7px);background-size:7px 7px}
+.vintage-control{background:#0a0b09;border:1px solid rgba(210,166,45,.48);color:var(--hv-cream);border-radius:12px;min-height:50px}.vintage-control:focus{outline:none;border-color:var(--hv-lime);box-shadow:0 0 0 2px rgba(185,239,0,.14)}
+.vintage-ticket{position:relative;overflow:hidden;background:linear-gradient(135deg,#e9d9b2,#c8ae78);color:#17130b;border:2px solid #9a7220;border-radius:14px;box-shadow:0 14px 30px rgba(0,0,0,.42),inset 0 0 0 2px rgba(55,38,8,.18)}
+.vintage-stub{background:linear-gradient(180deg,#d2a62d,#9b7218);border-left:2px dashed rgba(30,22,5,.62)}
+.vintage-action{background:linear-gradient(145deg,#0c100b,#080a08);border:1px solid rgba(210,166,45,.36);border-radius:16px;transition:.16s ease}.vintage-action:active{transform:scale(.985);border-color:var(--hv-lime)}
+.vintage-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;color:var(--hv-lime);background:radial-gradient(circle at 35% 30%,#233317,#0a0e08 70%);border:1px solid rgba(185,239,0,.55);box-shadow:0 0 18px rgba(185,239,0,.12)}
+.vintage-torn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;background:#dfcfaa;color:#17130b;font-weight:950;text-transform:uppercase;letter-spacing:.04em;clip-path:polygon(1% 8%,5% 0,10% 6%,16% 1%,22% 5%,30% 0,38% 5%,46% 1%,54% 5%,62% 0,70% 5%,78% 1%,86% 5%,94% 0,99% 7%,98% 92%,93% 100%,86% 95%,78% 100%,70% 95%,62% 100%,54% 95%,46% 100%,38% 95%,30% 100%,22% 95%,14% 100%,7% 95%,1% 100%)}
+.vintage-empty{border:1px dashed rgba(210,166,45,.48);background:rgba(10,12,9,.78);border-radius:16px;color:var(--hv-muted)}
