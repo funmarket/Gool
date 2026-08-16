@@ -15,37 +15,61 @@ export function HomePage() {
   const rides = useQuery({ queryKey: ['rides', id], queryFn: () => get<RideListResponse>(`/api/v1/rides?communityId=${id}`), enabled: !!id });
   const funds = useQuery({ queryKey: ['funds', id], queryFn: () => get<FundPage>(`/api/v1/fundraisers?communityId=${id}`), enabled: !!id });
   const rideCount = (rides.data?.offers.length || 0) + (rides.data?.requests.length || 0);
+
   const quick = [
-    { label: 'Teams', note: 'Manage squads', icon: Users, to: '/community' },
+    { label: 'Teams', note: 'Manage squads', icon: Users, to: '/teams' },
     { label: 'Requests', note: `${requests.data?.items.length || 0} open`, icon: Flag, to: '/requests' },
     { label: 'Ride', note: `${rideCount} active`, icon: CarFront, to: '/rides' },
     { label: 'FundMe', note: `${funds.data?.items.length || 0} active`, icon: Trophy, to: '/fundme' },
   ];
+
   return (
     <div className="page-shell vintage-page">
       <section className="vintage-home-hero pt-3">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="vintage-kicker">Matchday command center</div>
-            <h1 className="vintage-display mt-2 text-[48px] leading-[.88] sm:text-[62px]">Matchday<br/><span className="vintage-home-title-accent">command center</span></h1>
-            <p className="mt-4 max-w-lg text-sm leading-6 muted">Play together. Watch together. Move as one.<br/>{active ? `Everything happening inside ${active.name}.` : 'Create or join a HOOMA community to get started.'}</p>
+        <div className="relative z-[1] flex items-start justify-between gap-4">
+          <div className="max-w-[520px]">
+            <h1 className="vintage-home-title text-[58px] leading-[.9] sm:text-[72px]">Match Day</h1>
+            <p className="vintage-copy mt-4 text-sm leading-6">Play together. Watch together. Move as one.<br />{active ? `Everything happening inside ${active.name}.` : 'Create or join a HOOMA community to get started.'}</p>
           </div>
-          <button className="vintage-cta vintage-home-cta shrink-0 px-4" onClick={() => navigate('/events/new')}><Plus size={20}/> <span className="hidden sm:inline">Create a Match</span></button>
+          <button className="vintage-outline-cta shrink-0" onClick={() => navigate('/events/new')}><Plus size={20} /><span className="hidden sm:inline">Create a Match</span></button>
         </div>
       </section>
 
       <section className="mt-7">
-        <div className="mb-3 flex items-end justify-between"><div><div className="vintage-kicker">Next up</div><h2 className="vintage-display text-[30px]">Events</h2></div><button className="flex items-center gap-1 text-sm font-black" style={{ color: 'var(--hv-gold)' }} onClick={() => navigate('/play')}>See all <ArrowRight size={16}/></button></div>
-        {(events.data?.items || []).length ? <div className="grid gap-3 sm:grid-cols-2">{(events.data?.items || []).slice(0, 4).map((event) => <EventCard key={event.id} event={event}/>)}</div> : !events.isLoading && <div className="vintage-empty flex items-center gap-4 p-5"><span className="vintage-icon"><CalendarDays/></span><div><strong className="block text-[var(--hv-cream)]">No upcoming events yet.</strong><span className="text-sm">Create the first match or watch meetup.</span></div></div>}
+        <div className="mb-3 flex items-end justify-between">
+          <div><div className="vintage-kicker">Next up</div><h2 className="vintage-section-title text-[30px]">Events</h2></div>
+          <button className="flex items-center gap-1 text-sm font-black text-[var(--hv-lime)]" onClick={() => navigate('/play')}>See all <ArrowRight size={16} /></button>
+        </div>
+        {(events.data?.items || []).length ? (
+          <div className="grid gap-3 sm:grid-cols-2">{(events.data?.items || []).slice(0, 4).map((event) => <EventCard key={event.id} event={event} />)}</div>
+        ) : !events.isLoading ? (
+          <div className="vintage-empty flex items-center gap-4 p-5"><span className="vintage-icon"><CalendarDays /></span><div><strong className="block text-white">No upcoming events yet.</strong><span className="text-sm">Create the first match or watch meetup.</span></div></div>
+        ) : null}
       </section>
 
-      <section className="vintage-home-grid mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {quick.map(({ label, note, icon: Icon, to }) => <button key={label} className="vintage-action min-h-[142px] p-4 text-left" onClick={() => navigate(to)}><span className="vintage-icon"><Icon size={24}/></span><strong className="vintage-display mt-4 block text-[20px]">{label}</strong><span className="text-xs muted">{note}</span></button>)}
+      <section className="mt-6">
+        <div className="vintage-kicker mb-3">Quick actions</div>
+        <div className="vintage-home-grid grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {quick.map(({ label, note, icon: Icon, to }) => (
+            <button key={label} className="vintage-action p-4 text-left" onClick={() => navigate(to)}>
+              <span className="vintage-icon"><Icon size={25} /></span>
+              <strong className="mt-4 block text-[17px] font-black text-white">{label}</strong>
+              <span className="mt-1 block text-xs text-[var(--hv-muted)]">{label === 'Requests' || label === 'Ride' || label === 'FundMe' ? <><span className="count-accent">{note.split(' ')[0]}</span> {note.substring(note.indexOf(' ') + 1)}</> : note}</span>
+            </button>
+          ))}
+        </div>
       </section>
+
+      {/* Community Actions was intentionally removed: it duplicated Quick Actions. */}
 
       <section className="mt-8">
-        <div className="vintage-kicker">Matchday logistics</div><h2 className="vintage-display mb-3 text-[30px]">Community actions</h2>
-        <div className="grid gap-3">{[['Requests', `${requests.data?.items.length || 0} open · players, positions, equipment, help`, Flag, '/requests'], ['Ride', `${rideCount} active · offers and ride requests`, CarFront, '/rides'], ['FundMe', `${funds.data?.items.length || 0} active · pitch fees, travel, tifo, equipment`, Trophy, '/fundme']].map(([title, subtitle, Icon, to]) => <button key={String(title)} className="vintage-action flex min-h-[86px] items-center gap-4 p-4 text-left" onClick={() => navigate(String(to))}><span className="vintage-icon"><Icon size={23}/></span><span className="min-w-0 flex-1"><strong className="vintage-display block text-[20px]">{String(title)}</strong><span className="text-xs muted">{String(subtitle)}</span></span><ArrowRight style={{ color: 'var(--hv-gold)' }}/></button>)}</div>
+        <div className="mb-3 flex items-end justify-between">
+          <div><div className="vintage-kicker">Football data</div><h2 className="vintage-section-title text-[30px]">Trending Now</h2></div>
+        </div>
+        <div className="vintage-empty px-5 py-5">
+          <strong className="block text-sm text-white">Trending feed connects here.</strong>
+          <p className="mt-1 text-xs leading-5">Do not hardcode editorial cards. Codex/local implementation should connect HOOMA's server-side football-data feed here and render normalized LIVE_MATCH, UPCOMING_MATCH, RESULT, TABLE and TOP_SCORER items in a horizontally swipeable HOOMA-native feed. No auto-scroll.</p>
+        </div>
       </section>
     </div>
   );
