@@ -6,35 +6,18 @@ export function AppHeader() {
   const { resolved, toggle } = useTheme();
   return (
     <header
-      className="sticky top-0 layer-chrome mx-auto flex w-full max-w-[760px] items-center justify-between gap-3 px-4 py-3 backdrop-blur-xl"
-      style={{
-        paddingTop: 'calc(var(--safe-top) + 10px)',
-        background: 'color-mix(in srgb, var(--bg) 82%, transparent)',
-      }}
+      className="sticky top-0 layer-chrome mx-auto flex w-full max-w-[760px] items-center justify-between gap-3 px-4 py-3 backdrop-blur-xl vintage-header"
+      style={{ paddingTop: 'calc(var(--safe-top) + 10px)' }}
     >
-      <div className="flex min-w-0 items-center gap-2.5">
-        <img
-          src="/brand/gool-wordmark.png"
-          alt="GOOL"
-          className="h-auto w-14 shrink-0 object-contain sm:w-20"
-        />
+      <div className="flex min-w-0 items-center gap-3">
+        <img src="/brand/hooma-wordmark.svg" alt="HOOMA" className="h-auto w-[118px] shrink-0 object-contain sm:w-[146px]" />
         <CommunitySwitcher />
       </div>
-      <div className="flex items-center gap-1">
-        <button
-          aria-label="Theme"
-          onClick={toggle}
-          className="grid h-11 w-11 place-items-center rounded-2xl"
-          style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}
-        >
+      <div className="flex items-center gap-2">
+        <button aria-label="Theme" onClick={toggle} className="vintage-header-button">
           {resolved === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
         </button>
-        <button
-          aria-label="Notifications"
-          className="grid h-11 w-11 place-items-center rounded-2xl"
-        >
-          <Bell size={20} />
-        </button>
+        <button aria-label="Notifications" className="vintage-header-button vintage-notification"><Bell size={21} /></button>
       </div>
     </header>
   );
