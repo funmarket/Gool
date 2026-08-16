@@ -1,135 +1,26 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { LocateFixed, MapPin, Plus } from 'lucide-react';
+import { CalendarDays, LocateFixed, MapPin, Plus, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MapPanel } from '../components/MapPanel';
-import { EventCard } from '../components/EventCard';
 import { get } from '../shared/api/http-client';
 import { requestTelegramLocation } from '../lib/telegram';
 import { useCommunity } from '../providers/CommunityProvider';
 import type { Club, CursorPage, EventItem } from '../types/domain';
 
-type FanHub = {
-  id: string;
-  name: string;
-  venueName: string;
-  latitude: string | number;
-  longitude: string | number;
-  verified: boolean;
-  clubs?: Array<{ club: Club }>;
-};
+type FanHub = { id:string; name:string; venueName:string; latitude:string|number; longitude:string|number; verified:boolean; clubs?:Array<{club:Club}> };
 
 export function WatchPage() {
-  const { active } = useCommunity();
-  const navigate = useNavigate();
-  const [clubId, setClubId] = useState('');
-  const [center, setCenter] = useState<[number, number]>();
-
-  const clubs = useQuery({
-    queryKey: ['clubs'],
-    queryFn: () => get<Club[]>('/api/v1/watch/clubs?limit=100'),
-  });
-  const events = useQuery({
-    queryKey: ['events', active?.id, 'WATCH'],
-    queryFn: () =>
-      get<CursorPage<EventItem>>(`/api/v1/events?communityId=${active?.id}&type=WATCH`),
-    enabled: Boolean(active),
-  });
-  const hubs = useQuery({
-    queryKey: ['hubs', active?.id, clubId],
-    queryFn: () =>
-      get<FanHub[]>(
-        `/api/v1/watch/hubs?communityId=${active?.id}${clubId ? `&clubId=${encodeURIComponent(clubId)}` : ''}`,
-      ),
-    enabled: Boolean(active),
-  });
-
-  const points = useMemo(
-    () =>
-      (hubs.data || []).map((hub) => ({
-        id: hub.id,
-        lat: Number(hub.latitude),
-        lng: Number(hub.longitude),
-        label: hub.venueName,
-      })),
-    [hubs.data],
-  );
-
-  const locate = async () => {
-    const location = await requestTelegramLocation();
-    setCenter([location.longitude, location.latitude]);
-  };
-
-  return (
-    <div className="page-shell">
-      <div className="flex items-end justify-between">
-        <div>
-          <div className="section-kicker">Fan meetups</div>
-          <h1 className="section-title">Watch</h1>
-          <p className="mt-1 text-sm muted">Find your crowd, club and matchday venue.</p>
-        </div>
-        <button
-          className="accent-button p-3"
-          onClick={() => void navigate('/events/new?type=WATCH')}
-        >
-          <Plus size={20} />
-        </button>
-      </div>
-
-      <div className="mt-5 flex gap-2">
-        <select
-          className="gool-input"
-          value={clubId}
-          onChange={(event) => setClubId(event.target.value)}
-        >
-          <option value="">All club allegiances</option>
-          {clubs.data?.map((club) => (
-            <option key={club.id} value={club.id}>
-              {club.name}
-            </option>
-          ))}
-        </select>
-        <button
-          className="ghost-button p-3"
-          onClick={() => void locate()}
-          aria-label="Use my location"
-        >
-          <LocateFixed size={18} />
-        </button>
-      </div>
-
-      <div className="mt-4">
-        <MapPanel points={points} {...(center ? { center } : {})} />
-      </div>
-
-      <div className="mt-5 grid gap-2 sm:grid-cols-2">
-        {hubs.data?.slice(0, 6).map((hub) => (
-          <div key={hub.id} className="surface-card p-4">
-            <div className="flex items-start gap-3">
-              <span className="icon-well">
-                <MapPin size={20} />
-              </span>
-              <div>
-                <div className="font-black">{hub.venueName}</div>
-                <div className="text-xs muted">
-                  {hub.clubs?.map((link) => link.club.name).join(' · ') || 'All supporters'}
-                  {hub.verified ? ' · Verified' : ''}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="mb-3 mt-8">
-        <div className="section-kicker">Match rooms</div>
-        <h2 className="section-title">Upcoming watches</h2>
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {events.data?.items.map((event) => (
-          <EventCard event={event} key={event.id} />
-        ))}
-      </div>
-    </div>
-  );
+  const { active } = useCommunity(); const navigate = useNavigate(); const [clubId,setClubId]=useState(''); const [center,setCenter]=useState<[number,number]>();
+  const clubs=useQuery({queryKey:['clubs'],queryFn:()=>get<Club[]>('/api/v1/watch/clubs?limit=100')});
+  const events=useQuery({queryKey:['events',active?.id,'WATCH'],queryFn:()=>get<CursorPage<EventItem>>(`/api/v1/events?communityId=${active?.id}&type=WATCH`),enabled:Boolean(active)});
+  const hubs=useQuery({queryKey:['hubs',active?.id,clubId],queryFn:()=>get<FanHub[]>(`/api/v1/watch/hubs?communityId=${active?.id}${clubId?`&clubId=${encodeURIComponent(clubId)}`:''}`),enabled:Boolean(active)});
+  const points=useMemo(()=>(hubs.data||[]).map(h=>({id:h.id,lat:Number(h.latitude),lng:Number(h.longitude),label:h.venueName})),[hubs.data]);
+  const locate=async()=>{const location=await requestTelegramLocation();setCenter([location.longitude,location.latitude])};
+  return <div className="page-shell vintage-page">
+    <section className="border-b vintage-rule pb-5 pt-2"><div className="vintage-kicker">Watch together</div><div className="flex items-end justify-between gap-4"><div><h1 className="vintage-display text-[64px] leading-none">Watch</h1><p className="mt-1 text-sm muted">Watch together. Find the match. Find the crowd.</p></div><button className="vintage-cta px-4" onClick={()=>navigate('/events/new?type=WATCH')}><Plus size={20}/><span className="hidden sm:inline">Create watch event</span></button></div></section>
+    <section className="mt-5 flex gap-2"><select className="vintage-control w-full px-4" value={clubId} onChange={e=>setClubId(e.target.value)}><option value="">All clubs</option>{clubs.data?.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select><button className="vintage-control grid w-[54px] shrink-0 place-items-center" onClick={()=>void locate()} aria-label="Use my location"><LocateFixed size={19}/></button></section>
+    <section className="mt-5"><div className="vintage-torn"><MapPin size={17}/> Watch places</div><div className="mt-3 overflow-hidden rounded-[14px] border vintage-rule"><MapPanel points={points} {...(center?{center}:{})}/></div><div className="mt-3 grid gap-3 sm:grid-cols-2">{hubs.data?.slice(0,6).map(h=><div key={h.id} className="vintage-panel rounded-[14px] p-4"><div className="flex items-center gap-3"><span className="vintage-icon"><MapPin size={20}/></span><div><strong className="text-[var(--hv-cream)]">{h.venueName}</strong><div className="text-xs muted">{h.clubs?.map(l=>l.club.name).join(' · ')||'All supporters'}{h.verified?' · Verified':''}</div></div></div></div>)}</div></section>
+    <section className="mt-8"><div className="vintage-kicker">Upcoming matches</div><h2 className="vintage-display mb-3 text-[32px]">Collector tickets</h2><div className="grid gap-3">{events.data?.items.map((event,index)=><button key={event.id} onClick={()=>navigate(`/events/${event.id}`)} className="vintage-ticket grid min-h-[160px] w-full grid-cols-[1fr_44px] text-left"><div className="relative z-[1] p-5"><div className="flex items-center justify-between border-b border-black/25 pb-2 text-[10px] font-black uppercase tracking-[.18em]"><span>Collector series</span><span>No. {String(index+1).padStart(4,'0')} ★</span></div><div className="mt-3 vintage-display !text-[#17130b] text-[30px] leading-none">{event.title}</div><div className="mt-4 grid grid-cols-2 gap-3 border-t border-black/20 pt-3 text-sm"><span className="flex gap-2"><MapPin size={17}/>{event.venueName||'Venue TBA'}</span><span className="flex gap-2"><CalendarDays size={17}/>{new Date(event.startsAt).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</span></div><div className="mt-3 flex items-center gap-2 font-black"><Users size={18}/>{event._count?.rsvps||0} going</div></div><div className="vintage-stub relative z-[1] flex items-center justify-center"><span className="vintage-display !text-[#17130b] text-[15px] [writing-mode:vertical-rl] rotate-180">HOOMA · WATCH</span></div></button>)}{!events.isLoading&&!events.data?.items.length&&<div className="vintage-empty p-6 text-center"><strong className="block text-[var(--hv-cream)]">No watch events yet.</strong><span className="text-sm">Create the first collector ticket for your crowd.</span></div>}</div></section>
+  </div>;
 }
