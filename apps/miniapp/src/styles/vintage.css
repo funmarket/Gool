@@ -1,112 +1,39 @@
-/* HOOMA vintage football UI — classy black football programme, cream paper, muted gold, selective lime. */
+/* HOOMA vintage football UI REFERENCE.
+   IMPORTANT: current local app is the functional/architectural source of truth.
+   Port these visual primitives into local authoritative components; do not replace current nav/header/routes/data flows.
+   MapPanel is intentionally removed from the product and must not be reintroduced. */
 :root {
-  --hv-ink: #050504;
-  --hv-card: #0b0c09;
-  --hv-card-2: #11120e;
-  --hv-cream: #eadfc6;
-  --hv-paper: #dec99d;
-  --hv-gold: #c79a2b;
-  --hv-gold-soft: rgba(199,154,43,.42);
-  --hv-lime: #b7e31d;
-  --hv-lime-soft: rgba(183,227,29,.14);
-  --hv-white: #f7f7f4;
-  --hv-muted: #a9a49a;
+  --hv-ink:#050504; --hv-card:#0b0c09; --hv-card-2:#11120e;
+  --hv-cream:#eadfc6; --hv-paper:#dec99d; --hv-gold:#c79a2b;
+  --hv-gold-soft:rgba(199,154,43,.42); --hv-lime:#b7e31d;
+  --hv-lime-soft:rgba(183,227,29,.14); --hv-white:#f7f7f4; --hv-muted:#a9a49a;
 }
-
-.vintage-page { position: relative; isolation: isolate; color: var(--hv-cream); }
-.vintage-page::before {
-  content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
-  background:
-    radial-gradient(circle at 82% 7%, rgba(140,117,26,.08), transparent 28%),
-    linear-gradient(180deg,#050604 0%,#070805 48%,#030403 100%);
-}
-.vintage-page::after {
-  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .11;
-  background-image: radial-gradient(rgba(236,223,198,.18) .45px, transparent .7px);
-  background-size: 19px 19px;
-}
-
-.vintage-header { background: rgba(4,5,3,.96); border-bottom: 1px solid rgba(199,154,43,.18); box-shadow: 0 10px 30px rgba(0,0,0,.28); }
-.vintage-header-button { position: relative; display:grid; width:44px; height:44px; place-items:center; border-radius:50%; color:var(--hv-white); background:#080907; border:1px solid rgba(199,154,43,.46); }
-.vintage-notification::after { content:""; position:absolute; right:4px; top:3px; width:8px; height:8px; border-radius:999px; background:var(--hv-lime); box-shadow:0 0 8px rgba(183,227,29,.5); }
-
-.vintage-display { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', 'Arial Narrow', sans-serif; text-transform:uppercase; letter-spacing:.012em; color:var(--hv-cream); text-shadow:0 1px rgba(255,255,255,.05); }
-.vintage-kicker { font-size:11px; font-weight:900; letter-spacing:.18em; text-transform:uppercase; color:var(--hv-lime); }
-.vintage-section-title { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', 'Arial Narrow', sans-serif; text-transform:uppercase; letter-spacing:.02em; color:var(--hv-cream); }
-.vintage-copy { color:var(--hv-muted); }
-.vintage-rule { border-color: rgba(199,154,43,.30); }
-
-.vintage-panel { background:linear-gradient(145deg,rgba(15,16,12,.98),rgba(6,7,5,.99)); border:1px solid rgba(199,154,43,.38); box-shadow:inset 0 0 24px rgba(199,154,43,.02),0 14px 30px rgba(0,0,0,.28); }
-.vintage-action { background:linear-gradient(145deg,#0d0e0b,#080907); border:1px solid rgba(199,154,43,.38); border-radius:12px; transition:.16s ease; box-shadow:inset 0 0 18px rgba(199,154,43,.018); color:var(--hv-white); }
-.vintage-action:active { transform:scale(.985); border-color:var(--hv-lime); }
-.vintage-action svg { color:var(--hv-white); stroke-width:2.15; }
-.vintage-icon { display:grid; place-items:center; width:48px; height:48px; border-radius:50%; color:var(--hv-white); background:#0b0c09; border:1px solid rgba(199,154,43,.44); }
-.vintage-icon svg { color:var(--hv-white); }
-
-.vintage-outline-cta { display:inline-flex; align-items:center; justify-content:center; gap:9px; min-height:48px; padding:0 18px; color:var(--hv-white); background:#070806; border:1px solid var(--hv-lime); border-radius:999px; font-weight:850; box-shadow:0 0 0 1px rgba(183,227,29,.05); }
-.vintage-outline-cta svg { color:var(--hv-lime); }
-.vintage-cta { position:relative; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:56px; padding:0 22px; background:linear-gradient(135deg,#c7e83b,#9fbf19); color:#101405; border:1px solid #d8ef63; border-radius:9px; font-weight:950; text-transform:uppercase; letter-spacing:.035em; }
-.vintage-cta::after,.vintage-ticket::after,.vintage-paper::after { content:""; position:absolute; inset:0; pointer-events:none; opacity:.08; background-image:radial-gradient(#17130b .5px, transparent .7px); background-size:8px 8px; }
-
-.vintage-control { min-height:50px; background:#090a08; border:1px solid rgba(199,154,43,.44); border-radius:9px; color:var(--hv-white); }
-.vintage-control:focus,.vintage-control:focus-within { outline:none; border-color:var(--hv-lime); box-shadow:0 0 0 1px rgba(183,227,29,.18); }
-
-.vintage-paper { position:relative; overflow:hidden; background:linear-gradient(135deg,#eadbb8,#c8ae78); color:#17130b; border:1px solid #8d681c; box-shadow:inset 0 0 0 1px rgba(255,255,255,.20),0 12px 30px rgba(0,0,0,.35); }
-.vintage-ticket { position:relative; overflow:hidden; background:linear-gradient(135deg,#ecddb9,#c9ae78); color:#17130b; border:2px solid #90681b; border-radius:11px; box-shadow:0 14px 30px rgba(0,0,0,.38), inset 0 0 0 1px rgba(55,38,8,.18); }
-.vintage-ticket-title { font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif; text-transform:uppercase; letter-spacing:.018em; color:#17130b; }
-.vintage-ticket-meta { border-top:1px solid rgba(23,19,11,.25); border-bottom:1px solid rgba(23,19,11,.20); }
-.vintage-stub { background:linear-gradient(180deg,#d2a62c,#9e7319); border-left:2px dashed rgba(30,22,5,.58); }
-
-.vintage-torn { display:inline-flex; align-items:center; gap:8px; padding:7px 13px; background:#dfcfaa; color:#17130b; font-weight:950; text-transform:uppercase; letter-spacing:.05em; clip-path:polygon(1% 9%,5% 1%,10% 6%,16% 1%,22% 5%,30% 0,38% 5%,46% 1%,54% 5%,62% 0,70% 5%,78% 1%,86% 5%,94% 0,99% 7%,98% 92%,93% 100%,86% 95%,78% 100%,70% 95%,62% 100%,54% 95%,46% 100%,38% 95%,30% 100%,22% 95%,14% 100%,7% 95%,1% 100%); }
-.vintage-empty { border:1px solid rgba(199,154,43,.34); background:rgba(9,10,7,.90); border-radius:12px; color:var(--hv-muted); }
-
-/* Home: less noisy. One vintage hero, clean dark utility cards. */
-.vintage-home-hero { position:relative; overflow:hidden; min-height:220px; padding:18px 0 24px; border-bottom:1px solid rgba(199,154,43,.26); }
-.vintage-home-hero::before { content:""; position:absolute; inset:0 0 0 46%; opacity:.30; background:radial-gradient(ellipse at 55% 55%,rgba(221,193,124,.20),transparent 35%),linear-gradient(180deg,transparent,rgba(0,0,0,.32)); pointer-events:none; }
-.vintage-home-title { font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif; text-transform:uppercase; color:var(--hv-cream); letter-spacing:.014em; }
-.vintage-home-grid .vintage-action { min-height:132px; }
-.vintage-home-grid strong,.vintage-home-grid span { color:var(--hv-white); }
-.vintage-home-grid .count-accent { color:var(--hv-lime); }
-
-/* Horizontal feed cards */
-.vintage-feed { display:flex; gap:12px; overflow-x:auto; overscroll-behavior-inline:contain; scroll-snap-type:x proximity; padding-bottom:4px; scrollbar-width:none; }
-.vintage-feed::-webkit-scrollbar { display:none; }
-.vintage-feed-card { flex:0 0 min(76vw,250px); scroll-snap-align:start; overflow:hidden; border:1px solid rgba(199,154,43,.34); border-radius:11px; background:#090a08; color:var(--hv-white); }
-.vintage-feed-card img { width:100%; aspect-ratio:16/10; object-fit:cover; display:block; }
-.vintage-feed-card .feed-label { color:var(--hv-lime); font-size:10px; font-weight:900; letter-spacing:.10em; text-transform:uppercase; }
-
-/* Watch: strongest vintage treatment. */
-.vintage-watch-hero { position:relative; overflow:hidden; padding:14px 0 22px; border-bottom:1px solid rgba(199,154,43,.28); }
-.vintage-watch-hero::after { content:""; position:absolute; right:-24px; top:3px; width:220px; height:120px; opacity:.08; background:radial-gradient(ellipse at bottom,rgba(183,227,29,.8),transparent 55%); }
-
-/* Play: social/action page, black cards + real people; vintage stays subtle. */
-.vintage-player-card { flex:0 0 156px; overflow:hidden; border:1px solid rgba(199,154,43,.36); border-radius:12px; background:#090a08; color:var(--hv-white); }
-.vintage-player-card img { width:100%; aspect-ratio:4/5; object-fit:cover; display:block; }
-.vintage-player-card .player-status { color:var(--hv-lime); font-size:10px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
-.vintage-match-card-wrap > * { border-color:rgba(199,154,43,.32)!important; }
-
-/* HOOMA community: club-office / squad-sheet feeling, not ticket-heavy. */
-.vintage-community-hero { position:relative; overflow:hidden; border:1px solid rgba(199,154,43,.35); border-radius:14px; background:linear-gradient(145deg,#10110d,#080907); }
-.vintage-community-mark { display:grid; width:66px; height:66px; place-items:center; border-radius:16px; color:#111; background:var(--hv-paper); border:2px solid rgba(199,154,43,.55); font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif; font-size:22px; }
-
-/* Pitch: real venue photography with restrained vintage framing. */
-.vintage-pitch-card { display:grid; grid-template-columns:minmax(130px,42%) minmax(0,1fr) 34px; min-height:190px; overflow:hidden; border:1px solid rgba(199,154,43,.40); border-radius:11px; background:#090a08; color:var(--hv-white); }
-.vintage-pitch-card img { width:100%; height:100%; object-fit:cover; display:block; }
-.vintage-pitch-price { color:var(--hv-lime); font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif; font-size:46px; line-height:.9; }
-.vintage-pitch-stub { display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#bddc2c,#91ad17); color:#151905; border-left:1px dashed rgba(23,26,8,.65); }
-.vintage-pitch-stub span { writing-mode:vertical-rl; transform:rotate(180deg); font-size:9px; font-weight:950; letter-spacing:.10em; text-transform:uppercase; }
-
-/* Bottom nav: fixed contract Home | Play | Watch | HOOMA | Pitch */
-.vintage-bottom-nav { background:rgba(6,7,5,.97); border:1px solid rgba(199,154,43,.30); border-bottom:0; box-shadow:0 -8px 30px rgba(0,0,0,.26); }
-.vintage-bottom-nav a { color:var(--hv-white); }
-.vintage-bottom-nav svg { color:var(--hv-white); stroke-width:2.2; }
-.vintage-bottom-nav .is-active { color:var(--hv-lime); }
-.vintage-bottom-nav .is-active svg { color:var(--hv-lime); }
-
-@media (max-width:460px) {
-  .vintage-home-grid .vintage-action { min-height:120px; }
-  .vintage-pitch-card { grid-template-columns:1fr 32px; }
-  .vintage-pitch-card .pitch-photo { grid-column:1; min-height:180px; }
-  .vintage-pitch-card .pitch-body { grid-column:1; }
-  .vintage-pitch-card .vintage-pitch-stub { grid-column:2; grid-row:1 / span 2; }
-}
+.vintage-page{position:relative;isolation:isolate;color:var(--hv-cream)}
+.vintage-page::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(circle at 82% 7%,rgba(140,117,26,.08),transparent 28%),linear-gradient(180deg,#050604 0%,#070805 48%,#030403 100%)}
+.vintage-page::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.08;background-image:radial-gradient(rgba(236,223,198,.16) .45px,transparent .7px);background-size:19px 19px}
+.vintage-display,.vintage-section-title,.vintage-home-title{font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.015em;color:var(--hv-cream)}
+.vintage-kicker{font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--hv-lime)}
+.vintage-copy{color:var(--hv-muted)}
+.vintage-panel,.vintage-action,.vintage-empty{background:linear-gradient(145deg,#0d0e0b,#080907);border:1px solid rgba(199,154,43,.34);border-radius:12px;color:var(--hv-white);box-shadow:0 12px 28px rgba(0,0,0,.24)}
+.vintage-action{transition:.16s ease}.vintage-action:active{transform:scale(.985);border-color:var(--hv-lime)}
+.vintage-action svg,.vintage-icon svg{color:var(--hv-white);stroke-width:2.15}.vintage-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;color:var(--hv-white);background:#0b0c09;border:1px solid rgba(199,154,43,.40)}
+.vintage-outline-cta{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:0 18px;color:var(--hv-white);background:#070806;border:1px solid var(--hv-lime);border-radius:999px;font-weight:850}.vintage-outline-cta svg{color:var(--hv-lime)}
+.vintage-control{min-height:50px;background:#090a08;border:1px solid rgba(199,154,43,.40);border-radius:9px;color:var(--hv-white)}.vintage-control:focus,.vintage-control:focus-within{outline:none;border-color:var(--hv-lime);box-shadow:0 0 0 1px rgba(183,227,29,.18)}
+.vintage-paper,.vintage-ticket{position:relative;overflow:hidden;background:linear-gradient(135deg,#ecddb9,#c9ae78);color:#17130b;border:1px solid #8d681c;box-shadow:0 12px 30px rgba(0,0,0,.34)}
+.vintage-ticket{border:2px solid #90681b;border-radius:11px}.vintage-ticket-title{font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif;text-transform:uppercase;color:#17130b}.vintage-ticket-meta{border-top:1px solid rgba(23,19,11,.25);border-bottom:1px solid rgba(23,19,11,.20)}.vintage-stub{background:linear-gradient(180deg,#d2a62c,#9e7319);border-left:2px dashed rgba(30,22,5,.58)}
+/* HOME: one strong vintage hero; the rest clean/classy. Keep current functions. Community Actions is removed because it duplicates Teams/Requests/Ride/FundMe. */
+.vintage-home-hero{position:relative;overflow:hidden;min-height:220px;padding:18px 0 24px;border-bottom:1px solid rgba(199,154,43,.24)}.vintage-home-hero::before{content:"";position:absolute;inset:0 0 0 46%;opacity:.28;background:radial-gradient(ellipse at 55% 55%,rgba(221,193,124,.18),transparent 35%),linear-gradient(180deg,transparent,rgba(0,0,0,.34));pointer-events:none}.vintage-home-grid .vintage-action{min-height:126px}.vintage-home-grid strong,.vintage-home-grid span{color:var(--hv-white)}.vintage-home-grid .count-accent{color:var(--hv-lime)}
+/* Horizontal football-data feed: user-controlled swipe, no auto-scroll. */
+.vintage-feed{display:flex;gap:12px;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x proximity;padding-bottom:4px;scrollbar-width:none}.vintage-feed::-webkit-scrollbar{display:none}.vintage-feed-card{flex:0 0 min(76vw,250px);scroll-snap-align:start;overflow:hidden;border:1px solid rgba(199,154,43,.34);border-radius:11px;background:#090a08;color:var(--hv-white)}.vintage-feed-card img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block}.vintage-feed-card .feed-label{color:var(--hv-lime);font-size:10px;font-weight:900;letter-spacing:.10em;text-transform:uppercase}
+/* WATCH: strongest collector-ticket treatment; real local functionality/data only. No maps/MapPanel. */
+.vintage-watch-hero{position:relative;overflow:hidden;padding:14px 0 22px;border-bottom:1px solid rgba(199,154,43,.28)}
+/* PLAY: preserve pickup flow. Players feed is additive only when backed by real data. */
+.vintage-player-card{flex:0 0 156px;overflow:hidden;border:1px solid rgba(199,154,43,.36);border-radius:12px;background:#090a08;color:var(--hv-white)}.vintage-player-card img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}.vintage-player-card .player-status{color:var(--hv-lime);font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+/* HOOMA: manager office / club programme / squad sheet, not ticket-heavy. */
+.vintage-community-hero{position:relative;overflow:hidden;border:1px solid rgba(199,154,43,.35);border-radius:14px;background:linear-gradient(145deg,#10110d,#080907)}
+/* PITCH: real venue photography, hourly price, Address | Houma | Contact. No booking/payment/map invention. */
+.vintage-pitch-card{display:grid;grid-template-columns:minmax(130px,42%) minmax(0,1fr) 34px;min-height:190px;overflow:hidden;border:1px solid rgba(199,154,43,.40);border-radius:11px;background:#090a08;color:var(--hv-white)}.vintage-pitch-card img{width:100%;height:100%;object-fit:cover;display:block}.vintage-pitch-price{color:var(--hv-lime);font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif;font-size:46px;line-height:.9}.vintage-pitch-stub{display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#bddc2c,#91ad17);color:#151905;border-left:1px dashed rgba(23,26,8,.65)}.vintage-pitch-stub span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:9px;font-weight:950;letter-spacing:.10em;text-transform:uppercase}
+/* NAV/HEADER: visual tokens only. Current local BottomNav.tsx order/destinations and AppHeader.tsx More button are authoritative and MUST NOT be replaced from this PR. */
+.vintage-header{background:rgba(4,5,3,.96);border-bottom:1px solid rgba(199,154,43,.18)}.vintage-header-button{display:grid;width:44px;height:44px;place-items:center;border-radius:50%;color:var(--hv-white);background:#080907;border:1px solid rgba(199,154,43,.42)}
+.vintage-bottom-nav{background:rgba(6,7,5,.97);border:1px solid rgba(199,154,43,.30);border-bottom:0}.vintage-bottom-nav a,.vintage-bottom-nav svg{color:var(--hv-white)}.vintage-bottom-nav .is-active,.vintage-bottom-nav .is-active svg{color:var(--hv-lime)}
+@media(max-width:460px){.vintage-home-grid .vintage-action{min-height:118px}.vintage-pitch-card{grid-template-columns:1fr 32px}.vintage-pitch-card .pitch-photo{grid-column:1;min-height:180px}.vintage-pitch-card .pitch-body{grid-column:1}.vintage-pitch-card .vintage-pitch-stub{grid-column:2;grid-row:1/span 2}}
