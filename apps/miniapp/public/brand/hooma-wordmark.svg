@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 110" role="img" aria-label="HOOMA">
+  <defs>
+    <filter id="rough" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="0.8"/></filter>
+  </defs>
+  <rect width="420" height="110" fill="none"/>
+  <g fill="#d7a82d" stroke="#8a6112" stroke-width="2" filter="url(#rough)" font-family="Georgia, Times New Roman, serif" font-weight="900" font-size="72">
+    <text x="8" y="80">H</text><text x="148" y="80">OMA</text>
+  </g>
+  <g transform="translate(92 18)">
+    <circle cx="38" cy="38" r="34" fill="#e5d3a5" stroke="#b68116" stroke-width="4"/>
+    <polygon points="38,20 49,28 45,41 31,41 27,28" fill="#11140d"/>
+    <polygon points="15,24 27,28 25,42 12,46 7,34" fill="#11140d"/>
+    <polygon points="61,24 69,34 64,47 51,42 49,28" fill="#11140d"/>
+    <polygon points="21,57 31,41 45,41 55,57 46,69 30,69" fill="#11140d"/>
+    <circle cx="38" cy="38" r="34" fill="none" stroke="#17130b" stroke-width="2" opacity=".45"/>
+  </g>
+</svg>
