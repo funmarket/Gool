@@ -1,30 +1,112 @@
-/* HOOMA vintage football UI: black match programme, aged cream paper, muted gold, selective lime. */
-:root{--hv-ink:#050504;--hv-card:#0c0c0a;--hv-cream:#e8d9b8;--hv-paper:#ddc99c;--hv-gold:#c99a27;--hv-gold-dark:#765417;--hv-lime:#b8e51d;--hv-muted:#aaa294}
-.vintage-page{position:relative;isolation:isolate;color:var(--hv-cream)}
-.vintage-page:before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(circle at 72% 8%,rgba(139,119,25,.10),transparent 28%),linear-gradient(180deg,#050604 0%,#080805 46%,#030403 100%)}
-.vintage-page:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.22;background-image:radial-gradient(rgba(231,216,181,.14) .55px,transparent .8px),radial-gradient(rgba(201,154,39,.12) .55px,transparent .8px);background-position:0 0,9px 11px;background-size:17px 17px,23px 23px;mix-blend-mode:screen}
-.vintage-header{background:rgba(4,5,3,.94);border-bottom:1px solid rgba(201,154,39,.22);box-shadow:0 10px 34px rgba(0,0,0,.32)}
-.vintage-header-button{position:relative;display:grid;height:44px;width:44px;place-items:center;border-radius:50%;color:var(--hv-cream);background:#090a08;border:1px solid rgba(201,154,39,.5);box-shadow:inset 0 0 14px rgba(201,154,39,.04)}
-.vintage-notification:after{content:"";position:absolute;right:4px;top:3px;width:8px;height:8px;border-radius:999px;background:var(--hv-lime);box-shadow:0 0 8px rgba(184,229,29,.5)}
-.vintage-display{font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.012em;color:var(--hv-cream);text-shadow:0 1px rgba(255,255,255,.06),1px 0 rgba(103,73,16,.28)}
-.vintage-kicker{font-size:11px;font-weight:900;letter-spacing:.19em;text-transform:uppercase;color:var(--hv-gold)}
-.vintage-rule{border-color:rgba(201,154,39,.34)}
-.vintage-paper{position:relative;background:linear-gradient(135deg,#eadbb8,#c8ae78);color:#17130b;border:1px solid #8d681c;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2),0 12px 30px rgba(0,0,0,.35)}
-.vintage-paper:after,.vintage-ticket:after,.vintage-cta:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.12;background-image:radial-gradient(#17130b .5px,transparent .7px);background-size:8px 8px}
-.vintage-panel{background:linear-gradient(145deg,rgba(15,15,12,.98),rgba(5,6,4,.98));border:1px solid rgba(201,154,39,.42);box-shadow:inset 0 0 26px rgba(201,154,39,.035),0 16px 36px rgba(0,0,0,.34)}
-.vintage-cta{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:58px;padding:0 24px;background:linear-gradient(135deg,#c5e936,#9fbe19);color:#101405;border:1px solid #d7ef62;border-radius:8px;font-weight:950;text-transform:uppercase;letter-spacing:.035em;box-shadow:inset 0 0 0 2px rgba(31,42,3,.18),0 8px 20px rgba(0,0,0,.28)}
-.vintage-control{background:#0a0a08;border:1px solid rgba(201,154,39,.48);color:var(--hv-cream);border-radius:8px;min-height:50px;box-shadow:inset 0 0 16px rgba(201,154,39,.025)}.vintage-control:focus-within,.vintage-control:focus{outline:none;border-color:var(--hv-lime);box-shadow:0 0 0 1px rgba(184,229,29,.2)}
-.vintage-ticket{position:relative;overflow:hidden;background:linear-gradient(135deg,#eadbb8,#c7aa70);color:#17130b;border:2px solid #936b1b;border-radius:10px;box-shadow:0 14px 30px rgba(0,0,0,.42),inset 0 0 0 2px rgba(55,38,8,.18)}
-.vintage-stub{background:linear-gradient(180deg,#d1a226,#9b7117);border-left:2px dashed rgba(30,22,5,.62)}
-.vintage-action{background:linear-gradient(145deg,#0e0f0c,#070806);border:1px solid rgba(201,154,39,.42);border-radius:10px;transition:.16s ease;box-shadow:inset 0 0 20px rgba(201,154,39,.025)}.vintage-action:active{transform:scale(.985);border-color:var(--hv-lime)}
-.vintage-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;color:var(--hv-lime);background:radial-gradient(circle at 35% 30%,#202710,#090b07 70%);border:1px solid rgba(184,229,29,.45);box-shadow:0 0 14px rgba(184,229,29,.08)}
-.vintage-torn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;background:#dfcfaa;color:#17130b;font-weight:950;text-transform:uppercase;letter-spacing:.05em;clip-path:polygon(1% 8%,5% 0,10% 6%,16% 1%,22% 5%,30% 0,38% 5%,46% 1%,54% 5%,62% 0,70% 5%,78% 1%,86% 5%,94% 0,99% 7%,98% 92%,93% 100%,86% 95%,78% 100%,70% 95%,62% 100%,54% 95%,46% 100%,38% 95%,30% 100%,22% 95%,14% 100%,7% 95%,1% 100%);box-shadow:0 7px 18px rgba(0,0,0,.25)}
-.vintage-empty{border:1px dashed rgba(201,154,39,.5);background:rgba(9,10,7,.86);border-radius:10px;color:var(--hv-muted);box-shadow:inset 0 0 30px rgba(201,154,39,.025)}
-.vintage-home-hero{position:relative;overflow:hidden;border-bottom:1px solid rgba(201,154,39,.3);padding-bottom:24px}.vintage-home-hero:after{content:"";position:absolute;right:-50px;bottom:-70px;width:230px;height:230px;border-radius:50%;border:26px solid rgba(201,154,39,.035);box-shadow:0 0 0 2px rgba(184,229,29,.025)}
-.vintage-home-title-accent{color:var(--hv-paper)}
-.vintage-home-cta{background:linear-gradient(135deg,#c4e833,#9fbd18)}
-.vintage-home-grid .vintage-action:nth-child(1),.vintage-home-grid .vintage-action:nth-child(4){border-color:rgba(201,154,39,.58)}
-.vintage-home-grid .vintage-action:nth-child(2) .vintage-icon,.vintage-home-grid .vintage-action:nth-child(4) .vintage-icon{color:var(--hv-gold);border-color:rgba(201,154,39,.5)}
-.vintage-watch-hero{position:relative;overflow:hidden;padding:16px 0 24px;border-bottom:1px solid rgba(201,154,39,.32)}.vintage-watch-hero:after{content:"";position:absolute;right:-25px;top:5px;width:220px;height:130px;opacity:.12;background:radial-gradient(ellipse at bottom,rgba(184,229,29,.7),transparent 55%);filter:blur(4px)}
-.vintage-ticket-title{font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.018em;color:#17130b}
-.vintage-ticket-meta{border-top:1px solid rgba(23,19,11,.28);border-bottom:1px solid rgba(23,19,11,.22)}
+/* HOOMA vintage football UI — classy black football programme, cream paper, muted gold, selective lime. */
+:root {
+  --hv-ink: #050504;
+  --hv-card: #0b0c09;
+  --hv-card-2: #11120e;
+  --hv-cream: #eadfc6;
+  --hv-paper: #dec99d;
+  --hv-gold: #c79a2b;
+  --hv-gold-soft: rgba(199,154,43,.42);
+  --hv-lime: #b7e31d;
+  --hv-lime-soft: rgba(183,227,29,.14);
+  --hv-white: #f7f7f4;
+  --hv-muted: #a9a49a;
+}
+
+.vintage-page { position: relative; isolation: isolate; color: var(--hv-cream); }
+.vintage-page::before {
+  content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(circle at 82% 7%, rgba(140,117,26,.08), transparent 28%),
+    linear-gradient(180deg,#050604 0%,#070805 48%,#030403 100%);
+}
+.vintage-page::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .11;
+  background-image: radial-gradient(rgba(236,223,198,.18) .45px, transparent .7px);
+  background-size: 19px 19px;
+}
+
+.vintage-header { background: rgba(4,5,3,.96); border-bottom: 1px solid rgba(199,154,43,.18); box-shadow: 0 10px 30px rgba(0,0,0,.28); }
+.vintage-header-button { position: relative; display:grid; width:44px; height:44px; place-items:center; border-radius:50%; color:var(--hv-white); background:#080907; border:1px solid rgba(199,154,43,.46); }
+.vintage-notification::after { content:""; position:absolute; right:4px; top:3px; width:8px; height:8px; border-radius:999px; background:var(--hv-lime); box-shadow:0 0 8px rgba(183,227,29,.5); }
+
+.vintage-display { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', 'Arial Narrow', sans-serif; text-transform:uppercase; letter-spacing:.012em; color:var(--hv-cream); text-shadow:0 1px rgba(255,255,255,.05); }
+.vintage-kicker { font-size:11px; font-weight:900; letter-spacing:.18em; text-transform:uppercase; color:var(--hv-lime); }
+.vintage-section-title { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', 'Arial Narrow', sans-serif; text-transform:uppercase; letter-spacing:.02em; color:var(--hv-cream); }
+.vintage-copy { color:var(--hv-muted); }
+.vintage-rule { border-color: rgba(199,154,43,.30); }
+
+.vintage-panel { background:linear-gradient(145deg,rgba(15,16,12,.98),rgba(6,7,5,.99)); border:1px solid rgba(199,154,43,.38); box-shadow:inset 0 0 24px rgba(199,154,43,.02),0 14px 30px rgba(0,0,0,.28); }
+.vintage-action { background:linear-gradient(145deg,#0d0e0b,#080907); border:1px solid rgba(199,154,43,.38); border-radius:12px; transition:.16s ease; box-shadow:inset 0 0 18px rgba(199,154,43,.018); color:var(--hv-white); }
+.vintage-action:active { transform:scale(.985); border-color:var(--hv-lime); }
+.vintage-action svg { color:var(--hv-white); stroke-width:2.15; }
+.vintage-icon { display:grid; place-items:center; width:48px; height:48px; border-radius:50%; color:var(--hv-white); background:#0b0c09; border:1px solid rgba(199,154,43,.44); }
+.vintage-icon svg { color:var(--hv-white); }
+
+.vintage-outline-cta { display:inline-flex; align-items:center; justify-content:center; gap:9px; min-height:48px; padding:0 18px; color:var(--hv-white); background:#070806; border:1px solid var(--hv-lime); border-radius:999px; font-weight:850; box-shadow:0 0 0 1px rgba(183,227,29,.05); }
+.vintage-outline-cta svg { color:var(--hv-lime); }
+.vintage-cta { position:relative; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:56px; padding:0 22px; background:linear-gradient(135deg,#c7e83b,#9fbf19); color:#101405; border:1px solid #d8ef63; border-radius:9px; font-weight:950; text-transform:uppercase; letter-spacing:.035em; }
+.vintage-cta::after,.vintage-ticket::after,.vintage-paper::after { content:""; position:absolute; inset:0; pointer-events:none; opacity:.08; background-image:radial-gradient(#17130b .5px, transparent .7px); background-size:8px 8px; }
+
+.vintage-control { min-height:50px; background:#090a08; border:1px solid rgba(199,154,43,.44); border-radius:9px; color:var(--hv-white); }
+.vintage-control:focus,.vintage-control:focus-within { outline:none; border-color:var(--hv-lime); box-shadow:0 0 0 1px rgba(183,227,29,.18); }
+
+.vintage-paper { position:relative; overflow:hidden; background:linear-gradient(135deg,#eadbb8,#c8ae78); color:#17130b; border:1px solid #8d681c; box-shadow:inset 0 0 0 1px rgba(255,255,255,.20),0 12px 30px rgba(0,0,0,.35); }
+.vintage-ticket { position:relative; overflow:hidden; background:linear-gradient(135deg,#ecddb9,#c9ae78); color:#17130b; border:2px solid #90681b; border-radius:11px; box-shadow:0 14px 30px rgba(0,0,0,.38), inset 0 0 0 1px rgba(55,38,8,.18); }
+.vintage-ticket-title { font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif; text-transform:uppercase; letter-spacing:.018em; color:#17130b; }
+.vintage-ticket-meta { border-top:1px solid rgba(23,19,11,.25); border-bottom:1px solid rgba(23,19,11,.20); }
+.vintage-stub { background:linear-gradient(180deg,#d2a62c,#9e7319); border-left:2px dashed rgba(30,22,5,.58); }
+
+.vintage-torn { display:inline-flex; align-items:center; gap:8px; padding:7px 13px; background:#dfcfaa; color:#17130b; font-weight:950; text-transform:uppercase; letter-spacing:.05em; clip-path:polygon(1% 9%,5% 1%,10% 6%,16% 1%,22% 5%,30% 0,38% 5%,46% 1%,54% 5%,62% 0,70% 5%,78% 1%,86% 5%,94% 0,99% 7%,98% 92%,93% 100%,86% 95%,78% 100%,70% 95%,62% 100%,54% 95%,46% 100%,38% 95%,30% 100%,22% 95%,14% 100%,7% 95%,1% 100%); }
+.vintage-empty { border:1px solid rgba(199,154,43,.34); background:rgba(9,10,7,.90); border-radius:12px; color:var(--hv-muted); }
+
+/* Home: less noisy. One vintage hero, clean dark utility cards. */
+.vintage-home-hero { position:relative; overflow:hidden; min-height:220px; padding:18px 0 24px; border-bottom:1px solid rgba(199,154,43,.26); }
+.vintage-home-hero::before { content:""; position:absolute; inset:0 0 0 46%; opacity:.30; background:radial-gradient(ellipse at 55% 55%,rgba(221,193,124,.20),transparent 35%),linear-gradient(180deg,transparent,rgba(0,0,0,.32)); pointer-events:none; }
+.vintage-home-title { font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif; text-transform:uppercase; color:var(--hv-cream); letter-spacing:.014em; }
+.vintage-home-grid .vintage-action { min-height:132px; }
+.vintage-home-grid strong,.vintage-home-grid span { color:var(--hv-white); }
+.vintage-home-grid .count-accent { color:var(--hv-lime); }
+
+/* Horizontal feed cards */
+.vintage-feed { display:flex; gap:12px; overflow-x:auto; overscroll-behavior-inline:contain; scroll-snap-type:x proximity; padding-bottom:4px; scrollbar-width:none; }
+.vintage-feed::-webkit-scrollbar { display:none; }
+.vintage-feed-card { flex:0 0 min(76vw,250px); scroll-snap-align:start; overflow:hidden; border:1px solid rgba(199,154,43,.34); border-radius:11px; background:#090a08; color:var(--hv-white); }
+.vintage-feed-card img { width:100%; aspect-ratio:16/10; object-fit:cover; display:block; }
+.vintage-feed-card .feed-label { color:var(--hv-lime); font-size:10px; font-weight:900; letter-spacing:.10em; text-transform:uppercase; }
+
+/* Watch: strongest vintage treatment. */
+.vintage-watch-hero { position:relative; overflow:hidden; padding:14px 0 22px; border-bottom:1px solid rgba(199,154,43,.28); }
+.vintage-watch-hero::after { content:""; position:absolute; right:-24px; top:3px; width:220px; height:120px; opacity:.08; background:radial-gradient(ellipse at bottom,rgba(183,227,29,.8),transparent 55%); }
+
+/* Play: social/action page, black cards + real people; vintage stays subtle. */
+.vintage-player-card { flex:0 0 156px; overflow:hidden; border:1px solid rgba(199,154,43,.36); border-radius:12px; background:#090a08; color:var(--hv-white); }
+.vintage-player-card img { width:100%; aspect-ratio:4/5; object-fit:cover; display:block; }
+.vintage-player-card .player-status { color:var(--hv-lime); font-size:10px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+.vintage-match-card-wrap > * { border-color:rgba(199,154,43,.32)!important; }
+
+/* HOOMA community: club-office / squad-sheet feeling, not ticket-heavy. */
+.vintage-community-hero { position:relative; overflow:hidden; border:1px solid rgba(199,154,43,.35); border-radius:14px; background:linear-gradient(145deg,#10110d,#080907); }
+.vintage-community-mark { display:grid; width:66px; height:66px; place-items:center; border-radius:16px; color:#111; background:var(--hv-paper); border:2px solid rgba(199,154,43,.55); font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif; font-size:22px; }
+
+/* Pitch: real venue photography with restrained vintage framing. */
+.vintage-pitch-card { display:grid; grid-template-columns:minmax(130px,42%) minmax(0,1fr) 34px; min-height:190px; overflow:hidden; border:1px solid rgba(199,154,43,.40); border-radius:11px; background:#090a08; color:var(--hv-white); }
+.vintage-pitch-card img { width:100%; height:100%; object-fit:cover; display:block; }
+.vintage-pitch-price { color:var(--hv-lime); font-family:Impact,Haettenschweiler,'Arial Narrow Bold','Arial Narrow',sans-serif; font-size:46px; line-height:.9; }
+.vintage-pitch-stub { display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#bddc2c,#91ad17); color:#151905; border-left:1px dashed rgba(23,26,8,.65); }
+.vintage-pitch-stub span { writing-mode:vertical-rl; transform:rotate(180deg); font-size:9px; font-weight:950; letter-spacing:.10em; text-transform:uppercase; }
+
+/* Bottom nav: fixed contract Home | Play | Watch | HOOMA | Pitch */
+.vintage-bottom-nav { background:rgba(6,7,5,.97); border:1px solid rgba(199,154,43,.30); border-bottom:0; box-shadow:0 -8px 30px rgba(0,0,0,.26); }
+.vintage-bottom-nav a { color:var(--hv-white); }
+.vintage-bottom-nav svg { color:var(--hv-white); stroke-width:2.2; }
+.vintage-bottom-nav .is-active { color:var(--hv-lime); }
+.vintage-bottom-nav .is-active svg { color:var(--hv-lime); }
+
+@media (max-width:460px) {
+  .vintage-home-grid .vintage-action { min-height:120px; }
+  .vintage-pitch-card { grid-template-columns:1fr 32px; }
+  .vintage-pitch-card .pitch-photo { grid-column:1; min-height:180px; }
+  .vintage-pitch-card .pitch-body { grid-column:1; }
+  .vintage-pitch-card .vintage-pitch-stub { grid-column:2; grid-row:1 / span 2; }
+}
