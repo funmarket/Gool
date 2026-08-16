@@ -6,7 +6,7 @@
   },
   "deploy": {
     "numReplicas": 1,
-    "startCommand": "npm run db:migrate:deploy && npm -w @gool/api run start",
+    "startCommand": "NODE_ENV=production npm run db:migrate:deploy && NODE_ENV=production npm -w @gool/api run start",
     "healthcheckPath": "/health",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 5

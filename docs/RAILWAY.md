@@ -9,7 +9,6 @@ Use `railway.api.json`.
 Required environment:
 
 ```text
-NODE_ENV=production
 # APP_BASE_URL can be omitted for the first API boot; set it before Mini App browser traffic
 APP_BASE_URL=https://<miniapp-public-host>
 DATABASE_URL=<Railway pooled PostgreSQL URL>
@@ -21,7 +20,7 @@ DEV_AUTH_BYPASS=false
 RATE_LIMIT_STORE=memory
 ```
 
-The API start command runs `prisma migrate deploy` and then starts the built API. `DIRECT_DATABASE_URL` is intentionally required for migration operations; set both database URLs in Railway.
+The API start command sets `NODE_ENV=production`, runs `prisma migrate deploy`, and then starts the built API. Do not set `NODE_ENV=production` as a Railway service variable because Railway exposes service variables during build, and npm would omit dev dependencies that the TypeScript build needs. `DIRECT_DATABASE_URL` is intentionally required for migration operations; set both database URLs in Railway.
 
 **Important:** v1 intentionally uses `RATE_LIMIT_STORE=memory`. `railway.api.json` pins `deploy.numReplicas` to exactly **1**, and deployment preflight rejects a different value. Do not enable autoscaling above one replica; adding replicas requires implementing and validating the existing `RateLimitStore` contract with Redis/Valkey first.
 
