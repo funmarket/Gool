@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { checkInSchema, fanHubCreateSchema, venueDealCreateSchema } from '@gool/contracts';
+import type { checkInSchema, fanHubCreateSchema, venueDealCreateSchema } from '@hooma/contracts';
 
 export type FanHubCreateInput = z.infer<typeof fanHubCreateSchema>;
 export type CheckInInput = z.infer<typeof checkInSchema>;
