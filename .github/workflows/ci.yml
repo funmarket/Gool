@@ -12,7 +12,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: gool_ci
+          POSTGRES_DB: hooma_ci
         ports: ['5432:5432']
         options: >-
           --health-cmd pg_isready
@@ -20,8 +20,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/gool_ci?schema=public
-      DIRECT_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/gool_ci?schema=public
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hooma_ci?schema=public
+      DIRECT_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hooma_ci?schema=public
       TELEGRAM_BOT_TOKEN: ci-placeholder
       TELEGRAM_WEBHOOK_SECRET: ci-placeholder
       DEV_AUTH_BYPASS: 'false'
