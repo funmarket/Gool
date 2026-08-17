@@ -157,7 +157,7 @@ export function FormationBuilderPage() {
           name:
             [rsvp.user.firstName, rsvp.user.lastName].filter(Boolean).join(' ') ||
             rsvp.user.username ||
-            'GOOL player',
+            'HOOMA player',
           rating: rsvp.user.profile?.skillRating ?? 50,
         })) ?? [],
     [event.data],

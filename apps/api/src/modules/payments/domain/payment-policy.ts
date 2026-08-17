@@ -7,13 +7,13 @@ export function assertMethodAllowedForPurpose(
   if (purpose === 'DIGITAL_PRODUCT' && method !== 'TELEGRAM_STARS') {
     throw new PaymentDomainError(
       'PAYMENT_METHOD_NOT_ALLOWED',
-      'Digital GOOL products must use Telegram Stars.',
+      'Digital HOOMA products must use Telegram Stars.',
     );
   }
   if (purpose !== 'DIGITAL_PRODUCT' && method !== 'CASH') {
     throw new PaymentDomainError(
       'PAYMENT_METHOD_NOT_ALLOWED',
-      'Real-world GOOL obligations currently accept cash only.',
+      'Real-world HOOMA obligations currently accept cash only.',
     );
   }
 }

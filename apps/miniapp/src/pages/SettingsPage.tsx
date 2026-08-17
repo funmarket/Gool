@@ -72,7 +72,7 @@ export function SettingsPage() {
         settled,
         message: settled
           ? 'Supporter badge unlocked.'
-          : 'Payment is still processing. GOOL will recognize it from the Telegram webhook.',
+          : 'Payment is still processing. HOOMA will recognize it from the Telegram webhook.',
       };
     },
     onSuccess: async (result) => {
@@ -130,7 +130,7 @@ export function SettingsPage() {
             <Coins size={19} style={{ color: 'var(--accent)' }} />
             <div>
               <strong>Telegram Stars</strong>
-              <div className="muted">Reserved for digital GOOL goods and features.</div>
+              <div className="muted">Reserved for digital HOOMA goods and features.</div>
             </div>
           </div>
         </div>
@@ -142,7 +142,7 @@ export function SettingsPage() {
           <div className="min-w-0 flex-1">
             <div className="section-kicker">Digital supporter</div>
             <h2 className="mt-1 text-lg font-black">
-              {supporterBadge?.title || 'GOOL Supporter Badge'}
+              {supporterBadge?.title || 'HOOMA Supporter Badge'}
             </h2>
             <p className="mt-2 text-sm leading-6 muted">
               {supporterBadge?.description ||

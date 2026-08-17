@@ -1,0 +1,64 @@
+.team-game-card-pro {
+  flex: 0 0 16rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(232, 221, 196, 0.22);
+  border-radius: 12px;
+  background: linear-gradient(145deg, #0e100d, #080907);
+  color: var(--hv-white);
+  text-align: left;
+}
+.team-game-card-pro:active {
+  transform: scale(0.99);
+}
+.team-game-matchup {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.65rem;
+}
+.team-game-matchup > span {
+  height: 3.3rem;
+  display: grid;
+  place-items: center;
+  color: var(--hv-cream);
+  font-family: var(--hv-font-display);
+}
+.team-game-matchup img {
+  max-width: 3.2rem;
+  max-height: 3.2rem;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+.team-game-matchup b {
+  color: #3bd960;
+  font-size: 1.2rem;
+}
+.team-game-names {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 850;
+}
+.team-game-date {
+  margin-top: 0.7rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid rgba(232, 221, 196, 0.12);
+  color: var(--hv-muted);
+  font-size: 0.72rem;
+  text-align: center;
+}
+.team-game-status {
+  margin-top: 0.55rem;
+  padding: 0.35rem;
+  border: 1px solid #33d75d;
+  border-radius: 6px;
+  color: #46e775;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: capitalize;
+}

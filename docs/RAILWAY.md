@@ -1,6 +1,6 @@
 # Railway Deployment
 
-GOOL is intended to run as two Railway services plus PostgreSQL.
+HOOMA is intended to run as two Railway services plus PostgreSQL.
 
 ## Service 1: API
 

@@ -9,3 +9,4 @@ export * from './payments.js';
 export * from './watch.js';
 export * from './formations.js';
 export * from './chat.js';
+export * from './teams.js';

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
   Car,
@@ -23,6 +24,8 @@ import type {
   PaymentMethodSetting,
   PaymentStatus,
   Person,
+  TeamItem,
+  TeamManagedPage,
 } from '../types/domain';
 
 type AdminMembership = {
@@ -83,7 +86,7 @@ type InviteCreateResponse = {
 
 function payerName(user: Person): string {
   const full = [user.firstName, user.lastName].filter(Boolean).join(' ');
-  return full || user.username || 'GOOL member';
+  return full || user.username || 'HOOMA member';
 }
 
 function paymentContext(payment: AdminPayment): string {
@@ -104,6 +107,7 @@ function inviteState(invite: CommunityInvite): string {
 
 export function AdminPage() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [selected, setSelected] = useState('');
   const [inviteRoleSelection, setInviteRoleSelection] = useState<{
     communityId: string;
@@ -118,6 +122,14 @@ export function AdminPage() {
     stars: string;
     active: boolean;
   } | null>(null);
+  const [teamDraft, setTeamDraft] = useState({
+    name: '',
+    city: '',
+    houma: '',
+    badgeUrl: '',
+    isPublic: true,
+    acceptingChallenges: true,
+  });
 
   const admins = useQuery({
     queryKey: ['admin-communities'],
@@ -171,6 +183,11 @@ export function AdminPage() {
     enabled: Boolean(communityId),
   });
 
+  const managedTeams = useQuery({
+    queryKey: ['teams', 'managed'],
+    queryFn: () => get<TeamManagedPage>('/api/v1/teams/managed'),
+  });
+
   const invites = useQuery({
     queryKey: ['community-invites', communityId],
     queryFn: () => get<CommunityInvite[]>(`/api/v1/communities/${communityId}/invites`),
@@ -178,6 +195,7 @@ export function AdminPage() {
   });
 
   const supporterBadge = products.data?.find((product) => product.sku === 'SUPPORTER_BADGE');
+  const ownedTeam = managedTeams.data?.items.find((team) => team.communityId === communityId);
   const supporterStars =
     supporterDraft?.communityId === communityId
       ? supporterDraft.stars
@@ -226,6 +244,38 @@ export function AdminPage() {
       notify('success');
       await queryClient.invalidateQueries({ queryKey: ['digital-products', communityId] });
       setSupporterDraft(null);
+    },
+    onError: () => notify('error'),
+  });
+
+  const createTeam = useMutation({
+    mutationFn: () => {
+      const name = teamDraft.name.trim();
+      if (name.length < 2) throw new Error('Team name is required.');
+      return post<TeamItem>('/api/v1/teams', {
+        communityId,
+        name,
+        ...(teamDraft.city.trim() ? { city: teamDraft.city.trim() } : {}),
+        ...(teamDraft.houma.trim() ? { houma: teamDraft.houma.trim() } : {}),
+        ...(teamDraft.badgeUrl.trim() ? { badgeUrl: teamDraft.badgeUrl.trim() } : {}),
+        isPublic: teamDraft.isPublic,
+        acceptingChallenges: teamDraft.acceptingChallenges,
+      });
+    },
+    onSuccess: async () => {
+      notify('success');
+      setTeamDraft({
+        name: '',
+        city: '',
+        houma: '',
+        badgeUrl: '',
+        isPublic: true,
+        acceptingChallenges: true,
+      });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['teams', 'managed'] }),
+        queryClient.invalidateQueries({ queryKey: ['teams'] }),
+      ]);
     },
     onError: () => notify('error'),
   });
@@ -309,7 +359,7 @@ export function AdminPage() {
         <div className="section-kicker">Owner / admin</div>
         <h1 className="section-title">Command center</h1>
         <div className="surface-card mt-5 p-5 text-sm muted">
-          You do not manage a GOOL community yet.
+          You do not manage a HOOMA community yet.
         </div>
       </div>
     );
@@ -339,6 +389,106 @@ export function AdminPage() {
           </option>
         ))}
       </select>
+
+      <section className="surface-card mt-4 p-5">
+        <div className="section-kicker">Coach Control Room</div>
+        <h2 className="mt-1 text-lg font-black">Team</h2>
+        <p className="mt-2 text-xs leading-5 muted">
+          The HOOMA community owns the Team, but the Team appears globally only after a Coach
+          creates it.
+        </p>
+        {ownedTeam ? (
+          <div className="reference-row mt-4 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="text-lg font-black">{ownedTeam.name}</div>
+                <div className="mt-1 text-xs font-bold muted">
+                  {[ownedTeam.city, ownedTeam.houma].filter(Boolean).join(' · ') || 'Location TBA'}
+                </div>
+              </div>
+              <span className="chip">{ownedTeam.isPublic ? 'Public' : 'Private'}</span>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <button
+                className="ghost-button justify-center py-2.5"
+                onClick={() => navigate(`/teams/${ownedTeam.id}`)}
+              >
+                Team profile
+              </button>
+              <button
+                className="accent-button justify-center py-2.5"
+                onClick={() => navigate('/teams')}
+              >
+                Challenges
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-4 grid gap-3">
+            <input
+              className="gool-input"
+              value={teamDraft.name}
+              onChange={(event) =>
+                setTeamDraft((draft) => ({ ...draft, name: event.target.value }))
+              }
+              placeholder="Team name"
+            />
+            <div className="grid grid-cols-2 gap-2">
+              <input
+                className="gool-input"
+                value={teamDraft.city}
+                onChange={(event) =>
+                  setTeamDraft((draft) => ({ ...draft, city: event.target.value }))
+                }
+                placeholder="City"
+              />
+              <input
+                className="gool-input"
+                value={teamDraft.houma}
+                onChange={(event) =>
+                  setTeamDraft((draft) => ({ ...draft, houma: event.target.value }))
+                }
+                placeholder="Houma"
+              />
+            </div>
+            <input
+              className="gool-input"
+              value={teamDraft.badgeUrl}
+              onChange={(event) =>
+                setTeamDraft((draft) => ({ ...draft, badgeUrl: event.target.value }))
+              }
+              placeholder="Badge URL optional"
+            />
+            <label className="flex items-center justify-between gap-3 text-sm font-bold">
+              <span>Public team</span>
+              <input
+                type="checkbox"
+                checked={teamDraft.isPublic}
+                onChange={(event) =>
+                  setTeamDraft((draft) => ({ ...draft, isPublic: event.target.checked }))
+                }
+              />
+            </label>
+            <label className="flex items-center justify-between gap-3 text-sm font-bold">
+              <span>Accept challenges</span>
+              <input
+                type="checkbox"
+                checked={teamDraft.acceptingChallenges}
+                onChange={(event) =>
+                  setTeamDraft((draft) => ({ ...draft, acceptingChallenges: event.target.checked }))
+                }
+              />
+            </label>
+            <button
+              className="accent-button w-full"
+              disabled={createTeam.isPending || !communityId}
+              onClick={() => createTeam.mutate()}
+            >
+              Create Team
+            </button>
+          </div>
+        )}
+      </section>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {cards.map(([label, value, Icon]) => (
@@ -382,7 +532,7 @@ export function AdminPage() {
           </div>
         </div>
         <p className="mt-2 text-xs leading-5 muted">
-          Stars are only used for digital GOOL goods. The price is stored server-side and users
+          Stars are only used for digital HOOMA goods. The price is stored server-side and users
           cannot submit their own Stars amount.
         </p>
         <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
@@ -434,7 +584,7 @@ export function AdminPage() {
           </div>
         </div>
         <p className="mt-2 text-xs leading-5 muted">
-          GOOL stores only a hash of each invite. The full code below is shown once after creation.
+          HOOMA stores only a hash of each invite. The full code below is shown once after creation.
         </p>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
@@ -575,7 +725,7 @@ export function AdminPage() {
         <div className="section-kicker">Stars support</div>
         <h2 className="mt-1 text-lg font-black">Recent paid digital purchases</h2>
         <p className="mt-2 text-xs leading-5 muted">
-          Refunds call Telegram first, then revoke the matching GOOL entitlement. Retrying is
+          Refunds call Telegram first, then revoke the matching HOOMA entitlement. Retrying is
           idempotent if Telegram already refunded the charge.
         </p>
         <div className="mt-4 grid gap-3">
@@ -584,7 +734,7 @@ export function AdminPage() {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <div className="font-black">{payerName(payment.user)}</div>
-                  <div className="mt-1 text-xs muted">GOOL Supporter Badge</div>
+                  <div className="mt-1 text-xs muted">HOOMA Supporter Badge</div>
                 </div>
                 <div className="font-black">{String(payment.amountMinor)} ★</div>
               </div>

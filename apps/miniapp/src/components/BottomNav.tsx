@@ -1,45 +1,95 @@
-import { Home, Shield, Tv2, UserRoundCog } from 'lucide-react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '../lib/cn';
-import { BallIcon } from './icons/SoccerIcons';
+import homeArtwork from '../assets/nav-home-provided.png';
+import playArtwork from '../assets/nav-play-provided.png';
+import watchArtwork from '../assets/nav-watch-provided.png';
+import pitchArtwork from '../assets/nav-pitch-provided.png';
+import hoomaNavArtwork from '../assets/nav-hooma-play-more.png';
 
-const tabs = [
-  { to: '/', label: 'Home', icon: Home, end: true },
-  { to: '/play', label: 'Play', icon: BallIcon, end: false },
-  { to: '/watch', label: 'Watch', icon: Tv2, end: false },
-  { to: '/community', label: 'GOOL', icon: Shield, end: false },
-  { to: '/more', label: 'More', icon: UserRoundCog, end: false },
+type NavArtwork =
+  { kind: 'mask'; src: string } | { kind: 'image'; src: string; className?: string };
+
+type Tab = {
+  to: string;
+  label: string;
+  artwork: NavArtwork;
+  end: boolean;
+};
+
+const tabs: readonly Tab[] = [
+  { to: '/', label: 'Home', artwork: { kind: 'mask', src: homeArtwork }, end: true },
+  {
+    to: '/play',
+    label: 'Play',
+    artwork: { kind: 'image', src: playArtwork, className: 'app-nav-image-ball' },
+    end: false,
+  },
+  { to: '/watch', label: 'Watch', artwork: { kind: 'mask', src: watchArtwork }, end: false },
+  {
+    to: '/community',
+    label: 'HOOMA',
+    artwork: { kind: 'image', src: hoomaNavArtwork, className: 'app-nav-image-hooma' },
+    end: false,
+  },
+  { to: '/pitch', label: 'Pitch', artwork: { kind: 'mask', src: pitchArtwork }, end: false },
 ];
 
+function NavArtworkView({ artwork, active }: { artwork: NavArtwork; active: boolean }) {
+  if (artwork.kind === 'image') {
+    return (
+      <img
+        src={artwork.src}
+        alt=""
+        aria-hidden="true"
+        className={cn('app-nav-image', artwork.className, active && 'app-nav-image-active')}
+      />
+    );
+  }
+
+  const style = {
+    '--app-nav-mask': `url(${artwork.src})`,
+  } as CSSProperties;
+
+  return <span className="app-nav-mask" style={style} aria-hidden="true" />;
+}
+
 export function BottomNav() {
+  const [hidden, setHidden] = useState(false);
+  const previousY = useRef(0);
+
+  useEffect(() => {
+    previousY.current = window.scrollY;
+    const onScroll = () => {
+      const nextY = window.scrollY;
+      const delta = nextY - previousY.current;
+      if (nextY <= 12) setHidden(false);
+      else if (delta > 5) setHidden(true);
+      else if (delta < -5) setHidden(false);
+      previousY.current = nextY;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 layer-chrome mx-auto flex max-w-[760px] items-center justify-around border-t px-2 pt-2 backdrop-blur-xl"
-      style={{
-        background: 'color-mix(in srgb, var(--surface) 92%, transparent)',
-        borderColor: 'var(--border)',
-        paddingBottom: 'calc(var(--safe-bottom) + 8px)',
-      }}
+      className={cn('app-bottom-nav', hidden && 'app-bottom-nav-hidden')}
+      aria-label="Primary navigation"
     >
-      {tabs.map(({ to, label, icon: Icon, end }) => (
+      {tabs.map(({ to, label, artwork, end }) => (
         <NavLink
           key={to}
           to={to}
           end={end}
-          className={({ isActive }) =>
-            cn(
-              'flex min-w-14 flex-col items-center gap-1 rounded-2xl px-3 py-2 text-[10px] font-extrabold transition',
-              isActive && 'bg-[var(--accent-soft)]',
-            )
-          }
+          className={({ isActive }) => cn('app-nav-item', isActive && 'app-nav-item-active')}
         >
           {({ isActive }) => (
             <>
-              <Icon
-                className="h-[21px] w-[21px]"
-                style={{ color: isActive ? 'var(--accent)' : 'var(--muted)' }}
-              />
-              <span style={{ color: isActive ? 'var(--text)' : 'var(--muted)' }}>{label}</span>
+              <span className={cn('app-nav-icon-shell', isActive && 'app-nav-icon-shell-active')}>
+                <NavArtworkView artwork={artwork} active={isActive} />
+              </span>
+              <span className="app-nav-label">{label}</span>
             </>
           )}
         </NavLink>

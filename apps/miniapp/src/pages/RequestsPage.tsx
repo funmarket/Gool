@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Check, Clock3, Plus, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { RequestFlagIcon } from '../components/icons/SoccerIcons';
+import { RequestFlagIcon } from '../icons/RequestFlagIcon';
 import { get, post } from '../shared/api/http-client';
 import { eventDate } from '../lib/format';
 import { notify } from '../lib/telegram';

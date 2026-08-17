@@ -1,4 +1,4 @@
-# GOOL Telegram Integration
+# HOOMA Telegram Integration
 
 ## Mini App authentication
 
@@ -30,14 +30,14 @@ Production startup fails if `DEV_AUTH_BYPASS=true`.
 `ThemeProvider` combines Telegram ThemeParams with a user override:
 
 - `TELEGRAM`: follow Telegram theme
-- `LIGHT`: GOOL light theme
-- `DARK`: GOOL dark theme
+- `LIGHT`: HOOMA light theme
+- `DARK`: HOOMA dark theme
 
 The local override updates immediately and the server-side user preference is the canonical persisted setting.
 
 ## Stars
 
-GOOL uses the Telegram Bot API for:
+HOOMA uses the Telegram Bot API for:
 
 - `createInvoiceLink` with `XTR`
 - `answerPreCheckoutQuery`
@@ -53,7 +53,7 @@ Telegram webhook endpoint:
 POST /webhooks/telegram
 ```
 
-GOOL checks `X-Telegram-Bot-Api-Secret-Token` against `TELEGRAM_WEBHOOK_SECRET` before processing updates.
+HOOMA checks `X-Telegram-Bot-Api-Secret-Token` against `TELEGRAM_WEBHOOK_SECRET` before processing updates.
 
 Configure the webhook on Telegram with a unique secret token. Do not expose the bot token in the Mini App or GitHub.
 

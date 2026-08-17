@@ -1,0 +1,2 @@
+import type { HoomaIconProps } from './types';
+export function DollarIcon({className,size=24,title}:HoomaIconProps){return <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role={title?'img':undefined} aria-hidden={title?undefined:true}><title>{title}</title><path d="M15.8 7.2c-.8-.8-2-1.2-3.6-1.2-2.2 0-3.7 1.05-3.7 2.65 0 3.9 7.2 1.65 7.2 5.8 0 1.65-1.5 2.9-3.9 2.9-1.65 0-3.1-.5-4.1-1.5M12 3.5v17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg>}

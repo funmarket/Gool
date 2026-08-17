@@ -1,0 +1,2 @@
+import type { HoomaIconProps } from './types';
+export function CalendarIcon({className,size=24,title}:HoomaIconProps){return <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role={title?'img':undefined} aria-hidden={title?undefined:true}><title>{title}</title><rect x="4" y="5.5" width="16" height="14" rx="2" stroke="currentColor" strokeWidth="1.7"/><path d="M7.5 3.5v4M16.5 3.5v4M4 9h16M8 12h2M12 12h2M16 12h1M8 15h2M12 15h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>}

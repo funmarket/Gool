@@ -24,7 +24,9 @@ export class PrismaPlayRepository implements PlayRepository {
     return rows.map(({ user }) => ({
       id: user.id,
       name:
-        [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || 'GOOL player',
+        [user.firstName, user.lastName].filter(Boolean).join(' ') ||
+        user.username ||
+        'HOOMA player',
       rating: user.profile?.skillRating ?? 50,
       preferredPositions: user.profile?.preferredPositions ?? [],
     }));

@@ -1,0 +1,2 @@
+import type { HoomaIconProps } from './types';
+export function HomeIcon({ className, size=24, title }: HoomaIconProps){return <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role={title?'img':undefined} aria-hidden={title?undefined:true}><title>{title}</title><path d="M3.5 11.2 12 4l8.5 7.2v8.3H15v-5.4H9v5.4H3.5v-8.3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/></svg>}

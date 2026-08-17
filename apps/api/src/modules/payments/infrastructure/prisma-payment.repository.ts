@@ -303,8 +303,8 @@ export class PrismaPaymentRepository implements PaymentRepository {
       create: {
         communityId: input.communityId,
         sku: 'SUPPORTER_BADGE',
-        title: 'GOOL Supporter Badge',
-        description: 'Digital supporter badge for this GOOL community.',
+        title: 'HOOMA Supporter Badge',
+        description: 'Digital supporter badge for this HOOMA community.',
         starsAmount: input.starsAmount,
         active: input.active,
       },

@@ -1,8 +1,8 @@
-# GOOL Design System
+# HOOMA Design System
 
 ## Brand direction
 
-GOOL is football-first and Telegram-native, not a clone of another application. The UI uses strong rounded cards/containers, compact mobile information hierarchy, and football-specific iconography.
+HOOMA is football-first and Telegram-native, not a clone of another application. The UI uses strong rounded cards/containers, compact mobile information hierarchy, and football-specific iconography.
 
 ## Theme tokens
 
@@ -26,7 +26,7 @@ Theme is implemented with CSS variables in `apps/miniapp/src/index.css`; compone
 
 ## Telegram behavior
 
-Telegram ThemeParams seed the `TELEGRAM` mode. Explicit GOOL LIGHT/DARK overrides persist immediately and sync to the user preference API.
+Telegram ThemeParams seed the `TELEGRAM` mode. Explicit HOOMA LIGHT/DARK overrides persist immediately and sync to the user preference API.
 
 ## Component rules
 

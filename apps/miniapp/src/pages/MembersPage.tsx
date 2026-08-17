@@ -90,7 +90,7 @@ export function MembersPage() {
                       .filter(Boolean)
                       .join(' ') ||
                       membership.user.username ||
-                      'GOOL member'}
+                      'HOOMA member'}
                   </div>
                   <div className="text-xs muted">
                     {membership.user.profile?.skillLevel || 'MIXED'} ·{' '}

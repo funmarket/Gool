@@ -1,14 +1,14 @@
 <p align="center">
-  <img src="apps/miniapp/public/brand/gool-wordmark.png" alt="GOOL" width="180" />
+  <img src="apps/miniapp/public/brand/hooma-wordmark.png" alt="HOOMA" width="180" />
 </p>
 
-# GOOL
+# HOOMA
 
-GOOL is a Telegram Mini App for football communities: pickup matches, watch events, Fan Hubs, requests, rides, fundraising, team formation, temporary event chat, community administration, and cash-first real-world payments.
+HOOMA is a Telegram Mini App for football communities: pickup matches, watch events, Fan Hubs, requests, rides, fundraising, team formation, temporary event chat, community administration, and cash-first real-world payments.
 
 ## Current payment scope
 
-GOOL v1 intentionally supports only:
+HOOMA v1 intentionally supports only:
 
 - **Cash** for real-world obligations such as match fees, ride shares, and fundraiser contributions.
 - **Telegram Stars** for digital goods and services sold inside Telegram.
@@ -173,7 +173,7 @@ Rerun `npm run release:check` and `npm run deploy:preflight` with the real deplo
 
 ## Deployment
 
-GOOL is designed as two Railway services sharing one PostgreSQL database:
+HOOMA is designed as two Railway services sharing one PostgreSQL database:
 
 1. `@gool/api` using `railway.api.json`
 2. `@gool/miniapp` using `railway.miniapp.json`

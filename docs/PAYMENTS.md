@@ -1,4 +1,4 @@
-# GOOL Payments
+# HOOMA Payments
 
 ## V1 rails
 
@@ -72,7 +72,7 @@ Event cancellation cancels pending cash intents. Already-paid cash is not silent
 
 ## Telegram Stars
 
-Stars are for GOOL digital products only. Current SKU: `SUPPORTER_BADGE`.
+Stars are for HOOMA digital products only. Current SKU: `SUPPORTER_BADGE`.
 
 The price is configured server-side in `DigitalProduct`. The Mini App submits only `communityId`, SKU and an idempotency key; it cannot choose a Stars amount.
 

@@ -1,39 +1,29 @@
-import { Bell, Moon, Sun } from 'lucide-react';
-import { CommunitySwitcher } from './CommunitySwitcher';
-import { useTheme } from '../providers/ThemeProvider';
+import { useNavigate } from 'react-router-dom';
+import hoomaLogo from '../assets/hooma-logo-reference.png';
+import { BellIcon } from '../icons/BellIcon';
+import { ProfileIcon } from '../icons/ProfileIcon';
 
 export function AppHeader() {
-  const { resolved, toggle } = useTheme();
+  const navigate = useNavigate();
   return (
-    <header
-      className="sticky top-0 layer-chrome mx-auto flex w-full max-w-[760px] items-center justify-between gap-3 px-4 py-3 backdrop-blur-xl"
-      style={{
-        paddingTop: 'calc(var(--safe-top) + 10px)',
-        background: 'color-mix(in srgb, var(--bg) 82%, transparent)',
-      }}
-    >
-      <div className="flex min-w-0 items-center gap-2.5">
-        <img
-          src="/brand/gool-wordmark.png"
-          alt="GOOL"
-          className="h-auto w-14 shrink-0 object-contain sm:w-20"
-        />
-        <CommunitySwitcher />
-      </div>
-      <div className="flex items-center gap-1">
-        <button
-          aria-label="Theme"
-          onClick={toggle}
-          className="grid h-11 w-11 place-items-center rounded-2xl"
-          style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}
-        >
-          {resolved === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
-        </button>
+    <header className="app-topbar">
+      <button onClick={() => navigate('/')} className="app-logo-button" aria-label="HOOMA home">
+        <img src={hoomaLogo} alt="HOOMA" className="app-logo" />
+      </button>
+      <div className="app-top-actions">
         <button
           aria-label="Notifications"
-          className="grid h-11 w-11 place-items-center rounded-2xl"
+          className="app-round-button app-bell-button app-notification-button"
         >
-          <Bell size={20} />
+          <BellIcon size={22} />
+          <span className="app-notification-dot" />
+        </button>
+        <button
+          aria-label="Profile and more"
+          className="app-round-button app-profile-button"
+          onClick={() => navigate('/more')}
+        >
+          <ProfileIcon size={22} />
         </button>
       </div>
     </header>

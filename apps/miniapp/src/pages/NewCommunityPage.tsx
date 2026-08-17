@@ -49,7 +49,7 @@ export function NewCommunityPage() {
 
   return (
     <SimpleForm
-      title={mode === 'create' ? 'Create GOOL' : 'Join GOOL'}
+      title={mode === 'create' ? 'Create HOOMA' : 'Join HOOMA'}
       kicker="Many communities, one identity"
     >
       <div className="grid grid-cols-2 gap-2">
@@ -83,7 +83,7 @@ export function NewCommunityPage() {
                   .replace(/^-|-$/g, ''),
               );
             }}
-            placeholder="North End GOOL"
+            placeholder="North End HOOMA"
           />
           <input
             className="gool-input"

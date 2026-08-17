@@ -6,7 +6,7 @@ This document defines the repository baseline. A command exiting successfully is
 
 `npm run architecture:check` enforces the V1 payment rails, API/database layering, centralized Mini App HTTP client, pinned dependencies, and design-cascade restrictions.
 
-Mini App feature pages are route-level lazy imports. MapLibre is loaded only through the map feature rather than global application bootstrap. `scripts/check-miniapp-bundle.mjs` is part of the Mini App production build and enforces separate raw-size budgets: 500 kB for initial JavaScript and 1 MB for any lazy feature chunk. The larger lazy budget acknowledges MapLibre's parse cost without forcing map code into initial startup.
+Mini App feature pages are route-level lazy imports. `scripts/check-miniapp-bundle.mjs` is part of the Mini App production build and enforces separate raw-size budgets: 500 kB for initial JavaScript and 1 MB for any lazy feature chunk. Large visualization dependencies must be introduced only by a real feature boundary, not by global bootstrap or unused screens.
 
 ## Clean source gate
 

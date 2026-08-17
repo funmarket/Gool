@@ -41,7 +41,7 @@ export function EventChatPage() {
         {query.data?.items.map((message) => (
           <div className="surface-card p-3" key={message.id}>
             <div className="text-xs font-black" style={{ color: 'var(--accent)' }}>
-              {message.user.firstName || message.user.username || 'GOOL member'}
+              {message.user.firstName || message.user.username || 'HOOMA member'}
             </div>
             <div className="mt-1 text-sm">{message.body}</div>
           </div>

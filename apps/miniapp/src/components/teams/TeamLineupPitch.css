@@ -1,0 +1,109 @@
+.team-lineup-pitch {
+  overflow: hidden;
+  border: 1px solid rgba(201, 155, 43, 0.4);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(44, 226, 82, 0.16), transparent 15rem),
+    linear-gradient(180deg, #0a1609, #030604);
+}
+
+.team-lineup-pitch header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.8rem 0.9rem;
+  border-bottom: 1px solid rgba(201, 155, 43, 0.24);
+  color: var(--hv-lime);
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.team-lineup-pitch header span {
+  color: var(--hv-gold);
+  font-size: 0.78rem;
+}
+
+.team-lineup-field {
+  position: relative;
+  min-height: 18rem;
+  background:
+    linear-gradient(
+      90deg,
+      transparent calc(50% - 1px),
+      rgba(255, 255, 255, 0.12) 50%,
+      transparent calc(50% + 1px)
+    ),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 42px);
+}
+
+.team-lineup-field::before,
+.team-lineup-field::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 42%;
+  height: 4.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.team-lineup-field::before {
+  top: 0;
+  border-top: 0;
+  border-radius: 0 0 40px 40px;
+}
+
+.team-lineup-field::after {
+  bottom: 0;
+  border-bottom: 0;
+  border-radius: 40px 40px 0 0;
+}
+
+.team-lineup-player {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 0.18rem;
+  min-width: 4.4rem;
+  transform: translate(-50%, -50%);
+  color: var(--hv-white);
+  text-align: center;
+}
+
+.team-lineup-player b {
+  display: grid;
+  width: 2.1rem;
+  height: 2.1rem;
+  place-items: center;
+  border: 1px solid var(--hv-gold);
+  border-radius: 999px;
+  background: #071006;
+  color: var(--hv-lime);
+  font-size: 0.88rem;
+}
+
+.team-lineup-player small {
+  max-width: 5.5rem;
+  overflow: hidden;
+  color: var(--hv-white);
+  font-size: 0.68rem;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-lineup-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 0.28rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.team-lineup-empty small {
+  color: var(--hv-muted);
+}

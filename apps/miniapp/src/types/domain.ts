@@ -221,6 +221,119 @@ export type DigitalProduct = {
   owned: boolean;
 };
 
+export type TeamItem = {
+  id: string;
+  communityId: string;
+  name: string;
+  city?: string | null;
+  houma?: string | null;
+  badgeUrl?: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
+  isPublic: boolean;
+  acceptingChallenges: boolean;
+  createdAt: string;
+  community?: Pick<Community, 'id' | 'name' | 'avatarUrl'>;
+  players?: Array<{
+    id: string;
+    displayName: string;
+    shirtNumber?: number | null;
+    position?: string | null;
+    photoUrl?: string | null;
+  }>;
+  lineups?: Array<{ id: string; name: string; formation: string; matchFormat: string }>;
+  _count?: { players: number };
+};
+
+export type TeamPage = CursorPage<TeamItem>;
+
+export type TeamLineupSlotItem = {
+  id: string;
+  role: string;
+  x: number;
+  y: number;
+  isStarter: boolean;
+  sortOrder: number;
+  player?: {
+    id: string;
+    displayName: string;
+    shirtNumber?: number | null;
+    position?: string | null;
+    photoUrl?: string | null;
+  } | null;
+};
+
+export type TeamLineupItem = {
+  id: string;
+  name: string;
+  formation: string;
+  matchFormat: string;
+  slots: TeamLineupSlotItem[];
+};
+
+export type TeamDetailItem = TeamItem & {
+  players?: Array<{
+    id: string;
+    displayName: string;
+    shirtNumber?: number | null;
+    position?: string | null;
+    photoUrl?: string | null;
+  }>;
+  lineups?: TeamLineupItem[];
+};
+
+export type TeamManagedPage = {
+  items: TeamItem[];
+};
+
+export type TeamChallengeItem = {
+  id: string;
+  status: 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'CANCELLED' | 'EXPIRED';
+  proposedStartsAt?: string | null;
+  proposedVenue?: string | null;
+  proposedFormat?: string | null;
+  message?: string | null;
+  createdAt: string;
+  challengerTeam: Pick<TeamItem, 'id' | 'name' | 'badgeUrl' | 'city' | 'houma' | 'communityId'>;
+  challengedTeam: Pick<TeamItem, 'id' | 'name' | 'badgeUrl' | 'city' | 'houma' | 'communityId'>;
+  game?: { id: string; status: string; scheduledAt?: string | null } | null;
+};
+
+export type TeamChallengePage = { items: TeamChallengeItem[] };
+
+export type TeamChallengeMessageItem = {
+  id: string;
+  challengeId: string;
+  teamId: string;
+  body: string;
+  createdAt: string;
+  team?: Pick<TeamItem, 'id' | 'name' | 'badgeUrl'>;
+  user?: Person;
+};
+
+export type TeamChallengeDetailItem = TeamChallengeItem & {
+  challengerTeam: TeamDetailItem;
+  challengedTeam: TeamDetailItem;
+  messages?: TeamChallengeMessageItem[];
+};
+
+export type TeamGameItem = {
+  id: string;
+  status: 'SCHEDULING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
+  scheduledAt?: string | null;
+  venueName?: string | null;
+  matchFormat?: string | null;
+  homeTeam: Pick<TeamItem, 'id' | 'name' | 'badgeUrl'>;
+  awayTeam: Pick<TeamItem, 'id' | 'name' | 'badgeUrl'>;
+};
+
+export type TeamGamePage = { items: TeamGameItem[] };
+
+export type TeamGameDetailItem = TeamGameItem & {
+  homeTeam: TeamDetailItem;
+  awayTeam: TeamDetailItem;
+  challenge?: TeamChallengeDetailItem | null;
+};
+
 export type CommunityInvite = {
   id: string;
   codePrefix: string;

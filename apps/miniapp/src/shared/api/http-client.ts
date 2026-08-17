@@ -55,6 +55,10 @@ export async function http<T>(path: string, options: HttpOptions = {}): Promise<
         },
       });
       const contentType = response.headers.get('content-type') || '';
+      const expectsJson = path.startsWith('/api/');
+      if (response.ok && expectsJson && !contentType.includes('application/json')) {
+        throw new Error('API returned a non-JSON response');
+      }
       const body = contentType.includes('application/json')
         ? await response.json()
         : await response.text();

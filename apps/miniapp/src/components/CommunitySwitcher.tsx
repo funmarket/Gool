@@ -10,7 +10,7 @@ export function CommunitySwitcher() {
   if (!active)
     return (
       <button className="ghost-button" onClick={() => navigate('/community/new')}>
-        <Plus size={18} /> Create GOOL
+        <Plus size={18} /> Create HOOMA
       </button>
     );
 
@@ -33,7 +33,7 @@ export function CommunitySwitcher() {
           </span>
           <span className="hidden min-w-0 sm:block">
             <span className="block text-[9px] font-black uppercase tracking-[.15em] muted">
-              Your GOOL
+              Your HOOMA
             </span>
             <span className="block max-w-40 truncate text-sm font-black">{active.name}</span>
           </span>

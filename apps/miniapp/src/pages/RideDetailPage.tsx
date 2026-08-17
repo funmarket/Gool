@@ -168,7 +168,7 @@ export function RideDetailPage() {
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <div className="text-sm font-black">
-                      {match.rider?.firstName || match.rider?.username || 'GOOL player'}
+                      {match.rider?.firstName || match.rider?.username || 'HOOMA player'}
                     </div>
                     <div className="mt-1 text-xs muted">
                       {match.seats} seat{match.seats === 1 ? '' : 's'} ·{' '}

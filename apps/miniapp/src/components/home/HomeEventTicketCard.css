@@ -1,0 +1,288 @@
+.home-event-ticket {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1672 / 941;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: clamp(9px, 1.3vw, 13px);
+  background: transparent;
+  color: #17130b;
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.home-event-ticket:focus-visible {
+  outline: 2px solid rgba(170, 255, 0, 0.9);
+  outline-offset: 3px;
+}
+
+.home-event-ticket-template,
+.home-event-ticket-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.home-event-ticket-template {
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+.home-event-ticket-overlay {
+  display: block;
+  pointer-events: none;
+}
+
+.home-event-ticket-heading {
+  position: absolute;
+  left: 7.5%;
+  right: 17.5%;
+  top: 13.2%;
+  height: 38.5%;
+  display: grid;
+  grid-template-columns: minmax(2.4rem, 15%) minmax(0, 1fr) minmax(2.4rem, 15%);
+  align-items: center;
+  gap: 2.3%;
+}
+
+.home-event-ticket-title-group {
+  display: grid;
+  min-width: 0;
+  justify-items: center;
+  align-content: center;
+}
+
+.home-event-ticket-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(0.72rem, 2.1vw, 1.16rem);
+  margin-bottom: clamp(0.18rem, 0.7vw, 0.38rem);
+  padding: 0.08rem clamp(0.28rem, 1.15vw, 0.52rem);
+  border: 1px solid rgba(50, 36, 18, 0.52);
+  border-radius: 2px;
+  color: #ddc895;
+  background: #18140d;
+  font-family: var(--hv-font-display);
+  font-size: clamp(0.42rem, 1.55vw, 0.82rem);
+  font-weight: 900;
+  letter-spacing: 0.065em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.home-event-ticket-title {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  color: #11100d;
+  font-family: var(--hv-font-display);
+  font-size: clamp(1.75rem, 8.2vw, 5.05rem);
+  font-weight: 950;
+  letter-spacing: 0.012em;
+  line-height: 0.82;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 0.5px 0.5px 0 rgba(255, 248, 220, 0.2);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.home-event-ticket-teams {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: baseline;
+  width: min(100%, 30rem);
+  margin-top: clamp(0.18rem, 0.75vw, 0.42rem);
+  gap: clamp(0.18rem, 0.8vw, 0.52rem);
+  font-family: var(--hv-font-condensed);
+  font-size: clamp(0.58rem, 2.65vw, 1.28rem);
+  font-weight: 900;
+  letter-spacing: 0.045em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.home-event-ticket-teams b,
+.home-event-ticket-teams em {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-event-ticket-teams b {
+  color: #1f5fa8;
+  text-align: right;
+}
+
+.home-event-ticket-teams em {
+  color: #a63634;
+  font-style: normal;
+  text-align: left;
+}
+
+.home-event-ticket-teams span {
+  color: #17130b;
+  font-size: 0.72em;
+}
+
+.home-event-ticket-crest {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  color: #15120b;
+  font-family: var(--hv-font-display);
+  font-size: clamp(0.72rem, 3vw, 1.5rem);
+  font-weight: 950;
+  line-height: 1;
+  text-align: center;
+}
+
+.home-event-ticket-crest img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: saturate(0.95) contrast(1.04) drop-shadow(0 1px 0 rgba(255, 248, 220, 0.18));
+}
+
+.home-event-ticket-crest span {
+  display: grid;
+  place-items: center;
+  width: 78%;
+  height: 78%;
+  border: 1px solid rgba(34, 25, 14, 0.48);
+  border-radius: 50%;
+  background: rgba(18, 15, 10, 0.08);
+}
+
+.home-event-ticket-info {
+  position: absolute;
+  display: grid;
+  grid-template-columns: clamp(0.9rem, 3vw, 1.25rem) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(0.26rem, 0.9vw, 0.52rem);
+  color: #17130b;
+  font-family: var(--hv-font-condensed);
+  line-height: 1.08;
+}
+
+.home-event-ticket-info svg,
+.home-event-ticket-going svg {
+  margin-top: 0.05rem;
+  color: #14110b;
+  stroke-width: 2.15;
+}
+
+.home-event-ticket-info strong,
+.home-event-ticket-info small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-event-ticket-info strong {
+  font-size: clamp(0.62rem, 2.65vw, 1.28rem);
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.home-event-ticket-info small {
+  margin-top: clamp(0.06rem, 0.3vw, 0.18rem);
+  color: #2a2316;
+  font-size: clamp(0.5rem, 1.8vw, 0.92rem);
+  font-weight: 700;
+  line-height: 1.16;
+  white-space: nowrap;
+}
+
+.home-event-ticket-location {
+  left: 7.7%;
+  top: 56.5%;
+  width: 38%;
+}
+
+.home-event-ticket-date {
+  left: 50.5%;
+  top: 56.5%;
+  width: 25%;
+}
+
+.home-event-ticket-going {
+  position: absolute;
+  left: 7.7%;
+  top: 77.8%;
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(0.18rem, 0.7vw, 0.36rem);
+  color: #12100a;
+  font-family: var(--hv-font-condensed);
+  font-size: clamp(0.54rem, 2.1vw, 1.02rem);
+  font-weight: 750;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.home-event-ticket-going strong {
+  font-size: clamp(0.74rem, 3vw, 1.45rem);
+  font-weight: 950;
+}
+
+.home-event-ticket-status {
+  position: absolute;
+  left: 50.8%;
+  top: 74.6%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 24%;
+  min-height: clamp(1rem, 3.35vw, 1.7rem);
+  padding: 0.08rem clamp(0.28rem, 1vw, 0.55rem);
+  overflow: hidden;
+  border: 1.5px solid #496b38;
+  border-radius: 3px;
+  color: #3f6130;
+  font-family: var(--hv-font-display);
+  font-size: clamp(0.42rem, 1.6vw, 0.78rem);
+  font-weight: 900;
+  letter-spacing: 0.055em;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .home-event-ticket-heading {
+    left: 7.4%;
+    right: 17.2%;
+    top: 14%;
+    height: 37%;
+    grid-template-columns: 14% minmax(0, 1fr) 14%;
+    gap: 1.8%;
+  }
+
+  .home-event-ticket-title {
+    font-size: clamp(1.55rem, 8.7vw, 2.7rem);
+  }
+
+  .home-event-ticket-info svg,
+  .home-event-ticket-going svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .home-event-ticket-info {
+    grid-template-columns: 0.78rem minmax(0, 1fr);
+    gap: 0.18rem;
+  }
+}

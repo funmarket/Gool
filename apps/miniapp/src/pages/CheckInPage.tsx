@@ -31,7 +31,7 @@ export function CheckInPage() {
         <LocateFixed size={34} className="mx-auto" style={{ color: 'var(--accent)' }} />
         <h2 className="mt-3 text-xl font-black">Check in near the venue</h2>
         <p className="mt-2 text-sm leading-6 muted">
-          GOOL sends your current coordinates only when you tap. The backend accepts a check-in
+          HOOMA sends your current coordinates only when you tap. The backend accepts a check-in
           within ~250m.
         </p>
         <button className="accent-button mt-5" onClick={() => m.mutate()} disabled={m.isPending}>

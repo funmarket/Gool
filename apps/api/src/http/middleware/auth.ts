@@ -68,11 +68,11 @@ export function telegramAuth(identity: IdentityService) {
           telegramUserId,
           username: `dev_${telegramUserId}`,
           firstName: 'Dev',
-          lastName: 'GOOL',
+          lastName: 'HOOMA',
         });
         (req as AuthenticatedRequest).auth = {
           user,
-          telegramUser: { id: telegramUserId, firstName: 'Dev', lastName: 'GOOL' },
+          telegramUser: { id: telegramUserId, firstName: 'Dev', lastName: 'HOOMA' },
         };
         return next();
       }

@@ -48,7 +48,7 @@ export function telegramWebhookRouter(service: PaymentService, telegram: Telegra
         await telegram.answerPreCheckoutQuery(
           pre.id,
           result.valid,
-          result.valid ? undefined : 'This GOOL Stars invoice is no longer valid.',
+          result.valid ? undefined : 'This HOOMA Stars invoice is no longer valid.',
         );
         return res.json({ ok: true });
       }

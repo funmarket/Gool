@@ -1,6 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { ArrowRight, CalendarPlus, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { MatchDayHero } from '../components/hero/MatchDayHero';
+import { HomeEventTicketCard } from '../components/home/HomeEventTicketCard';
+import { QuickActionCard } from '../components/home/QuickActionCard';
+import teamsActionArtwork from '../assets/quick-actions/teams.png';
+import requestsActionArtwork from '../assets/quick-actions/requests.png';
+import rideActionArtwork from '../assets/quick-actions/ride.png';
+import fundmeActionArtwork from '../assets/quick-actions/fundme.png';
 import { get } from '../shared/api/http-client';
 import { useCommunity } from '../providers/CommunityProvider';
 import type {
@@ -10,9 +16,34 @@ import type {
   RequestPage,
   RideListResponse,
 } from '../types/domain';
-import { EventCard } from '../components/EventCard';
-import { FundCupIcon, RequestFlagIcon, RideBallIcon } from '../components/icons/SoccerIcons';
-import { ActionRow } from '../components/ui/ActionRow';
+
+function dateParts(value: string) {
+  const date = new Date(value);
+  return {
+    date: date.toLocaleDateString([], { weekday: 'short', day: '2-digit', month: 'short' }),
+    time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  };
+}
+
+function eventTeams(event: EventItem, fallbackName?: string) {
+  if (event.type === 'WATCH') {
+    const home = event.watchDetails?.homeClub;
+    const away = event.watchDetails?.awayClub;
+    return {
+      homeTeamName: home?.name || fallbackName || 'Home',
+      awayTeamName: away?.name || 'Away',
+      homeTeamLogoUrl: home?.logoUrl,
+      awayTeamLogoUrl: away?.logoUrl,
+    };
+  }
+
+  return {
+    homeTeamName: fallbackName || 'HOOMA',
+    awayTeamName: event.playDetails?.format?.replaceAll('_', ' ') || 'Open Match',
+    homeTeamLogoUrl: undefined,
+    awayTeamLogoUrl: undefined,
+  };
+}
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -39,84 +70,104 @@ export function HomePage() {
     enabled: !!id,
   });
   const rideCount = (rides.data?.offers.length || 0) + (rides.data?.requests.length || 0);
+  const nextEvent = events.data?.items[0];
 
   return (
-    <div className="page-shell">
-      <section
-        className="relative overflow-hidden rounded-[30px] border p-6"
-        style={{
-          background: 'linear-gradient(145deg,var(--surface-2),var(--surface))',
-          borderColor: 'var(--border)',
-        }}
-      >
-        <div
-          className="absolute -right-8 -top-10 h-40 w-40 rounded-full blur-3xl"
-          style={{ background: 'var(--accent-soft)' }}
-        />
-        <span className="section-kicker flex items-center gap-1.5">
-          <Sparkles size={13} /> Matchday command center
-        </span>
-        <h1 className="mt-2 max-w-md text-[34px] font-black leading-[1.02] tracking-[-.05em]">
-          Play together. Watch together. Move as one.
-        </h1>
-        <p className="mt-3 max-w-lg text-sm leading-6 muted">
-          {active
-            ? `Everything happening inside ${active.name}, organized around real events.`
-            : 'Create or join a GOOL community to get started.'}
-        </p>
-        <button className="accent-button mt-5" onClick={() => navigate('/events/new')}>
-          <CalendarPlus size={18} /> Create event
-        </button>
-      </section>
+    <div className="page-shell vintage-page">
+      <MatchDayHero onCreateMatch={() => navigate('/events/new')} />
 
-      <section className="mt-8">
-        <div className="mb-3 flex items-end justify-between">
+      <section className="vintage-home-section">
+        <div className="vintage-section-heading">
           <div>
-            <div className="section-kicker">Next up</div>
-            <h2 className="section-title">Events</h2>
+            <div className="vintage-kicker">Next up</div>
+            <h2 className="vintage-section-title">Events</h2>
           </div>
-          <button
-            className="flex items-center gap-1 text-xs font-black"
-            onClick={() => navigate('/play')}
-            style={{ color: 'var(--accent)' }}
-          >
-            See all <ArrowRight size={14} />
+          <button type="button" className="vintage-text-button" onClick={() => navigate('/play')}>
+            See all →
           </button>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {(events.data?.items || []).slice(0, 4).map((event) => (
-            <EventCard key={event.id} event={event} />
-          ))}
-          {!events.isLoading && !events.data?.items.length && (
-            <div className="surface-card col-span-full p-6 text-sm muted">
-              No upcoming events yet. Create the first match or watch meetup.
-            </div>
-          )}
+        {events.isLoading ? (
+          <div className="vintage-empty">Loading events…</div>
+        ) : events.isError ? (
+          <div className="vintage-empty">Events could not be loaded.</div>
+        ) : nextEvent ? (
+          (() => {
+            const parts = dateParts(nextEvent.startsAt);
+            const teams = eventTeams(nextEvent, active?.name);
+            return (
+              <HomeEventTicketCard
+                title={nextEvent.title}
+                homeTeamName={teams.homeTeamName}
+                awayTeamName={teams.awayTeamName}
+                homeTeamLogoUrl={teams.homeTeamLogoUrl}
+                awayTeamLogoUrl={teams.awayTeamLogoUrl}
+                venueName={nextEvent.venueName || 'Venue TBA'}
+                venueLocation={nextEvent.address || active?.name || 'Location TBA'}
+                dateLabel={parts.date}
+                timeLabel={parts.time}
+                goingCount={nextEvent._count?.rsvps ?? 0}
+                onClick={() => navigate(`/events/${nextEvent.id}`)}
+              />
+            );
+          })()
+        ) : (
+          <button
+            className="vintage-empty vintage-empty-action"
+            onClick={() => navigate('/events/new')}
+          >
+            <span>
+              <strong>No upcoming events yet.</strong>
+              <small>Create the first match or watch meetup.</small>
+            </span>
+          </button>
+        )}
+      </section>
+
+      <section className="vintage-home-section" aria-labelledby="home-quick-actions">
+        <div id="home-quick-actions" className="vintage-kicker vintage-actions-kicker">
+          Quick actions
+        </div>
+        <div className="vintage-home-grid">
+          <QuickActionCard
+            title="Teams"
+            subtitle="Manage squads"
+            artworkSrc={teamsActionArtwork}
+            onClick={() => navigate('/teams')}
+          />
+          <QuickActionCard
+            title="Requests"
+            subtitle={`${requests.data?.items.length ?? 0} open`}
+            accentValue={String(requests.data?.items.length ?? 0)}
+            artworkSrc={requestsActionArtwork}
+            onClick={() => navigate('/requests')}
+          />
+          <QuickActionCard
+            title="Ride"
+            subtitle={`${rideCount} active`}
+            accentValue={String(rideCount)}
+            artworkSrc={rideActionArtwork}
+            onClick={() => navigate('/rides')}
+          />
+          <QuickActionCard
+            title="FundMe"
+            subtitle={`${funds.data?.items.length ?? 0} active`}
+            accentValue={String(funds.data?.items.length ?? 0)}
+            artworkSrc={fundmeActionArtwork}
+            onClick={() => navigate('/fundme')}
+          />
         </div>
       </section>
 
-      <section className="mt-8">
-        <div className="section-kicker">Matchday logistics</div>
-        <h2 className="section-title mb-3">Community actions</h2>
-        <div className="grid gap-3">
-          <ActionRow
-            icon={<RequestFlagIcon className="h-6 w-6" />}
-            title="Requests"
-            subtitle={`${requests.data?.items.length || 0} open · players, positions, equipment, help`}
-            onClick={() => navigate('/requests')}
-          />
-          <ActionRow
-            icon={<RideBallIcon className="h-6 w-6" />}
-            title="Ride"
-            subtitle={`${rideCount} active · offers and ride requests`}
-            onClick={() => navigate('/rides')}
-          />
-          <ActionRow
-            icon={<FundCupIcon className="h-6 w-6" />}
-            title="FundMe"
-            subtitle={`${funds.data?.items.length || 0} active · pitch fees, travel, tifo, equipment`}
-            onClick={() => navigate('/fundme')}
-          />
+      <section className="vintage-home-section">
+        <div className="vintage-section-heading vintage-section-heading-inline">
+          <h2 className="vintage-kicker vintage-kicker-title">Trending Now</h2>
+        </div>
+        <div className="vintage-empty vintage-feed-empty">
+          <strong>Football feed waiting for live data.</strong>
+          <small>
+            Matches, results, tables and scorers will use this media-card area when the HOOMA
+            football feed returns real content.
+          </small>
         </div>
       </section>
     </div>

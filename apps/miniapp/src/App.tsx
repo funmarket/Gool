@@ -59,6 +59,9 @@ const NotFoundPage = lazy(() =>
 const PlayPage = lazy(() =>
   import('./pages/PlayPage').then((module) => ({ default: module.PlayPage })),
 );
+const PitchPage = lazy(() =>
+  import('./pages/PitchPage').then((module) => ({ default: module.PitchPage })),
+);
 const ProfilePage = lazy(() =>
   import('./pages/ProfilePage').then((module) => ({ default: module.ProfilePage })),
 );
@@ -73,6 +76,27 @@ const RidesPage = lazy(() =>
 );
 const SettingsPage = lazy(() =>
   import('./pages/SettingsPage').then((module) => ({ default: module.SettingsPage })),
+);
+const TeamsPage = lazy(() =>
+  import('./pages/TeamsPage').then((module) => ({ default: module.TeamsPage })),
+);
+const CreateTeamChallengePage = lazy(() =>
+  import('./pages/CreateTeamChallengePage').then((module) => ({
+    default: module.CreateTeamChallengePage,
+  })),
+);
+const TeamChallengeDetailPage = lazy(() =>
+  import('./pages/TeamChallengeDetailPage').then((module) => ({
+    default: module.TeamChallengeDetailPage,
+  })),
+);
+const TeamGameDetailPage = lazy(() =>
+  import('./pages/TeamGameDetailPage').then((module) => ({
+    default: module.TeamGameDetailPage,
+  })),
+);
+const TeamProfilePage = lazy(() =>
+  import('./pages/TeamProfilePage').then((module) => ({ default: module.TeamProfilePage })),
 );
 const WatchPage = lazy(() =>
   import('./pages/WatchPage').then((module) => ({ default: module.WatchPage })),
@@ -99,8 +123,20 @@ export default function App() {
         <Route element={<Layout />}>
           <Route path="/" element={routeElement(<HomePage />)} />
           <Route path="/play" element={routeElement(<PlayPage />)} />
+          <Route path="/pitch" element={routeElement(<PitchPage />)} />
           <Route path="/watch" element={routeElement(<WatchPage />)} />
           <Route path="/community" element={routeElement(<CommunityPage />)} />
+          <Route path="/teams" element={routeElement(<TeamsPage />)} />
+          <Route path="/teams/:teamId" element={routeElement(<TeamProfilePage />)} />
+          <Route
+            path="/teams/:teamId/challenge"
+            element={routeElement(<CreateTeamChallengePage />)}
+          />
+          <Route
+            path="/teams/challenges/:challengeId"
+            element={routeElement(<TeamChallengeDetailPage />)}
+          />
+          <Route path="/teams/games/:gameId" element={routeElement(<TeamGameDetailPage />)} />
           <Route path="/more" element={routeElement(<MorePage />)} />
           <Route path="/requests" element={routeElement(<RequestsPage />)} />
           <Route path="/requests/new" element={routeElement(<CreateRequestPage />)} />

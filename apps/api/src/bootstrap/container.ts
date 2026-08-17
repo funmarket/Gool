@@ -30,6 +30,8 @@ import { PrismaChatRepository } from '../modules/chat/infrastructure/prisma-chat
 import { ChatService } from '../modules/chat/application/chat.service.js';
 import { PrismaAdminReadRepository } from '../modules/admin/infrastructure/prisma-admin-read.repository.js';
 import { AdminService } from '../modules/admin/application/admin.service.js';
+import { PrismaTeamRepository } from '../modules/teams/infrastructure/prisma-team.repository.js';
+import { TeamService } from '../modules/teams/application/team.service.js';
 
 export function buildContainer() {
   const db = buildDatabase();
@@ -87,6 +89,9 @@ export function buildContainer() {
   const adminReadRepository = new PrismaAdminReadRepository(db);
   const admin = new AdminService(adminReadRepository, communities, events);
 
+  const teamRepository = new PrismaTeamRepository(db);
+  const teams = new TeamService(teamRepository);
+
   return {
     db,
     uow,
@@ -106,6 +111,7 @@ export function buildContainer() {
       play: playRepository,
       chat: chatRepository,
       adminRead: adminReadRepository,
+      teams: teamRepository,
     },
     services: {
       identity,
@@ -120,6 +126,7 @@ export function buildContainer() {
       play,
       chat,
       admin,
+      teams,
     },
   };
 }

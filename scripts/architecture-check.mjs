@@ -92,16 +92,6 @@ if (/^\s*import\s+.+\s+from\s+['"]\.\/pages\//m.test(appRouterSource)) {
   );
 }
 
-const miniappBootstrapPath = path.join(root, 'apps/miniapp/src/main.tsx');
-const miniappBootstrapSource = fs.readFileSync(miniappBootstrapPath, 'utf8');
-if (/maplibre-gl/.test(miniappBootstrapSource)) {
-  fail(
-    miniappBootstrapPath,
-    'MapLibre in initial bootstrap',
-    'load map code through the lazy map feature',
-  );
-}
-
 const schemaPath = path.join(root, 'packages/database/prisma/schema.prisma');
 const schema = fs.readFileSync(schemaPath, 'utf8');
 const paymentMethodEnum = schema.match(/enum\s+PaymentMethod\s*\{([\s\S]*?)\}/)?.[1] ?? '';

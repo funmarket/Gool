@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { FundCupIcon } from '../components/icons/SoccerIcons';
+import { FundCupIcon } from '../icons/FundCupIcon';
 import { get } from '../shared/api/http-client';
 import { money } from '../lib/format';
 import { useCommunity } from '../providers/CommunityProvider';

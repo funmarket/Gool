@@ -4,7 +4,14 @@ This file records decisions that should not be silently reversed while the first
 
 ## Product name
 
-The canonical product and repository name is **GOOL**. Runtime source, package scopes, docs, database names and deployment examples use `gool` / `@gool/*`.
+The public product name is **HOOMA** for the first-release user experience.
+
+The technical baseline remains hybrid until after the first stable release:
+
+- user-facing app copy, browser title, brand assets, bot-facing copy, and generated product labels use **HOOMA**.
+- package scopes, source paths, API namespaces, database names, deployment files, and import specifiers remain `gool` / `@gool/*`.
+
+A full internal rename is intentionally deferred because it touches package workspaces, lockfile metadata, deployment config, database names, and service identifiers. Do not perform a full internal rename as part of ordinary UI work.
 
 ## Payment V1
 
@@ -48,7 +55,7 @@ React never imports the database package. Controllers do not query Prisma. Appli
 
 ## Deployment topology
 
-GOOL deploys as two Railway services plus PostgreSQL:
+HOOMA deploys as two Railway services plus PostgreSQL:
 
 1. API
 2. Mini App static frontend
@@ -60,6 +67,6 @@ The API may not also serve the production Mini App bundle. The current in-memory
 
 No deployment is considered ready until the clean-install release sequence passes: dependency install from the committed lockfile, architecture enforcement, Prisma validation/generation/migration, lint, typecheck, tests, formatting, production build, migration status, bundle budget and dependency security audit.
 
-Mini App feature routes are lazy-loaded so feature code is not forced into initial bootstrap. The production build enforces a 500 kB raw initial-JavaScript budget and a separate 1 MB raw lazy-feature budget. MapLibre remains isolated to lazy map routes.
+Mini App feature routes are lazy-loaded so feature code is not forced into initial bootstrap. The production build enforces a 500 kB raw initial-JavaScript budget and a separate 1 MB raw lazy-feature budget. Large visualization/map dependencies are intentionally absent from the first-release Mini App unless a source-level feature requires them.
 
 The repository intentionally fails closed when the lockfile or real initial migration is missing, and high-severity dependency audit findings block the first production baseline.

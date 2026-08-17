@@ -1,107 +1,21 @@
-import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { List, LocateFixed, Map as MapIcon, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { EventCard } from '../components/EventCard';
-import { MapPanel } from '../components/MapPanel';
-import { requestTelegramLocation } from '../lib/telegram';
+import { PlayHero } from '../components/hero/PlayHero';
+import { PickupMatchCard } from '../components/play/PickupMatchCard';
+import { UsersIcon } from '../icons/UsersIcon';
 import { useCommunity } from '../providers/CommunityProvider';
 import { get } from '../shared/api/http-client';
 import type { CursorPage, EventItem } from '../types/domain';
 
-export function PlayPage() {
-  const { active } = useCommunity();
-  const navigate = useNavigate();
-  const [view, setView] = useState<'list' | 'map'>('list');
-  const [center, setCenter] = useState<[number, number]>();
+function dateLabel(value:string){return new Date(value).toLocaleString([],{weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
 
-  const query = useQuery({
-    queryKey: ['events', active?.id, 'PLAY'],
-    queryFn: () => get<CursorPage<EventItem>>(`/api/v1/events?communityId=${active?.id}&type=PLAY`),
-    enabled: Boolean(active),
-  });
-
-  const points = useMemo(
-    () =>
-      (query.data?.items ?? [])
-        .filter((event) => event.latitude != null && event.longitude != null)
-        .map((event) => ({
-          id: event.id,
-          lat: Number(event.latitude),
-          lng: Number(event.longitude),
-          label: event.title,
-        })),
-    [query.data],
-  );
-
-  const locate = async () => {
-    try {
-      const location = await requestTelegramLocation();
-      setCenter([location.longitude, location.latitude]);
-      setView('map');
-    } catch {
-      // Permission UI belongs to the host platform/browser.
-    }
-  };
-
-  return (
-    <div className="page-shell">
-      <div className="flex items-end justify-between gap-3">
-        <div>
-          <div className="section-kicker">Pickup football</div>
-          <h1 className="section-title">Play</h1>
-          <p className="mt-1 text-sm muted">One-tap RSVP, fair waitlists, balanced squads.</p>
-        </div>
-        <button
-          className="accent-button p-3"
-          onClick={() => void navigate('/events/new?type=PLAY')}
-          aria-label="Create match"
-        >
-          <Plus size={20} />
-        </button>
-      </div>
-
-      <div className="mt-5 flex gap-2">
-        <button
-          className="ghost-button py-2.5"
-          onClick={() => setView('list')}
-          style={view === 'list' ? { borderColor: 'var(--accent)' } : {}}
-        >
-          <List size={16} /> List
-        </button>
-        <button
-          className="ghost-button py-2.5"
-          onClick={() => setView('map')}
-          style={view === 'map' ? { borderColor: 'var(--accent)' } : {}}
-        >
-          <MapIcon size={16} /> Map
-        </button>
-        <button className="ghost-button ml-auto p-3" onClick={() => void locate()}>
-          <LocateFixed size={17} />
-        </button>
-      </div>
-
-      {view === 'map' ? (
-        <div className="mt-4">
-          <MapPanel
-            points={points}
-            {...(center ? { center } : {})}
-            onPoint={(id) => {
-              void navigate(`/events/${id}`);
-            }}
-          />
-          <p className="mt-2 text-[11px] muted">
-            Field markers only appear for events with coordinates. Use a production tile provider
-            before launch.
-          </p>
-        </div>
-      ) : (
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          {query.data?.items.map((event) => (
-            <EventCard event={event} key={event.id} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+export function PlayPage(){
+  const {active}=useCommunity();
+  const navigate=useNavigate();
+  const query=useQuery({queryKey:['events',active?.id,'PLAY'],queryFn:()=>get<CursorPage<EventItem>>(`/api/v1/events?communityId=${active?.id}&type=PLAY`),enabled:Boolean(active)});
+  return <div className="page-shell vintage-page">
+    <PlayHero onCreateMatch={()=>navigate('/events/new?type=PLAY')}/>
+    <section className="vintage-home-section" aria-labelledby="players-looking-title"><div className="vintage-section-heading"><div><div className="vintage-kicker">Players</div><h2 id="players-looking-title" className="vintage-section-title">Looking to play</h2></div></div><div className="play-player-strip"><div className="vintage-empty play-player-empty"><div className="flex items-center gap-4"><span className="vintage-icon"><UsersIcon size={26}/></span><div><strong>Player listings will appear here.</strong><small>Only real player listings and explicitly published contact details render in this feed.</small></div></div></div></div></section>
+    <section className="vintage-home-section" aria-labelledby="open-matches-title"><div className="vintage-section-heading"><div><div className="vintage-kicker">Open matches</div><h2 id="open-matches-title" className="vintage-section-title">Pickup games</h2></div><UsersIcon size={22}/></div>{query.isLoading?<div className="vintage-empty">Loading matches…</div>:query.isError?<div className="vintage-empty">Matches could not be loaded.</div>:query.data?.items.length?<div className="play-match-list">{query.data.items.map(event=><PickupMatchCard key={event.id} title={event.title} dateLabel={dateLabel(event.startsAt)} venueName={event.venueName} goingCount={event._count?.rsvps??0} capacity={event.capacity} format={event.playDetails?.format} onClick={()=>navigate(`/events/${event.id}`)}/>)}</div>:<div className="vintage-empty"><strong>No open matches yet.</strong><small>Create the first pickup match for this community.</small></div>}</section>
+  </div>;
 }

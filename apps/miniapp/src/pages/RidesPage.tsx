@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Clock3, MapPin, Plus, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { RideBallIcon } from '../components/icons/SoccerIcons';
+import { RideBallIcon } from '../icons/RideBallIcon';
 import { get } from '../shared/api/http-client';
 import { eventDate, money } from '../lib/format';
 import { useCommunity } from '../providers/CommunityProvider';

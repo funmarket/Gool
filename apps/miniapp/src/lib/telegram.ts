@@ -91,7 +91,7 @@ type TelegramWindow = Window & {
 
 /**
  * Opens Telegram's native invoice surface. The returned status is UI feedback only;
- * GOOL never treats it as proof of settlement. The server-side successful_payment
+ * HOOMA never treats it as proof of settlement. The server-side successful_payment
  * webhook remains authoritative.
  */
 export function openTelegramInvoice(url: string): Promise<InvoiceStatus> {

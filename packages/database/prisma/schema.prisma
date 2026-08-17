@@ -221,6 +221,35 @@ enum TeamSide {
   B
 }
 
+enum TeamStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum TeamChallengeStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+  EXPIRED
+}
+
+enum TeamGameStatus {
+  SCHEDULING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum TeamMatchFormat {
+  FIVE_V_FIVE
+  SIX_V_SIX
+  SEVEN_V_SEVEN
+  EIGHT_V_EIGHT
+  NINE_V_NINE
+  ELEVEN_V_ELEVEN
+}
+
 model User {
   id             String    @id @default(cuid())
   telegramUserId String    @unique @db.VarChar(32)
@@ -237,32 +266,39 @@ model User {
   profile                 PlayerProfile?
   preference              UserPreference?
   memberships             Membership[]
-  createdCommunities      Community[]          @relation("CommunityCreator")
-  createdInvites          CommunityInvite[]    @relation("InviteCreator")
-  createdEvents           Event[]              @relation("EventCreator")
+  createdCommunities      Community[]            @relation("CommunityCreator")
+  createdInvites          CommunityInvite[]      @relation("InviteCreator")
+  createdEvents           Event[]                @relation("EventCreator")
   rsvps                   EventRsvp[]
-  createdRequests         Request[]            @relation("RequestCreator")
+  createdRequests         Request[]              @relation("RequestCreator")
   requestClaims           RequestClaim[]
-  rideOffers              RideOffer[]          @relation("RideDriver")
-  rideRequests            RideRequest[]        @relation("RideRequester")
-  rideMatches             RideMatch[]          @relation("RideMatchRider")
+  rideOffers              RideOffer[]            @relation("RideDriver")
+  rideRequests            RideRequest[]          @relation("RideRequester")
+  rideMatches             RideMatch[]            @relation("RideMatchRider")
   rideLocationPings       RideLocationPing[]
-  rideRatingsGiven        RideRating[]         @relation("RideRatingRater")
-  rideRatingsReceived     RideRating[]         @relation("RideRatingRatee")
-  fundraisers             Fundraiser[]         @relation("FundOrganizer")
+  rideRatingsGiven        RideRating[]           @relation("RideRatingRater")
+  rideRatingsReceived     RideRating[]           @relation("RideRatingRatee")
+  fundraisers             Fundraiser[]           @relation("FundOrganizer")
   fundContributions       FundContribution[]
   paymentIntents          PaymentIntent[]
-  cashSettlementsReceived CashSettlement[]     @relation("CashReceiver")
-  cashSettlementsVoided   CashSettlement[]     @relation("CashVoider")
-  formations              Formation[]          @relation("FormationCreator")
+  cashSettlementsReceived CashSettlement[]       @relation("CashReceiver")
+  cashSettlementsVoided   CashSettlement[]       @relation("CashVoider")
+  formations              Formation[]            @relation("FormationCreator")
   formationSlots          FormationSlot[]
-  fanHubs                 FanHub[]             @relation("FanHubCreator")
-  venueDeals              VenueDeal[]          @relation("VenueDealCreator")
+  fanHubs                 FanHub[]               @relation("FanHubCreator")
+  venueDeals              VenueDeal[]            @relation("VenueDealCreator")
   checkIns                CheckIn[]
   eventChatMessages       EventChatMessage[]
   digitalEntitlements     DigitalEntitlement[]
-  auditLogs               AuditLog[]           @relation("AuditActor")
+  auditLogs               AuditLog[]             @relation("AuditActor")
   idempotencyRecords      IdempotencyRecord[]
+  createdTeams            Team[]                 @relation("TeamCreator")
+  teamPlayers             TeamPlayer[]
+  createdTeamLineups      TeamLineup[]           @relation("TeamLineupCreator")
+  acceptedTeamChallenges  TeamChallenge[]        @relation("TeamChallengeAccepter")
+  declinedTeamChallenges  TeamChallenge[]        @relation("TeamChallengeDecliner")
+  cancelledTeamChallenges TeamChallenge[]        @relation("TeamChallengeCanceller")
+  teamChallengeMessages   TeamChallengeMessage[]
 
   @@index([createdAt])
   @@index([deletedAt])
@@ -346,6 +382,9 @@ model Community {
   digitalProducts     DigitalProduct[]
   digitalEntitlements DigitalEntitlement[]
   auditLogs           AuditLog[]
+  team                Team?
+  teamChallengesSent  TeamChallenge[]           @relation("TeamChallengeProposedCommunity")
+  teamChallengesInbox TeamChallenge[]           @relation("TeamChallengeChallengedCommunity")
 
   @@index([createdByUserId])
   @@index([visibility, createdAt])
@@ -949,6 +988,175 @@ model FormationSlot {
 
   @@index([formationId, team])
   @@index([userId])
+}
+
+model Team {
+  id                  String     @id @default(cuid())
+  communityId         String     @unique
+  createdByUserId     String
+  name                String     @db.VarChar(120)
+  city                String?    @db.VarChar(100)
+  houma               String?    @db.VarChar(100)
+  badgeUrl            String?
+  status              TeamStatus @default(ACTIVE)
+  isPublic            Boolean    @default(true)
+  acceptingChallenges Boolean    @default(true)
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  deletedAt           DateTime?
+
+  community          Community              @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  createdBy          User                   @relation("TeamCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  players            TeamPlayer[]
+  lineups            TeamLineup[]
+  challengesSent     TeamChallenge[]        @relation("TeamChallengeChallenger")
+  challengesReceived TeamChallenge[]        @relation("TeamChallengeChallenged")
+  homeGames          TeamGame[]             @relation("TeamGameHome")
+  awayGames          TeamGame[]             @relation("TeamGameAway")
+  messages           TeamChallengeMessage[]
+
+  @@index([status, isPublic, acceptingChallenges, createdAt])
+  @@index([city, houma])
+  @@index([createdByUserId])
+  @@index([deletedAt])
+}
+
+model TeamPlayer {
+  id          String          @id @default(cuid())
+  teamId      String
+  userId      String?
+  displayName String          @db.VarChar(120)
+  shirtNumber Int?
+  position    PlayerPosition?
+  photoUrl    String?
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  team        Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user        User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  lineupSlots TeamLineupSlot[]
+
+  @@index([teamId, isActive])
+  @@index([userId])
+}
+
+model TeamLineup {
+  id              String          @id @default(cuid())
+  teamId          String
+  createdByUserId String
+  name            String          @db.VarChar(80)
+  formation       String          @db.VarChar(32)
+  matchFormat     TeamMatchFormat @default(ELEVEN_V_ELEVEN)
+  isCurrent       Boolean         @default(false)
+  isPublished     Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime?
+
+  team      Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  createdBy User             @relation("TeamLineupCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  slots     TeamLineupSlot[]
+
+  @@index([teamId, isCurrent, isPublished])
+  @@index([createdByUserId])
+  @@index([deletedAt])
+}
+
+model TeamLineupSlot {
+  id        String         @id @default(cuid())
+  lineupId  String
+  playerId  String?
+  role      PlayerPosition
+  x         Float
+  y         Float
+  isStarter Boolean        @default(true)
+  sortOrder Int            @default(0)
+
+  lineup TeamLineup  @relation(fields: [lineupId], references: [id], onDelete: Cascade)
+  player TeamPlayer? @relation(fields: [playerId], references: [id], onDelete: SetNull)
+
+  @@index([lineupId, isStarter, sortOrder])
+  @@index([playerId])
+}
+
+model TeamChallenge {
+  id                    String              @id @default(cuid())
+  challengerTeamId      String
+  challengedTeamId      String
+  proposedByCommunityId String
+  challengedCommunityId String
+  status                TeamChallengeStatus @default(PENDING)
+  proposedStartsAt      DateTime?
+  proposedVenue         String?             @db.VarChar(160)
+  proposedFormat        TeamMatchFormat?
+  message               String?             @db.VarChar(500)
+  acceptedByUserId      String?
+  declinedByUserId      String?
+  cancelledByUserId     String?
+  acceptedAt            DateTime?
+  declinedAt            DateTime?
+  cancelledAt           DateTime?
+  expiresAt             DateTime?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  challengerTeam Team                   @relation("TeamChallengeChallenger", fields: [challengerTeamId], references: [id], onDelete: Cascade)
+  challengedTeam Team                   @relation("TeamChallengeChallenged", fields: [challengedTeamId], references: [id], onDelete: Cascade)
+  acceptedBy     User?                  @relation("TeamChallengeAccepter", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
+  declinedBy     User?                  @relation("TeamChallengeDecliner", fields: [declinedByUserId], references: [id], onDelete: SetNull)
+  cancelledBy    User?                  @relation("TeamChallengeCanceller", fields: [cancelledByUserId], references: [id], onDelete: SetNull)
+  proposedBy     Community              @relation("TeamChallengeProposedCommunity", fields: [proposedByCommunityId], references: [id], onDelete: Cascade)
+  challenged     Community              @relation("TeamChallengeChallengedCommunity", fields: [challengedCommunityId], references: [id], onDelete: Cascade)
+  game           TeamGame?
+  messages       TeamChallengeMessage[]
+
+  @@index([challengerTeamId, status, createdAt])
+  @@index([challengedTeamId, status, createdAt])
+  @@index([proposedByCommunityId, status, createdAt])
+  @@index([challengedCommunityId, status, createdAt])
+  @@index([expiresAt])
+}
+
+model TeamChallengeMessage {
+  id          String    @id @default(cuid())
+  challengeId String
+  teamId      String
+  userId      String
+  body        String    @db.VarChar(500)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  challenge TeamChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  team      Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([challengeId, createdAt, id])
+  @@index([teamId, createdAt])
+  @@index([userId])
+  @@index([deletedAt])
+}
+
+model TeamGame {
+  id          String           @id @default(cuid())
+  challengeId String           @unique
+  homeTeamId  String
+  awayTeamId  String
+  status      TeamGameStatus   @default(SCHEDULING)
+  scheduledAt DateTime?
+  venueName   String?          @db.VarChar(160)
+  matchFormat TeamMatchFormat?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  challenge TeamChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  homeTeam  Team          @relation("TeamGameHome", fields: [homeTeamId], references: [id], onDelete: Cascade)
+  awayTeam  Team          @relation("TeamGameAway", fields: [awayTeamId], references: [id], onDelete: Cascade)
+
+  @@index([status, scheduledAt, id])
+  @@index([homeTeamId, scheduledAt])
+  @@index([awayTeamId, scheduledAt])
 }
 
 model FanHub {
