@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { formationSaveSchema } from '@gool/contracts';
+import { formationSaveSchema } from '@hooma/contracts';
 import type { PlayService } from '../application/play.service.js';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';
 import { getAuth } from '../../../http/middleware/auth.js';
