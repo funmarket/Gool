@@ -4,10 +4,10 @@ import { buildApp } from './app.js';
 
 const container = buildContainer();
 const app = buildApp(container);
-const server = app.listen(env.PORT, () => console.log(`GOOL API listening on :${env.PORT}`));
+const server = app.listen(env.PORT, () => console.log(`HOOMA API listening on :${env.PORT}`));
 
 async function shutdown(signal: string) {
-  console.log(`GOOL API received ${signal}; shutting down.`);
+  console.log(`HOOMA API received ${signal}; shutting down.`);
   server.close(async () => {
     await container.db.$disconnect();
     process.exit(0);
