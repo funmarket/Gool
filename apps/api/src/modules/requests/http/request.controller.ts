@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { requestClaimSchema, requestCreateSchema } from '@gool/contracts';
+import { requestClaimSchema, requestCreateSchema } from '@hooma/contracts';
 import type { RequestService } from '../application/request.service.js';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';
 import { getAuth } from '../../../http/middleware/auth.js';
