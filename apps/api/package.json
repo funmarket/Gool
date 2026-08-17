@@ -1,5 +1,5 @@
 {
-  "name": "@gool/api",
+  "name": "@hooma/api",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,8 +10,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@gool/contracts": "file:../../packages/contracts",
-    "@gool/database": "file:../../packages/database",
+    "@hooma/contracts": "file:../../packages/contracts",
+    "@hooma/database": "file:../../packages/database",
     "@tma.js/init-data-node": "2.0.8",
     "cors": "2.8.5",
     "express": "5.1.0",
