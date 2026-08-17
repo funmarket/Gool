@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { formationSaveSchema } from '@gool/contracts';
+import type { formationSaveSchema } from '@hooma/contracts';
 export type FormationSaveInput = z.infer<typeof formationSaveSchema>;
 export interface PlayEventAccess {
   eventId: string;
