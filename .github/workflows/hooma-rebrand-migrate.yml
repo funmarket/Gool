@@ -1,0 +1,48 @@
+name: HOOMA Rebrand Migration
+
+on:
+  push:
+    branches:
+      - chore/hooma-rebrand
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout rebrand branch
+        uses: actions/checkout@v7
+        with:
+          ref: chore/hooma-rebrand
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Migrate active workspace imports
+        run: node scripts/hooma-rebrand-active-code.mjs
+
+      - name: Regenerate npm lockfile workspace metadata
+        run: npm install --package-lock-only --ignore-scripts
+
+      - name: Verify active workspace imports
+        run: node scripts/hooma-rebrand-active-code.mjs --check
+
+      - name: Commit migration result
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No migration changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps packages tests scripts package-lock.json
+          git commit -m "chore: migrate active code to HOOMA workspace namespace"
+          git push origin HEAD:chore/hooma-rebrand
