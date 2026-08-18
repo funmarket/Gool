@@ -1,4 +1,4 @@
-import { checkInSchema, fanHubCreateSchema, venueDealCreateSchema } from '@gool/contracts';
+import { checkInSchema, fanHubCreateSchema, venueDealCreateSchema } from '@hooma/contracts';
 import { Router } from 'express';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';
 import { getAuth } from '../../../http/middleware/auth.js';
