@@ -1,4 +1,4 @@
-import { Prisma } from '@gool/database';
+import { Prisma } from '@hooma/database';
 import type { TransactionHandle } from '../../../application/unit-of-work.js';
 import type { DatabaseClient } from '../../../infrastructure/database/prisma.js';
 import { transactionClient } from '../../../infrastructure/database/unit-of-work.js';
