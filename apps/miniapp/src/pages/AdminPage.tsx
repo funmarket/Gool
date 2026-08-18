@@ -374,7 +374,7 @@ export function AdminPage() {
       </p>
 
       <select
-        className="gool-input mt-5"
+        className="hooma-input mt-5"
         value={communityId}
         onChange={(event) => {
           setSelected(event.target.value);
@@ -426,7 +426,7 @@ export function AdminPage() {
         ) : (
           <div className="mt-4 grid gap-3">
             <input
-              className="gool-input"
+              className="hooma-input"
               value={teamDraft.name}
               onChange={(event) =>
                 setTeamDraft((draft) => ({ ...draft, name: event.target.value }))
@@ -435,7 +435,7 @@ export function AdminPage() {
             />
             <div className="grid grid-cols-2 gap-2">
               <input
-                className="gool-input"
+                className="hooma-input"
                 value={teamDraft.city}
                 onChange={(event) =>
                   setTeamDraft((draft) => ({ ...draft, city: event.target.value }))
@@ -443,7 +443,7 @@ export function AdminPage() {
                 placeholder="City"
               />
               <input
-                className="gool-input"
+                className="hooma-input"
                 value={teamDraft.houma}
                 onChange={(event) =>
                   setTeamDraft((draft) => ({ ...draft, houma: event.target.value }))
@@ -452,7 +452,7 @@ export function AdminPage() {
               />
             </div>
             <input
-              className="gool-input"
+              className="hooma-input"
               value={teamDraft.badgeUrl}
               onChange={(event) =>
                 setTeamDraft((draft) => ({ ...draft, badgeUrl: event.target.value }))
@@ -537,7 +537,7 @@ export function AdminPage() {
         </p>
         <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
           <input
-            className="gool-input"
+            className="hooma-input"
             inputMode="numeric"
             value={supporterStars}
             onChange={(event) =>
@@ -589,7 +589,7 @@ export function AdminPage() {
 
         <div className="mt-4 grid grid-cols-2 gap-2">
           <select
-            className="gool-input"
+            className="hooma-input"
             value={inviteRole}
             onChange={(event) =>
               setInviteRoleSelection({
@@ -602,7 +602,7 @@ export function AdminPage() {
             {isOwner && <option value="ADMIN">Admin</option>}
           </select>
           <input
-            className="gool-input"
+            className="hooma-input"
             inputMode="numeric"
             value={inviteMaxUses}
             onChange={(event) => setInviteMaxUses(event.target.value)}
