@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import './PitchListingDraft.css';
 
 type Draft = {
@@ -26,22 +26,24 @@ const EMPTY_DRAFT: Draft = {
   email: '',
 };
 
+function loadDraft(): Draft {
+  if (typeof window === 'undefined') return EMPTY_DRAFT;
+
+  try {
+    const value = window.localStorage.getItem(STORAGE_KEY);
+    return value ? { ...EMPTY_DRAFT, ...(JSON.parse(value) as Partial<Draft>) } : EMPTY_DRAFT;
+  } catch {
+    return EMPTY_DRAFT;
+  }
+}
+
 export type PitchListingDraftProps = {
   onClose: () => void;
 };
 
 export function PitchListingDraft({ onClose }: PitchListingDraftProps) {
-  const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
+  const [draft, setDraft] = useState<Draft>(loadDraft);
   const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    try {
-      const value = window.localStorage.getItem(STORAGE_KEY);
-      if (value) setDraft({ ...EMPTY_DRAFT, ...(JSON.parse(value) as Partial<Draft>) });
-    } catch {
-      // Ignore an invalid or unavailable local draft.
-    }
-  }, []);
 
   const update = (key: keyof Draft, value: string) => {
     setSaved(false);
