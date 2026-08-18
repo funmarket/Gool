@@ -59,7 +59,7 @@ export function CreateFundPage() {
   return (
     <SimpleForm title="New FundMe" kicker="Transparent by design">
       <select
-        className="gool-input"
+        className="hooma-input"
         value={purpose}
         onChange={(event) => setPurpose(event.target.value)}
       >
@@ -70,20 +70,20 @@ export function CreateFundPage() {
         ))}
       </select>
       <input
-        className="gool-input"
+        className="hooma-input"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
         placeholder="Cover next month's pitch booking"
       />
       <textarea
-        className="gool-input min-h-28"
+        className="hooma-input min-h-28"
         value={description}
         onChange={(event) => setDescription(event.target.value)}
         placeholder="What the money covers"
       />
       <div className="grid grid-cols-[1fr_96px] gap-2">
         <input
-          className="gool-input"
+          className="hooma-input"
           type="number"
           min={moneyInputStep(currency)}
           step={moneyInputStep(currency)}
@@ -92,7 +92,7 @@ export function CreateFundPage() {
           placeholder="Goal"
         />
         <input
-          className="gool-input uppercase"
+          className="hooma-input uppercase"
           maxLength={3}
           value={currency}
           onChange={(event) => setCurrency(event.target.value)}
@@ -100,7 +100,7 @@ export function CreateFundPage() {
         />
       </div>
       <select
-        className="gool-input"
+        className="hooma-input"
         value={eventId}
         onChange={(event) => setEventId(event.target.value)}
       >

@@ -1,4 +1,4 @@
-import { chatMessageSchema } from '@gool/contracts';
+import { chatMessageSchema } from '@hooma/contracts';
 import { Router } from 'express';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';
 import { getAuth } from '../../../http/middleware/auth.js';

@@ -123,14 +123,14 @@ export function CreateRidePage() {
       </div>
 
       <input
-        className="gool-input"
+        className="hooma-input"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
         placeholder={mode === 'OFFER_SEATS' ? 'Ride to Friday 7v7' : 'Need a ride to Friday 7v7'}
       />
       <div className="flex gap-2">
         <input
-          className="gool-input"
+          className="hooma-input"
           value={origin}
           onChange={(event) => setOrigin(event.target.value)}
           placeholder="Pickup area"
@@ -146,20 +146,20 @@ export function CreateRidePage() {
       {mode === 'OFFER_SEATS' && (
         <>
           <input
-            className="gool-input"
+            className="hooma-input"
             value={destination}
             onChange={(event) => setDestination(event.target.value)}
             placeholder="Destination label"
           />
           <div className="grid grid-cols-2 gap-2">
             <input
-              className="gool-input"
+              className="hooma-input"
               value={destinationLatitude}
               onChange={(event) => setDestinationLatitude(event.target.value)}
               placeholder="Destination lat"
             />
             <input
-              className="gool-input"
+              className="hooma-input"
               value={destinationLongitude}
               onChange={(event) => setDestinationLongitude(event.target.value)}
               placeholder="Destination lng"
@@ -169,7 +169,7 @@ export function CreateRidePage() {
       )}
 
       <input
-        className="gool-input"
+        className="hooma-input"
         type="datetime-local"
         value={date}
         onChange={(event) => setDate(event.target.value)}
@@ -177,7 +177,7 @@ export function CreateRidePage() {
       <label className="text-xs font-black">
         {mode === 'OFFER_SEATS' ? 'Seats available' : 'Seats needed'}
         <input
-          className="gool-input mt-1"
+          className="hooma-input mt-1"
           type="number"
           min={1}
           max={mode === 'OFFER_SEATS' ? 20 : 8}
@@ -190,7 +190,7 @@ export function CreateRidePage() {
         <>
           <div className="grid grid-cols-[1fr_96px] gap-2">
             <input
-              className="gool-input"
+              className="hooma-input"
               type="number"
               min="0"
               step={moneyInputStep(currency)}
@@ -199,7 +199,7 @@ export function CreateRidePage() {
               placeholder="Seat cost"
             />
             <input
-              className="gool-input uppercase"
+              className="hooma-input uppercase"
               maxLength={3}
               value={currency}
               onChange={(event) => setCurrency(event.target.value)}
@@ -225,7 +225,7 @@ export function CreateRidePage() {
       )}
 
       <select
-        className="gool-input"
+        className="hooma-input"
         value={eventId}
         onChange={(event) => setEventId(event.target.value)}
       >

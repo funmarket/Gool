@@ -72,7 +72,7 @@ export function NewCommunityPage() {
       {mode === 'create' ? (
         <>
           <input
-            className="gool-input"
+            className="hooma-input"
             value={name}
             onChange={(event) => {
               setName(event.target.value);
@@ -86,19 +86,19 @@ export function NewCommunityPage() {
             placeholder="North End HOOMA"
           />
           <input
-            className="gool-input"
+            className="hooma-input"
             value={city}
             onChange={(event) => setCity(event.target.value)}
             placeholder="City (optional)"
           />
           <textarea
-            className="gool-input min-h-24"
+            className="hooma-input min-h-24"
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             placeholder="What brings this community together?"
           />
           <select
-            className="gool-input"
+            className="hooma-input"
             value={visibility}
             onChange={(event) => setVisibility(event.target.value as 'PUBLIC' | 'PRIVATE')}
           >
@@ -106,7 +106,7 @@ export function NewCommunityPage() {
             <option value="PRIVATE">Private · invite code required</option>
           </select>
           <input
-            className="gool-input"
+            className="hooma-input"
             value={slug}
             onChange={(event) => setSlug(event.target.value.toLowerCase())}
             placeholder="community-slug"
@@ -132,14 +132,14 @@ export function NewCommunityPage() {
           </div>
           {joinMode === 'invite' ? (
             <input
-              className="gool-input"
+              className="hooma-input"
               value={inviteCode}
               onChange={(event) => setInviteCode(event.target.value)}
               placeholder="Paste your private invite code"
             />
           ) : (
             <input
-              className="gool-input"
+              className="hooma-input"
               value={slug}
               onChange={(event) => setSlug(event.target.value.toLowerCase())}
               placeholder="community-slug"
