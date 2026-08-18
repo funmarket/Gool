@@ -1,4 +1,4 @@
-# GOOL Security Model
+# HOOMA Security Model
 
 ## Secrets
 
