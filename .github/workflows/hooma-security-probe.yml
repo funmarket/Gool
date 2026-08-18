@@ -1,0 +1,19 @@
+name: HOOMA Security Probe
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  probe:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'chore/hooma-rebrand'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify patched deepmerge-ts release
+        run: |
+          npm view deepmerge-ts@8.0.1 version
+          npm view deepmerge-ts@8.0.1 dist.integrity
+          npm view deepmerge-ts@8.0.1 engines --json
