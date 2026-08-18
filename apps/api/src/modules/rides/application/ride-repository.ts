@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { rideOfferCreateSchema, rideRequestCreateSchema } from '@gool/contracts';
+import type { rideOfferCreateSchema, rideRequestCreateSchema } from '@hooma/contracts';
 import type { TransactionHandle } from '../../../application/unit-of-work.js';
 
 export type RideOfferCreateInput = z.infer<typeof rideOfferCreateSchema>;
