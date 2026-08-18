@@ -7,7 +7,7 @@ import {
   communityPaymentDefaultsSchema,
   membershipRoleSchema,
   ownershipTransferSchema,
-} from '@gool/contracts';
+} from '@hooma/contracts';
 import type { CommunityService } from '../application/community.service.js';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';
 import { parseBody } from '../../../http/middleware/parse.js';
