@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { requestCreateSchema } from '@gool/contracts';
+import type { requestCreateSchema } from '@hooma/contracts';
 
 export type RequestCreateInput = z.infer<typeof requestCreateSchema>;
 

@@ -24,7 +24,7 @@ export default tseslint.config(
     rules: {
       'no-restricted-imports': [
         'error',
-        { patterns: ['@gool/database', '**/infrastructure/database/**'] },
+        { patterns: ['@hooma/database', '**/infrastructure/database/**'] },
       ],
     },
   },

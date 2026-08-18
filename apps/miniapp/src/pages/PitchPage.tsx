@@ -27,7 +27,9 @@ export function PitchPage() {
         onAddPlace={() => {
           setShowListingDraft(true);
           window.requestAnimationFrame(() => {
-            document.getElementById('pitch-listing-draft-anchor')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document
+              .getElementById('pitch-listing-draft-anchor')
+              ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           });
         }}
       />

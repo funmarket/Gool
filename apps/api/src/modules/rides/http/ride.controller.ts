@@ -5,7 +5,7 @@ import {
   rideOfferStatusSchema,
   rideRatingSchema,
   rideRequestCreateSchema,
-} from '@gool/contracts';
+} from '@hooma/contracts';
 import { Router } from 'express';
 import { z } from 'zod';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';

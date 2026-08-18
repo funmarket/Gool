@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { eventCreateSchema, eventUpdateSchema, rsvpCreateSchema } from '@gool/contracts';
+import { eventCreateSchema, eventUpdateSchema, rsvpCreateSchema } from '@hooma/contracts';
 import type { EventService } from '../application/event.service.js';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';
 import { parseBody } from '../../../http/middleware/parse.js';

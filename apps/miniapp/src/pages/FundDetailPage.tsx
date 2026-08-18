@@ -94,7 +94,7 @@ export function FundDetailPage() {
             <label className="mt-5 block text-xs font-black">
               Cash contribution · {fund.currency}
               <input
-                className="gool-input mt-1"
+                className="hooma-input mt-1"
                 type="number"
                 min={moneyInputStep(fund.currency)}
                 step={moneyInputStep(fund.currency)}

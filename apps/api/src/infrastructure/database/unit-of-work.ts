@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { Prisma, type PrismaClient } from '@gool/database';
+import { Prisma, type PrismaClient } from '@hooma/database';
 import type { TransactionHandle, UnitOfWork } from '../../application/unit-of-work.js';
 
 const transactionClients = new WeakMap<object, Prisma.TransactionClient>();

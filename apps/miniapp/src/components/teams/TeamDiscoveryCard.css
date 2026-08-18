@@ -1,2 +1,115 @@
-.team-discovery-card-pro{display:grid;grid-template-columns:6rem minmax(0,1fr);gap:1rem;padding:1rem;border:1px solid rgba(232,221,196,.2);border-radius:14px;background:linear-gradient(145deg,#0e100d,#080907);color:var(--hv-white)}.team-discovery-badge{width:6rem;height:6rem;display:grid;place-items:center;overflow:hidden;align-self:center;background:radial-gradient(circle,rgba(183,227,29,.12),transparent 64%);color:var(--hv-lime);font-family:var(--hv-font-display);font-size:1.6rem}.team-discovery-badge img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}.team-discovery-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:.7rem}.team-discovery-heading h3{margin:0;font-size:1.3rem;font-weight:950}.team-discovery-heading p{margin:.25rem 0 0;color:var(--hv-muted);font-size:.8rem}.team-discovery-heading>span{color:#4eea77;font-size:.72rem;font-weight:850}.team-discovery-meta{margin-top:.65rem;color:#d4d0c7;font-size:.8rem}.team-discovery-meta b{color:#4eea77}.team-discovery-players{display:flex;margin-top:.7rem}.team-discovery-players span{width:2rem;height:2rem;display:grid;place-items:center;overflow:hidden;margin-left:-.25rem;border:1px solid var(--hv-gold);border-radius:50%;background:#151712;font-size:.65rem;font-weight:900}.team-discovery-players span:first-child{margin-left:0}.team-discovery-players img{width:100%;height:100%;object-fit:contain}.team-discovery-actions{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-top:.8rem}.team-discovery-actions button{min-height:2.5rem;border:1px solid rgba(199,154,43,.42);border-radius:7px;background:#090a08;color:var(--hv-white);font:inherit;font-size:.78rem;font-weight:900}.team-discovery-actions .primary{border-color:#32ea62;background:linear-gradient(180deg,rgba(28,110,38,.92),rgba(8,54,15,.92))}
-@media(max-width:520px){.team-discovery-card-pro{grid-template-columns:4.5rem minmax(0,1fr)}.team-discovery-badge{width:4.5rem;height:4.5rem}.team-discovery-actions{grid-template-columns:1fr}}
+.team-discovery-card-pro {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(232, 221, 196, 0.2);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #0e100d, #080907);
+  color: var(--hv-white);
+}
+.team-discovery-badge {
+  width: 6rem;
+  height: 6rem;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  align-self: center;
+  background: radial-gradient(circle, rgba(183, 227, 29, 0.12), transparent 64%);
+  color: var(--hv-lime);
+  font-family: var(--hv-font-display);
+  font-size: 1.6rem;
+}
+.team-discovery-badge img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+.team-discovery-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+.team-discovery-heading h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 950;
+}
+.team-discovery-heading p {
+  margin: 0.25rem 0 0;
+  color: var(--hv-muted);
+  font-size: 0.8rem;
+}
+.team-discovery-heading > span {
+  color: #4eea77;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+.team-discovery-meta {
+  margin-top: 0.65rem;
+  color: #d4d0c7;
+  font-size: 0.8rem;
+}
+.team-discovery-meta b {
+  color: #4eea77;
+}
+.team-discovery-players {
+  display: flex;
+  margin-top: 0.7rem;
+}
+.team-discovery-players span {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  margin-left: -0.25rem;
+  border: 1px solid var(--hv-gold);
+  border-radius: 50%;
+  background: #151712;
+  font-size: 0.65rem;
+  font-weight: 900;
+}
+.team-discovery-players span:first-child {
+  margin-left: 0;
+}
+.team-discovery-players img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.team-discovery-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+  margin-top: 0.8rem;
+}
+.team-discovery-actions button {
+  min-height: 2.5rem;
+  border: 1px solid rgba(199, 154, 43, 0.42);
+  border-radius: 7px;
+  background: #090a08;
+  color: var(--hv-white);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+.team-discovery-actions .primary {
+  border-color: #32ea62;
+  background: linear-gradient(180deg, rgba(28, 110, 38, 0.92), rgba(8, 54, 15, 0.92));
+}
+@media (max-width: 520px) {
+  .team-discovery-card-pro {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+  }
+  .team-discovery-badge {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+  .team-discovery-actions {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,4 +1,4 @@
-import { Prisma } from '@gool/database';
+import { Prisma } from '@hooma/database';
 import type {
   TeamChallengeCreateInput,
   TeamChallengeMessageCreateInput,
@@ -6,7 +6,7 @@ import type {
   TeamLineupCreateInput,
   TeamPlayerCreateInput,
   TeamUpdateInput,
-} from '@gool/contracts';
+} from '@hooma/contracts';
 import type { DatabaseClient } from '../../../infrastructure/database/prisma.js';
 import { AppError } from '../../../http/errors/app-error.js';
 import { decodeTimeIdCursor, encodeTimeIdCursor } from '../../../infrastructure/database/cursor.js';

@@ -1,3 +1,58 @@
-.trending-card-pro{flex:0 0 min(72vw,15.5rem);padding:0;overflow:hidden;border:1px solid var(--hv-gold-line);border-radius:10px;background:#080906;color:var(--hv-white);font:inherit;text-align:left}.trending-card-pro img{display:block;width:100%;height:auto;max-height:10rem;object-fit:contain;background:#050604}.trending-card-art{aspect-ratio:16/9;background:radial-gradient(circle at 72% 35%,rgba(183,227,29,.28),transparent 8%),linear-gradient(160deg,#12180d,#050604 66%)}.trending-card-body{padding:.8rem}.trending-card-body>span{display:inline-flex;padding:.2rem .35rem;border:1px solid rgba(183,227,29,.38);border-radius:3px;color:var(--hv-lime);font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.trending-card-body strong,.trending-card-body small{display:block}.trending-card-body strong{margin-top:.55rem;font-size:.95rem;line-height:1.3}.trending-card-body small{margin-top:.28rem;color:var(--hv-muted);font-size:.72rem}
+.trending-card-pro {
+  flex: 0 0 min(72vw, 15.5rem);
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--hv-gold-line);
+  border-radius: 10px;
+  background: #080906;
+  color: var(--hv-white);
+  font: inherit;
+  text-align: left;
+}
+.trending-card-pro img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 10rem;
+  object-fit: contain;
+  background: #050604;
+}
+.trending-card-art {
+  aspect-ratio: 16/9;
+  background:
+    radial-gradient(circle at 72% 35%, rgba(183, 227, 29, 0.28), transparent 8%),
+    linear-gradient(160deg, #12180d, #050604 66%);
+}
+.trending-card-body {
+  padding: 0.8rem;
+}
+.trending-card-body > span {
+  display: inline-flex;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid rgba(183, 227, 29, 0.38);
+  border-radius: 3px;
+  color: var(--hv-lime);
+  font-size: 0.62rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.trending-card-body strong,
+.trending-card-body small {
+  display: block;
+}
+.trending-card-body strong {
+  margin-top: 0.55rem;
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+.trending-card-body small {
+  margin-top: 0.28rem;
+  color: var(--hv-muted);
+  font-size: 0.72rem;
+}
 
-.trending-card-pro:disabled{opacity:1;cursor:default}
+.trending-card-pro:disabled {
+  opacity: 1;
+  cursor: default;
+}

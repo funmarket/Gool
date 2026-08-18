@@ -258,14 +258,14 @@ a {
     border: 1px solid rgba(210, 166, 45, 0.28);
     border-radius: 13px;
   }
-  .gool-input {
+  .hooma-input {
     @apply w-full px-4 py-3.5 outline-none transition;
     color: var(--text);
     background: #0b0d0a;
     border: 1px solid rgba(220, 201, 154, 0.2);
     border-radius: 10px;
   }
-  .gool-input:focus {
+  .hooma-input:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(183, 227, 29, 0.075);
   }

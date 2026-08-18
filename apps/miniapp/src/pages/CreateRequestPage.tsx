@@ -43,7 +43,11 @@ export function CreateRequestPage() {
 
   return (
     <SimpleForm title="New request" kicker="Fast, specific, expiring">
-      <select className="gool-input" value={kind} onChange={(event) => setKind(event.target.value)}>
+      <select
+        className="hooma-input"
+        value={kind}
+        onChange={(event) => setKind(event.target.value)}
+      >
         <option value="PLAYER">Player</option>
         <option value="POSITION">Specific position</option>
         <option value="EQUIPMENT">Equipment</option>
@@ -52,7 +56,7 @@ export function CreateRequestPage() {
       </select>
       {kind === 'POSITION' && (
         <select
-          className="gool-input"
+          className="hooma-input"
           value={position}
           onChange={(event) => setPosition(event.target.value)}
         >
@@ -62,19 +66,19 @@ export function CreateRequestPage() {
         </select>
       )}
       <input
-        className="gool-input"
+        className="hooma-input"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
         placeholder="Need one goalkeeper for 7v7"
       />
       <textarea
-        className="gool-input min-h-28"
+        className="hooma-input min-h-28"
         value={details}
         onChange={(event) => setDetails(event.target.value)}
         placeholder="Details"
       />
       <input
-        className="gool-input"
+        className="hooma-input"
         type="number"
         min={1}
         max={50}
@@ -82,7 +86,7 @@ export function CreateRequestPage() {
         onChange={(event) => setQuantity(Number(event.target.value))}
       />
       <select
-        className="gool-input"
+        className="hooma-input"
         value={eventId}
         onChange={(event) => setEventId(event.target.value)}
       >

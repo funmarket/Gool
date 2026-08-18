@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { profileUpdateSchema } from '@gool/contracts';
+import { profileUpdateSchema } from '@hooma/contracts';
 import type { IdentityService } from '../application/identity.service.js';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';
 import { getAuth } from '../../../http/middleware/auth.js';

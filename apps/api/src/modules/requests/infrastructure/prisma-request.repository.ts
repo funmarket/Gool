@@ -1,4 +1,4 @@
-import { Prisma } from '@gool/database';
+import { Prisma } from '@hooma/database';
 import type { DatabaseClient } from '../../../infrastructure/database/prisma.js';
 import { decodeTimeIdCursor, encodeTimeIdCursor } from '../../../infrastructure/database/cursor.js';
 import { AppError } from '../../../http/errors/app-error.js';

@@ -1,2 +1,24 @@
 import type { HoomaIconProps } from './types';
-export function ChatIcon({className,size=24,title}:HoomaIconProps){return <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role={title?'img':undefined} aria-hidden={title?undefined:true}><title>{title}</title><path d="M4 5.5h16v10.2H9l-5 4v-14.2Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/><path d="M8 9.5h8M8 12.5h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>}
+export function ChatIcon({ className, size = 24, title }: HoomaIconProps) {
+  return (
+    <svg
+      className={className}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      role={title ? 'img' : undefined}
+      aria-hidden={title ? undefined : true}
+    >
+      <title>{title}</title>
+      <path
+        d="M4 5.5h16v10.2H9l-5 4v-14.2Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path d="M8 9.5h8M8 12.5h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}

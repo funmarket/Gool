@@ -52,7 +52,7 @@ export function EventChatPage() {
         style={{ bottom: 'calc(82px + var(--safe-bottom))' }}
       >
         <input
-          className="gool-input shadow-xl"
+          className="hooma-input shadow-xl"
           value={body}
           onChange={(event) => setBody(event.target.value)}
           onKeyDown={(event) => {

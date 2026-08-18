@@ -83,20 +83,20 @@ Mini App -> create Stars checkout
 API -> Telegram createInvoiceLink (currency XTR)
 Mini App -> Telegram.WebApp.openInvoice
 Telegram -> pre_checkout_query webhook
-GOOL -> validate payload, amount, Telegram user and payment state
+HOOMA -> validate payload, amount, Telegram user and payment state
 Telegram -> successful_payment webhook
-GOOL -> dedupe update -> store TelegramStarPayment -> PAID -> DigitalEntitlement
+HOOMA -> dedupe update -> store TelegramStarPayment -> PAID -> DigitalEntitlement
 ```
 
-The `openInvoice()` callback is UI feedback only and never settles the database. The Mini App polls the GOOL PaymentIntent after Telegram reports paid/pending so UI catches up with the authoritative webhook.
+The `openInvoice()` callback is UI feedback only and never settles the database. The Mini App polls the HOOMA PaymentIntent after Telegram reports paid/pending so UI catches up with the authoritative webhook.
 
 Refund:
 
 ```text
 admin -> refund endpoint
-GOOL -> Telegram refundStarPayment
-GOOL -> idempotent database refund record
-GOOL -> revoke entitlement tied to that payment
+HOOMA -> Telegram refundStarPayment
+HOOMA -> idempotent database refund record
+HOOMA -> revoke entitlement tied to that payment
 ```
 
 The Telegram adapter treats Telegram's already-refunded result as idempotent so a database retry can reconcile an external refund that succeeded before a transient database failure.

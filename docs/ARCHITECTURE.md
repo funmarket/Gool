@@ -1,8 +1,8 @@
-# GOOL Architecture
+# HOOMA Architecture
 
 ## Goal
 
-GOOL is a Telegram-first football community application. The architecture is deliberately modular so that Events, payments, ride matching, fundraising, chat, and future integrations do not acquire hidden cross-domain database dependencies.
+HOOMA is a Telegram-first football community application. The architecture is deliberately modular so that Events, payments, ride matching, fundraising, chat, and future integrations do not acquire hidden cross-domain database dependencies.
 
 ## Dependency rule
 
@@ -51,11 +51,11 @@ Forbidden dependencies:
 
 ### `packages/contracts`
 
-Shared Zod request schemas and wire types. Prisma-generated types must never be imported by the Mini App.
+Shared Zod request schemas and wire types, published inside the workspace as `@hooma/contracts`. Prisma-generated types must never be imported by the Mini App.
 
 ### `packages/database`
 
-Prisma schema/client/seeding/migrations. No frontend package imports this workspace.
+Prisma schema/client/seeding/migrations, published inside the workspace as `@hooma/database`. No frontend package imports this workspace.
 
 ## Domain ownership
 
@@ -109,7 +109,7 @@ Owns temporary event rooms and messages. MVP delivery is polling-based; WebSocke
 
 ### Admin/Audit
 
-Admin reads use normal authorization policy. Sensitive writes still call owning domain services. `AuditLog` is append-only from application perspective.
+Admin remains an internal technical permission concept. User-facing management UI uses Coach / Coach Control Room. Admin reads use normal authorization policy. Sensitive writes still call owning domain services. `AuditLog` is append-only from application perspective.
 
 ## Unit of work / transactions
 

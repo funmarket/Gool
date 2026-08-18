@@ -5,7 +5,7 @@ import {
   starsProductConfigureSchema,
   starsPurchaseSchema,
   starsRefundSchema,
-} from '@gool/contracts';
+} from '@hooma/contracts';
 import type { PaymentService } from '../application/payment.service.js';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';
 import { parseBody } from '../../../http/middleware/parse.js';

@@ -39,7 +39,7 @@ export function buildApp(container: AppContainer) {
   app.use(cors(corsOptions()));
   app.use(express.json({ limit: '256kb' }));
   app.use(requestId);
-  app.get('/health', (_req, res) => res.json({ ok: true, service: 'gool-api' }));
+  app.get('/health', (_req, res) => res.json({ ok: true, service: 'hooma-api' }));
   app.use(
     '/webhooks/telegram',
     telegramWebhookRouter(container.services.payments, container.telegram),

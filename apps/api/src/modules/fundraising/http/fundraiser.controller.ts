@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { contributionCreateSchema, fundraiserCreateSchema } from '@gool/contracts';
+import { contributionCreateSchema, fundraiserCreateSchema } from '@hooma/contracts';
 import type { FundraiserService } from '../application/fundraiser.service.js';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';
 import { getAuth } from '../../../http/middleware/auth.js';

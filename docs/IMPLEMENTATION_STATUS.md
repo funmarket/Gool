@@ -12,7 +12,7 @@ The runtime/source baseline was audited at commit `1259221` (`feat: update HOOMA
 - **Legacy application name:** GOOL
 - GOOL must not be used as current user-facing branding.
 - The canonical neighborhood/local-area field remains **houma**. This field is a domain term and is distinct from the HOOMA product name.
-- Some internal technical identifiers still use the legacy `gool` / `@gool/*` namespace. A dedicated controlled migration to `hooma` / `@hooma/*` is planned and should be completed before broader cleanup/refactoring work.
+- The controlled technical namespace migration from `gool` / `@gool/*` to `hooma` / `@hooma/*` is complete for active package, workspace, import, build, configuration, runtime, and CSS identifiers. Intentional legacy identifiers remain only for compatibility, persistence, immutable history, or external resources.
 - Historical Git commits and already-applied Prisma migrations should not be rewritten merely to remove legacy naming.
 
 ## Status legend
@@ -287,7 +287,7 @@ The design system uses HOOMA's restrained vintage football/soccer heritage direc
 
 ## Known cleanup / maintainability findings
 
-The latest source audit found cleanup work that should follow the GOOL -> HOOMA technical rename:
+The latest source audit found cleanup work that remains after the completed GOOL -> HOOMA technical rename:
 
 - duplicate/competing global CSS definitions exist in `apps/miniapp/src/index.css`
 - `vintage-additions.css` appears to be an unintegrated/stale additions file
@@ -300,26 +300,26 @@ The latest source audit found cleanup work that should follow the GOOL -> HOOMA 
 
 Do not delete or consolidate any of these blindly; reference/import tracing is required first.
 
-## Technical naming migration — Pending
+## Technical naming migration — Completed
 
-The active source still contains legacy technical names such as:
+The controlled GOOL -> HOOMA technical namespace migration is complete for active source identifiers.
 
-- root npm package `gool`
-- `@gool/api`
-- `@gool/miniapp`
-- `@gool/contracts`
-- `@gool/database`
-- Railway build commands referencing `@gool/*`
-- architecture checks referencing `@gool/database`
-- runtime service/log labels such as `gool-api` / `GOOL API`
-- local/CI database identifiers such as `gool` / `gool_ci`
-- browser local-storage key `gool-theme`
-- some CSS identifiers such as `.gool-input`
-- legacy documentation and repository naming
+Completed migration scope includes:
 
-This migration should be performed as a dedicated, atomic operation before broader cleanup/refactoring so future development expands on the HOOMA identity only.
+- root npm package `hooma`
+- workspace packages `@hooma/api`, `@hooma/miniapp`, `@hooma/contracts`, and `@hooma/database`
+- active TypeScript imports
+- Railway build commands and runtime naming
+- architecture and ESLint package-boundary rules
+- active Mini App CSS identifier `.hooma-input`
+- HOOMA browser-storage key with the legacy `gool-theme` compatibility fallback retained
+- regenerated npm lockfile using the current HOOMA workspace manifests
 
-Do not use a blind global replacement. Persistent database/volume names, lockfile content, Railway configuration, local-storage compatibility, and historical migrations require controlled handling.
+Intentional legacy identifiers remain where migration would affect compatibility, persistence, immutable history, cryptographic metadata, or external resources. These include the legacy theme fallback, existing local database/volume identifiers, canonical GitHub repository/history references, persisted development identifiers such as `gool-central`, historical payment payload compatibility, and incidental package integrity hashes.
+
+Migration validation performed in GitHub Codespaces included a clean `npm ci`, deployment preflight, Prisma schema validation and client generation, architecture checks, TypeScript checks, automated tests, production build, and migration deployment/status verification against a disposable PostgreSQL database.
+
+Repository-wide lint, formatting, and npm security gates still contain separately identified baseline issues that were present outside the technical rename and must not be disguised as migration regressions.
 
 ## Foundation / scaling work
 

@@ -21,17 +21,30 @@ export type PitchCardProps = {
 export function PitchCard(props: PitchCardProps) {
   const navigate = useNavigate();
 
-  const addressAction = props.onAddressClick ?? (props.address
-    ? () => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(props.address || '')}`, '_blank', 'noopener,noreferrer')
-    : undefined);
+  const addressAction =
+    props.onAddressClick ??
+    (props.address
+      ? () =>
+          window.open(
+            `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(props.address || '')}`,
+            '_blank',
+            'noopener,noreferrer',
+          )
+      : undefined);
 
-  const houmaAction = props.onHoumaClick ?? (props.houma
-    ? () => navigate(`/pitch?houma=${encodeURIComponent(props.houma || '')}`)
-    : undefined);
+  const houmaAction =
+    props.onHoumaClick ??
+    (props.houma
+      ? () => navigate(`/pitch?houma=${encodeURIComponent(props.houma || '')}`)
+      : undefined);
 
-  const contactAction = props.onContactClick ?? (props.phone
-    ? () => { window.location.href = `tel:${props.phone}`; }
-    : undefined);
+  const contactAction =
+    props.onContactClick ??
+    (props.phone
+      ? () => {
+          window.location.href = `tel:${props.phone}`;
+        }
+      : undefined);
 
   return (
     <article className="pitch-card-pro">
@@ -39,7 +52,9 @@ export function PitchCard(props: PitchCardProps) {
         {props.photoUrl ? (
           <img src={props.photoUrl} alt={props.name} />
         ) : (
-          <div className="pitch-card-pro-photo-fallback"><span>HOOMA</span></div>
+          <div className="pitch-card-pro-photo-fallback">
+            <span>HOOMA</span>
+          </div>
         )}
         <HoumaStampIcon className="pitch-card-pro-stamp" size={52} title="HOOMA" />
       </div>
@@ -55,9 +70,15 @@ export function PitchCard(props: PitchCardProps) {
           <span>{props.currency} / hour</span>
         </div>
         <div className="pitch-card-pro-actions">
-          <button type="button" onClick={addressAction} disabled={!addressAction}>Address</button>
-          <button type="button" onClick={houmaAction} disabled={!houmaAction}>Houma</button>
-          <button type="button" onClick={contactAction} disabled={!contactAction}>Contact</button>
+          <button type="button" onClick={addressAction} disabled={!addressAction}>
+            Address
+          </button>
+          <button type="button" onClick={houmaAction} disabled={!houmaAction}>
+            Houma
+          </button>
+          <button type="button" onClick={contactAction} disabled={!contactAction}>
+            Contact
+          </button>
         </div>
       </div>
 

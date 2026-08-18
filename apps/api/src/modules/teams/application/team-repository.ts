@@ -5,7 +5,7 @@ import type {
   TeamLineupCreateInput,
   TeamPlayerCreateInput,
   TeamUpdateInput,
-} from '@gool/contracts';
+} from '@hooma/contracts';
 
 export type TeamListInput = {
   cursor?: string;

@@ -8,7 +8,7 @@ async function main() {
     update: {},
     create: {
       telegramUserId: '100000001',
-      username: 'gool_dev',
+      username: 'hooma_dev',
       firstName: 'HOOMA',
       lastName: 'Dev',
       profile: {

@@ -1,4 +1,4 @@
-# GOOL API
+# HOOMA API
 
 All first-party authenticated endpoints are under `/api/v1`. Provider callbacks are outside that namespace.
 
@@ -50,7 +50,7 @@ Error envelope:
 - `POST /api/v1/events/:eventId/rsvp`
 - `DELETE /api/v1/events/:eventId/rsvp`
 
-Admin Event cancellation is exposed through `/api/v1/admin/events/:eventId`.
+Internal admin-route Event cancellation is exposed through `/api/v1/admin/events/:eventId`; user-facing management terminology is Coach / Coach Control Room.
 
 ## Requests
 
@@ -111,7 +111,7 @@ Messages are currently delivered via polling; collection paging uses an opaque c
 - `POST /api/v1/payments/:paymentIntentId/cash/void`
 - `POST /api/v1/payments/:paymentIntentId/stars/refund`
 
-## Admin
+## Admin (internal route namespace)
 
 - `GET /api/v1/admin/communities`
 - `GET /api/v1/admin/communities/:communityId/dashboard`
@@ -119,6 +119,8 @@ Messages are currently delivered via polling; collection paging uses an opaque c
 - `GET /api/v1/admin/communities/:communityId/audit`
 - `PATCH /api/v1/admin/communities/:communityId/members/:membershipId/ban`
 - `DELETE /api/v1/admin/events/:eventId` (cancel, not physical delete)
+
+The `/admin` route namespace and `ADMIN` permission values are technical interfaces and may remain even though the product presents authorized management as Coach / Coach Control Room.
 
 ## Webhooks
 

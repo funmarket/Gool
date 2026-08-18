@@ -1,2 +1,26 @@
 import type { HoomaIconProps } from './types';
-export function FilterIcon({className,size=24,title}:HoomaIconProps){return <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role={title?'img':undefined} aria-hidden={title?undefined:true}><title>{title}</title><path d="M4 7h10M17 7h3M4 12h3M10 12h10M4 17h8M15 17h5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/><circle cx="15.5" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.4"/><circle cx="8.5" cy="12" r="1.5" stroke="currentColor" strokeWidth="1.4"/><circle cx="13.5" cy="17" r="1.5" stroke="currentColor" strokeWidth="1.4"/></svg>}
+export function FilterIcon({ className, size = 24, title }: HoomaIconProps) {
+  return (
+    <svg
+      className={className}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      role={title ? 'img' : undefined}
+      aria-hidden={title ? undefined : true}
+    >
+      <title>{title}</title>
+      <path
+        d="M4 7h10M17 7h3M4 12h3M10 12h10M4 17h8M15 17h5"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <circle cx="15.5" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="8.5" cy="12" r="1.5" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="13.5" cy="17" r="1.5" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}

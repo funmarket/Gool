@@ -1,5 +1,5 @@
-import { Prisma } from '@gool/database';
-import type { EventCreateInput, EventUpdateInput } from '@gool/contracts';
+import { Prisma } from '@hooma/database';
+import type { EventCreateInput, EventUpdateInput } from '@hooma/contracts';
 import type { TransactionHandle } from '../../../application/unit-of-work.js';
 import type { DatabaseClient } from '../../../infrastructure/database/prisma.js';
 import { transactionClient } from '../../../infrastructure/database/unit-of-work.js';

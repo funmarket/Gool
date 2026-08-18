@@ -1,4 +1,4 @@
-import type { EventCreateInput, EventUpdateInput } from '@gool/contracts';
+import type { EventCreateInput, EventUpdateInput } from '@hooma/contracts';
 import type { CommunityService } from '../../communities/application/community.service.js';
 import type { EventRepository } from './event-repository.js';
 import type { RsvpService } from './rsvp.service.js';

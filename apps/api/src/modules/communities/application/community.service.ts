@@ -1,4 +1,4 @@
-import type { CommunityCreateInput } from '@gool/contracts';
+import type { CommunityCreateInput } from '@hooma/contracts';
 import { createHash, randomBytes } from 'node:crypto';
 import type { TransactionHandle } from '../../../application/unit-of-work.js';
 import { AppError } from '../../../http/errors/app-error.js';

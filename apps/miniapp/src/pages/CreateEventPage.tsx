@@ -131,7 +131,7 @@ export function CreateEventPage() {
           <label className="text-xs font-black">
             Title
             <input
-              className="gool-input mt-1"
+              className="hooma-input mt-1"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               placeholder={type === 'PLAY' ? 'Friday 7v7 under the lights' : 'Derby watch party'}
@@ -141,7 +141,7 @@ export function CreateEventPage() {
           <label className="text-xs font-black">
             Description
             <textarea
-              className="gool-input mt-1 min-h-24"
+              className="hooma-input mt-1 min-h-24"
               value={description}
               onChange={(event) => setDescription(event.target.value)}
               placeholder="What players or supporters should know"
@@ -152,7 +152,7 @@ export function CreateEventPage() {
             Starts
             <input
               type="datetime-local"
-              className="gool-input mt-1"
+              className="hooma-input mt-1"
               value={date}
               onChange={(event) => setDate(event.target.value)}
             />
@@ -161,7 +161,7 @@ export function CreateEventPage() {
           <label className="text-xs font-black">
             Venue
             <input
-              className="gool-input mt-1"
+              className="hooma-input mt-1"
               value={venue}
               onChange={(event) => setVenue(event.target.value)}
               placeholder="Pitch / pub / fan hub"
@@ -173,7 +173,7 @@ export function CreateEventPage() {
             <input
               type="number"
               min="2"
-              className="gool-input mt-1"
+              className="hooma-input mt-1"
               value={capacity}
               onChange={(event) => setCapacity(event.target.value)}
             />
@@ -184,7 +184,7 @@ export function CreateEventPage() {
               <label className="text-xs font-black">
                 Format
                 <select
-                  className="gool-input mt-1"
+                  className="hooma-input mt-1"
                   value={format}
                   onChange={(event) => setFormat(event.target.value as typeof format)}
                 >
@@ -201,7 +201,7 @@ export function CreateEventPage() {
                     type="number"
                     min="0"
                     step={moneyInputStep(currency)}
-                    className="gool-input mt-1"
+                    className="hooma-input mt-1"
                     value={fee}
                     onChange={(event) => setFee(event.target.value)}
                   />
@@ -209,7 +209,7 @@ export function CreateEventPage() {
                 <label className="text-xs font-black">
                   Currency
                   <input
-                    className="gool-input mt-1 uppercase"
+                    className="hooma-input mt-1 uppercase"
                     maxLength={3}
                     value={currency}
                     onChange={(event) => setCurrency(event.target.value)}
@@ -241,7 +241,7 @@ export function CreateEventPage() {
                   <label className="mt-4 block text-xs font-black">
                     Cash RSVP policy
                     <select
-                      className="gool-input mt-1"
+                      className="hooma-input mt-1"
                       value={cashRsvpPolicy}
                       onChange={(event) =>
                         setCashRsvpPolicy(event.target.value as typeof cashRsvpPolicy)
@@ -265,7 +265,7 @@ export function CreateEventPage() {
               <label className="text-xs font-black">
                 Home club
                 <select
-                  className="gool-input mt-1"
+                  className="hooma-input mt-1"
                   value={homeClubId}
                   onChange={(event) => setHomeClubId(event.target.value)}
                 >
@@ -280,7 +280,7 @@ export function CreateEventPage() {
               <label className="text-xs font-black">
                 Away club
                 <select
-                  className="gool-input mt-1"
+                  className="hooma-input mt-1"
                   value={awayClubId}
                   onChange={(event) => setAwayClubId(event.target.value)}
                 >

@@ -30,7 +30,7 @@ function ProfileForm({ me, clubs }: { me: Me; clubs: Club[] }) {
       <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider muted">
         Skill level
         <select
-          className="gool-input"
+          className="hooma-input"
           value={skill}
           onChange={(event) => setSkill(event.target.value)}
         >
@@ -43,7 +43,7 @@ function ProfileForm({ me, clubs }: { me: Me; clubs: Club[] }) {
       <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider muted">
         Club allegiance
         <select
-          className="gool-input"
+          className="hooma-input"
           value={favoriteClubId}
           onChange={(event) => setFavoriteClubId(event.target.value)}
         >
@@ -59,7 +59,7 @@ function ProfileForm({ me, clubs }: { me: Me; clubs: Club[] }) {
       <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider muted">
         Bio
         <textarea
-          className="gool-input min-h-28"
+          className="hooma-input min-h-28"
           value={bio}
           onChange={(event) => setBio(event.target.value)}
           placeholder="Short player bio"

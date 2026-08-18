@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { fundraiserCreateSchema } from '@gool/contracts';
+import type { fundraiserCreateSchema } from '@hooma/contracts';
 import type { TransactionHandle } from '../../../application/unit-of-work.js';
 
 export type FundraiserCreateInput = z.infer<typeof fundraiserCreateSchema>;

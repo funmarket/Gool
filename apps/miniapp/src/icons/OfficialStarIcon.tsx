@@ -1,2 +1,23 @@
 import type { HoomaIconProps } from './types';
-export function OfficialStarIcon({ className, size = 24, title }: HoomaIconProps) { return <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role={title?'img':undefined} aria-hidden={title?undefined:true}><title>{title}</title><path d="m12 3.5 2.55 5.17 5.7.83-4.13 4.02.98 5.68L12 16.52 6.9 19.2l.98-5.68L3.65 9.5l5.8-.83L12 3.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/></svg>; }
+export function OfficialStarIcon({ className, size = 24, title }: HoomaIconProps) {
+  return (
+    <svg
+      className={className}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      role={title ? 'img' : undefined}
+      aria-hidden={title ? undefined : true}
+    >
+      <title>{title}</title>
+      <path
+        d="m12 3.5 2.55 5.17 5.7.83-4.13 4.02.98 5.68L12 16.52 6.9 19.2l.98-5.68L3.65 9.5l5.8-.83L12 3.5Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}

@@ -74,7 +74,7 @@ export function CreateTeamChallengePage() {
         <label>
           <span>Your team</span>
           <select
-            className="gool-input"
+            className="hooma-input"
             value={selectedChallengerId}
             onChange={(event) => setChallengerTeamId(event.target.value)}
             disabled={!availableChallengers.length}
@@ -91,7 +91,7 @@ export function CreateTeamChallengePage() {
             <CalendarDays size={16} /> Proposed time
           </span>
           <input
-            className="gool-input"
+            className="hooma-input"
             type="datetime-local"
             value={startsAt}
             onChange={(event) => setStartsAt(event.target.value)}
@@ -102,7 +102,7 @@ export function CreateTeamChallengePage() {
             <MapPin size={16} /> Venue
           </span>
           <input
-            className="gool-input"
+            className="hooma-input"
             value={venue}
             onChange={(event) => setVenue(event.target.value)}
             placeholder="Pitch or meeting point"
@@ -113,7 +113,7 @@ export function CreateTeamChallengePage() {
             <Shield size={16} /> Message
           </span>
           <textarea
-            className="gool-input min-h-28"
+            className="hooma-input min-h-28"
             value={message}
             onChange={(event) => setMessage(event.target.value)}
             placeholder="Respectful challenge note"

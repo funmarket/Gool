@@ -1,3 +1,45 @@
 import './CommunityOfficeCard.css';
-export type CommunityOfficeCardProps={initials:string;name:string;description:string;roleLabel?:string|null;members:number;events:number;rides:number;city:string};
-export function CommunityOfficeCard(props:CommunityOfficeCardProps){return <section className="community-office-card-pro"><div className="community-office-top"><div className="community-office-mark">{props.initials}</div><div><div className="community-office-name-row"><h2>{props.name}</h2>{props.roleLabel&&<span>{props.roleLabel}</span>}</div><p>{props.description}</p></div></div><div className="community-office-stats"><div><strong>{props.members}</strong><span>Members</span></div><div><strong>{props.events}</strong><span>Events</span></div><div><strong>{props.rides}</strong><span>Rides</span></div><div><strong>{props.city}</strong><span>City</span></div></div></section>}
+export type CommunityOfficeCardProps = {
+  initials: string;
+  name: string;
+  description: string;
+  roleLabel?: string | null;
+  members: number;
+  events: number;
+  rides: number;
+  city: string;
+};
+export function CommunityOfficeCard(props: CommunityOfficeCardProps) {
+  return (
+    <section className="community-office-card-pro">
+      <div className="community-office-top">
+        <div className="community-office-mark">{props.initials}</div>
+        <div>
+          <div className="community-office-name-row">
+            <h2>{props.name}</h2>
+            {props.roleLabel && <span>{props.roleLabel}</span>}
+          </div>
+          <p>{props.description}</p>
+        </div>
+      </div>
+      <div className="community-office-stats">
+        <div>
+          <strong>{props.members}</strong>
+          <span>Members</span>
+        </div>
+        <div>
+          <strong>{props.events}</strong>
+          <span>Events</span>
+        </div>
+        <div>
+          <strong>{props.rides}</strong>
+          <span>Rides</span>
+        </div>
+        <div>
+          <strong>{props.city}</strong>
+          <span>City</span>
+        </div>
+      </div>
+    </section>
+  );
+}

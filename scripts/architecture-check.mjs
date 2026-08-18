@@ -63,7 +63,7 @@ for (const file of apiModuleFiles) {
   const relative = rel(file);
   if (relative.includes('/infrastructure/')) continue;
   const source = fs.readFileSync(file, 'utf8');
-  if (/@gool\/database|@prisma\/client|\bPrismaClient\b/.test(source)) {
+  if (/@hooma\/database|@prisma\/client|\bPrismaClient\b/.test(source)) {
     fail(file, 'database dependency outside infrastructure', 'use a repository port');
   }
 }
