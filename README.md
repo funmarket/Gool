@@ -30,14 +30,14 @@ Telegram Mini App / React
   -> PostgreSQL
 ```
 
-The API is an Express + TypeScript service. The Mini App is React + Vite + Tailwind. Shared request contracts live in `@gool/contracts`. PostgreSQL ownership lives in `@gool/database`.
+The API is an Express + TypeScript service. The Mini App is React + Vite + Tailwind. Shared request contracts live in `@hooma/contracts`. PostgreSQL ownership lives in `@hooma/database`.
 
 See [Architecture](docs/ARCHITECTURE.md), [Engineering Decisions](docs/DECISIONS.md), [Database](docs/DATABASE.md), [Payments](docs/PAYMENTS.md), [Security](docs/SECURITY.md), and [Quality Gates](docs/QUALITY_GATES.md).
 
 ## Repository layout
 
 ```text
-GOOL/
+<repo>/
 ├── apps/
 │   ├── api/                 # HTTP, services, domain ports, Prisma adapters
 │   └── miniapp/             # Telegram Mini App React UI
@@ -175,8 +175,8 @@ Rerun `npm run release:check` and `npm run deploy:preflight` with the real deplo
 
 HOOMA is designed as two Railway services sharing one PostgreSQL database:
 
-1. `@gool/api` using `railway.api.json`
-2. `@gool/miniapp` using `railway.miniapp.json`
+1. `@hooma/api` using `railway.api.json`
+2. `@hooma/miniapp` using `railway.miniapp.json`
 
 The API start command deploys committed migrations before starting the server. Telegram secrets live only in Railway/local environment variables, never in GitHub.
 
