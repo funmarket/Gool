@@ -1,4 +1,4 @@
-import type { EventCreateInput, EventUpdateInput } from '@gool/contracts';
+import type { EventCreateInput, EventUpdateInput } from '@hooma/contracts';
 import type { TransactionHandle } from '../../../application/unit-of-work.js';
 
 export interface EventRepository {
