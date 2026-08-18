@@ -7,7 +7,7 @@ import {
   teamListQuerySchema,
   teamPlayerCreateSchema,
   teamUpdateSchema,
-} from '@gool/contracts';
+} from '@hooma/contracts';
 import type { TeamService } from '../application/team.service.js';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';
 import { getAuth } from '../../../http/middleware/auth.js';
