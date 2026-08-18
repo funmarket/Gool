@@ -1,4 +1,4 @@
-import { Prisma } from '@gool/database';
+import { Prisma } from '@hooma/database';
 import type { DatabaseClient } from '../../../infrastructure/database/prisma.js';
 import { AppError } from '../../../http/errors/app-error.js';
 import type { CommunityRepository } from '../application/community-repository.js';
