@@ -8,12 +8,46 @@ jobs:
   probe:
     if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'chore/hooma-rebrand'
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hooma_ci?schema=public
+      DIRECT_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hooma_ci?schema=public
+      TELEGRAM_BOT_TOKEN: ci-placeholder
+      TELEGRAM_WEBHOOK_SECRET: ci-placeholder
+      DEV_AUTH_BYPASS: 'false'
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: hooma_ci
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
-      - name: Verify patched deepmerge-ts release
+          node-version-file: '.nvmrc'
+          cache: npm
+      - name: Apply ephemeral patched override
         run: |
-          npm view deepmerge-ts@8.0.1 version
-          npm view deepmerge-ts@8.0.1 dist.integrity
-          npm view deepmerge-ts@8.0.1 engines --json
+          npm pkg set overrides.deepmerge-ts=8.0.1
+          npm install --package-lock-only --ignore-scripts
+          npm ci
+      - name: Verify dependency resolution
+        run: |
+          npm ls deepmerge-ts @prisma/config prisma
+      - run: npm run db:validate
+      - run: npm run db:generate
+      - run: npm run typecheck
+      - run: npm test
+        env:
+          NODE_ENV: test
+      - run: npm run build
+        env:
+          NODE_ENV: production
+      - run: npm run security:check
