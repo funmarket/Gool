@@ -5,7 +5,7 @@ import type {
   TeamLineupCreateInput,
   TeamPlayerCreateInput,
   TeamUpdateInput,
-} from '@gool/contracts';
+} from '@hooma/contracts';
 import { AppError } from '../../../http/errors/app-error.js';
 import type { TeamListInput, TeamRepository } from './team-repository.js';
 
