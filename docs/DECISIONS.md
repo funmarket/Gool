@@ -1,17 +1,26 @@
-# GOOL Engineering Decisions
+# HOOMA Engineering Decisions
 
-This file records decisions that should not be silently reversed while the first production baseline is being established.
+This file records decisions that should not be silently reversed while the production baseline is being established and evolved.
 
-## Product name
+## Product and technical identity
 
-The public product name is **HOOMA** for the first-release user experience.
+The current product name is **HOOMA**. GOOL is legacy branding and must not be used for new user-facing or active technical identifiers.
 
-The technical baseline remains hybrid until after the first stable release:
+The active technical namespace is also HOOMA:
 
-- user-facing app copy, browser title, brand assets, bot-facing copy, and generated product labels use **HOOMA**.
-- package scopes, source paths, API namespaces, database names, deployment files, and import specifiers remain `gool` / `@gool/*`.
+- root workspace name: `hooma`
+- API workspace: `@hooma/api`
+- Mini App workspace: `@hooma/miniapp`
+- shared contracts: `@hooma/contracts`
+- database package: `@hooma/database`
+- active import specifiers and deployment workspace commands use `@hooma/*`
+- runtime service/log identity uses HOOMA / `hooma-api`
 
-A full internal rename is intentionally deferred because it touches package workspaces, lockfile metadata, deployment config, database names, and service identifiers. Do not perform a full internal rename as part of ordinary UI work.
+Legacy identifiers may remain only where changing them would break compatibility, persistence, immutable history, or an external resource that has not yet gone through a controlled migration. Examples include the `gool-theme` browser-storage fallback, already-persisted payment checkout payloads, applied Prisma migration history, and physical database/volume or repository names that have not yet been explicitly migrated.
+
+The canonical neighborhood/local-area field is `houma`. It is domain terminology and is not a legacy GOOL identifier; do not rename it to `hooma`.
+
+A branding cleanup must not be used as an excuse to redesign product behavior, rewrite migration history, reset databases, or rename persistent infrastructure without a migration plan.
 
 ## Payment V1
 
@@ -28,6 +37,8 @@ Cash acceptance is explicit on each applicable Event/Ride/Fundraiser and can inh
 
 An RSVP, RideMatch or FundContribution is not considered paid merely because its business status is active. `PaymentIntent` owns payment lifecycle and the business entity keeps a reference to that intent. Cash confirmation creates an auditable `CashSettlement`; Telegram Stars settlement is authoritative only from verified server-side Telegram updates.
 
+New Telegram Stars checkout payloads use the `hooma:stars:<paymentIntentId>` form. Existing persisted `gool:stars:*` payloads remain valid because pre-checkout and settlement resolve the exact stored provider checkout ID rather than enforcing a brand prefix. Do not rewrite historical payment rows merely for branding.
+
 ## Database identifiers and money
 
 - application IDs: `cuid()` text
@@ -36,11 +47,13 @@ An RSVP, RideMatch or FundContribution is not considered paid merely because its
 - wire money: decimal integer strings when serialized from `BigInt`
 - no floating-point money in persistence or settlement logic
 
+Physical PostgreSQL database names, connection targets, and persistent volume names are operational identities. They are not renamed merely because the application namespace changes. Any future physical rename requires an explicit data-preserving migration and rollback plan.
+
 ## Database migration baseline
 
-No synthetic or hand-written baseline migration is accepted just to make the repository look deployable. The initial migration must be generated from the checked-in Prisma schema against a fresh PostgreSQL database, reviewed, validated, and committed before deployment.
+The committed Prisma migrations are immutable once applied. Do not edit migration SQL or migration history for branding. Follow-up schema changes use new migrations.
 
-After a migration ships, it is immutable; follow-up changes use new migrations.
+Production uses `prisma migrate deploy`; never replace the migration chain with `prisma db push`.
 
 ## Runtime boundaries
 
@@ -52,6 +65,10 @@ Mini App -> central HTTP client -> controllers -> application services
 ```
 
 React never imports the database package. Controllers do not query Prisma. Application services do not import Prisma. Cross-domain operations are coordinated by application services through repository ports and one transaction handle.
+
+## User-facing management terminology
+
+`ADMIN` may remain an internal role/permission value where required by contracts and persistence. User-facing management surfaces use **Coach** / **Coach Control Room** rather than presenting Admin as the product role.
 
 ## Deployment topology
 
@@ -69,4 +86,4 @@ No deployment is considered ready until the clean-install release sequence passe
 
 Mini App feature routes are lazy-loaded so feature code is not forced into initial bootstrap. The production build enforces a 500 kB raw initial-JavaScript budget and a separate 1 MB raw lazy-feature budget. Large visualization/map dependencies are intentionally absent from the first-release Mini App unless a source-level feature requires them.
 
-The repository intentionally fails closed when the lockfile or real initial migration is missing, and high-severity dependency audit findings block the first production baseline.
+The repository intentionally fails closed when the lockfile or required migration/environment state is inconsistent, and high-severity dependency audit findings block the production baseline.
