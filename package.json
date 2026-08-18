@@ -2,6 +2,9 @@
   "name": "hooma",
   "version": "0.1.0",
   "private": true,
+  "overrides": {
+    "deepmerge-ts": "8.0.1"
+  },
   "packageManager": "npm@10.9.2",
   "workspaces": [
     "apps/*",
