@@ -1,4 +1,4 @@
-# GOOL Quality Gates
+# HOOMA Quality Gates
 
 This document defines the repository baseline. A command exiting successfully is necessary, but warnings and generated artifacts are also reviewed before the first GitHub push.
 
