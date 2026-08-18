@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { Prisma } from '@gool/database';
+import { Prisma } from '@hooma/database';
 import type { TransactionHandle } from '../../../application/unit-of-work.js';
 import type { DatabaseClient } from '../../../infrastructure/database/prisma.js';
 import { transactionClient } from '../../../infrastructure/database/unit-of-work.js';
@@ -406,7 +406,7 @@ export class PrismaPaymentRepository implements PaymentRepository {
             status: 'AWAITING_PAYMENT',
           },
         });
-        const payload = `gool:stars:${intent.id}`;
+        const payload = `hooma:stars:${intent.id}`;
         await tx.paymentAttempt.create({
           data: {
             paymentIntentId: intent.id,
