@@ -1,9 +1,11 @@
 name: HOOMA Rebrand Finalize
 
 on:
-  push:
+  pull_request:
     branches:
-      - chore/hooma-rebrand
+      - main
+    types:
+      - synchronize
 
 permissions:
   contents: write
