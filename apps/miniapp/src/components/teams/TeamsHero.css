@@ -1,2 +1,72 @@
-.teams-hero-pro{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:10rem;padding:.7rem 0 1.2rem}.teams-hero-pro h1{margin:0;color:var(--hv-white);font-size:clamp(3rem,12vw,4.6rem);line-height:.9;font-weight:950;letter-spacing:-.05em}.teams-hero-pro p{margin:1rem 0 0;color:var(--hv-muted);font-size:clamp(.85rem,3vw,1rem);line-height:1.6}.teams-hero-pro-art{position:relative;width:12rem;height:8.5rem;flex:0 0 auto;background:radial-gradient(ellipse at 50% 75%,rgba(36,224,70,.12),transparent 60%)}.teams-hero-pro-art>span{position:absolute;right:2.8rem;top:.45rem;width:5.5rem;height:6.2rem;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#2f8539,#123818);border:2px solid #76ef76;clip-path:polygon(50% 0,92% 17%,88% 70%,50% 100%,12% 70%,8% 17%);filter:drop-shadow(0 0 12px rgba(38,234,74,.18))}.teams-hero-pro-art>i{position:absolute;right:1.2rem;bottom:1rem;width:3.3rem;height:3.3rem;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle,#d7d1bd 0 45%,#151712 47% 100%);color:#12140f;box-shadow:0 7px 14px rgba(0,0,0,.5)}
-@media(max-width:520px){.teams-hero-pro-art{width:8rem;height:7rem}.teams-hero-pro-art>span{right:2rem;width:4.5rem;height:5rem}.teams-hero-pro-art>i{right:.5rem;width:2.8rem;height:2.8rem}}
+.teams-hero-pro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 10rem;
+  padding: 0.7rem 0 1.2rem;
+}
+.teams-hero-pro h1 {
+  margin: 0;
+  color: var(--hv-white);
+  font-size: clamp(3rem, 12vw, 4.6rem);
+  line-height: 0.9;
+  font-weight: 950;
+  letter-spacing: -0.05em;
+}
+.teams-hero-pro p {
+  margin: 1rem 0 0;
+  color: var(--hv-muted);
+  font-size: clamp(0.85rem, 3vw, 1rem);
+  line-height: 1.6;
+}
+.teams-hero-pro-art {
+  position: relative;
+  width: 12rem;
+  height: 8.5rem;
+  flex: 0 0 auto;
+  background: radial-gradient(ellipse at 50% 75%, rgba(36, 224, 70, 0.12), transparent 60%);
+}
+.teams-hero-pro-art > span {
+  position: absolute;
+  right: 2.8rem;
+  top: 0.45rem;
+  width: 5.5rem;
+  height: 6.2rem;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(145deg, #2f8539, #123818);
+  border: 2px solid #76ef76;
+  clip-path: polygon(50% 0, 92% 17%, 88% 70%, 50% 100%, 12% 70%, 8% 17%);
+  filter: drop-shadow(0 0 12px rgba(38, 234, 74, 0.18));
+}
+.teams-hero-pro-art > i {
+  position: absolute;
+  right: 1.2rem;
+  bottom: 1rem;
+  width: 3.3rem;
+  height: 3.3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, #d7d1bd 0 45%, #151712 47% 100%);
+  color: #12140f;
+  box-shadow: 0 7px 14px rgba(0, 0, 0, 0.5);
+}
+@media (max-width: 520px) {
+  .teams-hero-pro-art {
+    width: 8rem;
+    height: 7rem;
+  }
+  .teams-hero-pro-art > span {
+    right: 2rem;
+    width: 4.5rem;
+    height: 5rem;
+  }
+  .teams-hero-pro-art > i {
+    right: 0.5rem;
+    width: 2.8rem;
+    height: 2.8rem;
+  }
+}

@@ -1,1 +1,46 @@
-.pickup-match-card-pro{width:100%;padding:1rem;border:1px solid var(--hv-gold-line);border-radius:11px;background:linear-gradient(145deg,#0d0e0b,#080907);color:var(--hv-white);font:inherit;text-align:left}.pickup-match-card-top>span{color:var(--hv-lime);font-size:.63rem;font-weight:950;letter-spacing:.1em;text-transform:uppercase}.pickup-match-card-top strong{display:block;margin-top:.35rem;color:var(--hv-cream);font-size:1.1rem}.pickup-match-card-meta{display:grid;gap:.45rem;margin-top:.8rem;padding-top:.75rem;border-top:1px solid rgba(232,221,196,.12);color:var(--hv-muted);font-size:.74rem}.pickup-match-card-meta span{display:flex;align-items:center;gap:.4rem}.pickup-match-card-meta svg{color:var(--hv-white)}.pickup-match-card-cta{margin-top:.8rem;color:var(--hv-lime);font-size:.72rem;font-weight:900}
+.pickup-match-card-pro {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--hv-gold-line);
+  border-radius: 11px;
+  background: linear-gradient(145deg, #0d0e0b, #080907);
+  color: var(--hv-white);
+  font: inherit;
+  text-align: left;
+}
+.pickup-match-card-top > span {
+  color: var(--hv-lime);
+  font-size: 0.63rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.pickup-match-card-top strong {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--hv-cream);
+  font-size: 1.1rem;
+}
+.pickup-match-card-meta {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.8rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(232, 221, 196, 0.12);
+  color: var(--hv-muted);
+  font-size: 0.74rem;
+}
+.pickup-match-card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.pickup-match-card-meta svg {
+  color: var(--hv-white);
+}
+.pickup-match-card-cta {
+  margin-top: 0.8rem;
+  color: var(--hv-lime);
+  font-size: 0.72rem;
+  font-weight: 900;
+}

@@ -1,2 +1,33 @@
 import type { HoomaIconProps } from './types';
-export function LiveIcon({ className,size=24,title }:HoomaIconProps){return <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role={title?'img':undefined} aria-hidden={title?undefined:true}><title>{title}</title><rect x="3.4" y="5.2" width="17.2" height="12.3" rx="2" stroke="currentColor" strokeWidth="1.7"/><path d="m10 9 5 2.4-5 2.6V9ZM8 20h8" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+export function LiveIcon({ className, size = 24, title }: HoomaIconProps) {
+  return (
+    <svg
+      className={className}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      role={title ? 'img' : undefined}
+      aria-hidden={title ? undefined : true}
+    >
+      <title>{title}</title>
+      <rect
+        x="3.4"
+        y="5.2"
+        width="17.2"
+        height="12.3"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
+      <path
+        d="m10 9 5 2.4-5 2.6V9ZM8 20h8"
+        stroke="currentColor"
+        strokeWidth="1.55"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}

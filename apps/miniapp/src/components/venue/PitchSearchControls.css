@@ -1,2 +1,105 @@
-.pitch-search-controls-pro{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:.55rem;margin-top:.75rem}.pitch-search-controls-pro label,.pitch-search-controls-pro>button{min-height:3.2rem;display:flex;align-items:center;gap:.55rem;border:1px solid var(--hv-gold-line);border-radius:7px;background:#080906;color:var(--hv-white)}.pitch-search-controls-pro label{padding:0 .85rem}.pitch-search-controls-pro label svg{color:var(--hv-lime)}.pitch-search-controls-pro input{min-width:0;width:100%;border:0;outline:0;background:transparent;color:var(--hv-white);font:inherit}.pitch-search-controls-pro input::placeholder{color:#88847a}.pitch-search-controls-pro>button{padding:0 .8rem;font:inherit;font-weight:900;text-transform:uppercase;letter-spacing:.035em;cursor:pointer;touch-action:manipulation}.pitch-search-controls-pro>button:first-of-type{border-color:rgba(183,227,29,.55)}.pitch-search-controls-pro>button svg{color:var(--hv-lime);flex:0 0 auto}.pitch-search-controls-pro>button span{max-width:8.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pitch-search-controls-pro>button.pitch-filter-active{border-color:rgba(183,227,29,.72);background:linear-gradient(180deg,rgba(183,227,29,.08),#080906)}.pitch-filter-editor{grid-column:1/-1;min-height:3rem;display:flex;align-items:center;gap:.55rem;padding:.55rem .7rem;border:1px solid rgba(183,227,29,.34);border-radius:7px;background:#0b0c09}.pitch-filter-editor>svg{color:var(--hv-lime);flex:0 0 auto}.pitch-filter-editor>button{min-height:2.1rem;padding:0 .7rem;border:1px solid rgba(232,221,196,.2);border-radius:5px;background:#070806;color:var(--hv-cream);font:inherit;font-size:.72rem;font-weight:850;cursor:pointer}.pitch-filter-editor input{min-height:2.1rem}.pitch-search-main{grid-column:auto}
-@media(max-width:560px){.pitch-search-controls-pro{grid-template-columns:1fr 1fr}.pitch-search-main{grid-column:1/-1}.pitch-search-controls-pro>button span{max-width:7rem}}
+.pitch-search-controls-pro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+.pitch-search-controls-pro label,
+.pitch-search-controls-pro > button {
+  min-height: 3.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid var(--hv-gold-line);
+  border-radius: 7px;
+  background: #080906;
+  color: var(--hv-white);
+}
+.pitch-search-controls-pro label {
+  padding: 0 0.85rem;
+}
+.pitch-search-controls-pro label svg {
+  color: var(--hv-lime);
+}
+.pitch-search-controls-pro input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--hv-white);
+  font: inherit;
+}
+.pitch-search-controls-pro input::placeholder {
+  color: #88847a;
+}
+.pitch-search-controls-pro > button {
+  padding: 0 0.8rem;
+  font: inherit;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.035em;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.pitch-search-controls-pro > button:first-of-type {
+  border-color: rgba(183, 227, 29, 0.55);
+}
+.pitch-search-controls-pro > button svg {
+  color: var(--hv-lime);
+  flex: 0 0 auto;
+}
+.pitch-search-controls-pro > button span {
+  max-width: 8.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pitch-search-controls-pro > button.pitch-filter-active {
+  border-color: rgba(183, 227, 29, 0.72);
+  background: linear-gradient(180deg, rgba(183, 227, 29, 0.08), #080906);
+}
+.pitch-filter-editor {
+  grid-column: 1/-1;
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid rgba(183, 227, 29, 0.34);
+  border-radius: 7px;
+  background: #0b0c09;
+}
+.pitch-filter-editor > svg {
+  color: var(--hv-lime);
+  flex: 0 0 auto;
+}
+.pitch-filter-editor > button {
+  min-height: 2.1rem;
+  padding: 0 0.7rem;
+  border: 1px solid rgba(232, 221, 196, 0.2);
+  border-radius: 5px;
+  background: #070806;
+  color: var(--hv-cream);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+.pitch-filter-editor input {
+  min-height: 2.1rem;
+}
+.pitch-search-main {
+  grid-column: auto;
+}
+@media (max-width: 560px) {
+  .pitch-search-controls-pro {
+    grid-template-columns: 1fr 1fr;
+  }
+  .pitch-search-main {
+    grid-column: 1/-1;
+  }
+  .pitch-search-controls-pro > button span {
+    max-width: 7rem;
+  }
+}

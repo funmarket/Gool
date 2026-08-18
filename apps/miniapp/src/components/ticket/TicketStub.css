@@ -5,34 +5,39 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: .75rem .25rem;
+  padding: 0.75rem 0.25rem;
   background:
-    radial-gradient(circle at 50% 12%, rgba(196,154,74,.13), transparent 28%),
-    linear-gradient(180deg,#10100e,#070806 62%,#0d0d0b);
-  border-left: 1.5px dashed rgba(130,92,31,.78);
+    radial-gradient(circle at 50% 12%, rgba(196, 154, 74, 0.13), transparent 28%),
+    linear-gradient(180deg, #10100e, #070806 62%, #0d0d0b);
+  border-left: 1.5px dashed rgba(130, 92, 31, 0.78);
   color: #c49a4a;
   position: relative;
   overflow: hidden;
-  box-shadow: inset 5px 0 13px rgba(0,0,0,.28);
+  box-shadow: inset 5px 0 13px rgba(0, 0, 0, 0.28);
 }
 .hooma-ticket-stub::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: .1;
-  background-image: radial-gradient(rgba(196,154,74,.7) .45px,transparent .7px);
+  opacity: 0.1;
+  background-image: radial-gradient(rgba(196, 154, 74, 0.7) 0.45px, transparent 0.7px);
   background-size: 8px 8px;
 }
 .hooma-ticket-stub > span {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
   font-family: var(--hv-font-display);
-  font-size: .72rem;
-  letter-spacing: .12em;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   line-height: 1;
   position: relative;
   z-index: 1;
 }
-.hooma-ticket-stub-icon { position: relative; z-index: 1; display: grid; place-items: center; }
+.hooma-ticket-stub-icon {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+}
