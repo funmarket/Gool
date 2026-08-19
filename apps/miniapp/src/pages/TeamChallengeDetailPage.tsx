@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChallengeCard, type ChallengeCardTeam } from '../components/teams/ChallengeCard';
-import { get } from '../shared/api/http-client';
+import { getTeamChallenge, teamQueryKeys } from '../features/teams/api';
 import { eventDate } from '../lib/format';
-import type { TeamChallengeDetailItem, TeamDetailItem } from '../types/domain';
+import type { TeamDetailItem } from '../types/domain';
 
 function cardTeam(team: TeamDetailItem): ChallengeCardTeam {
   const lineup = team.lineups?.[0];
@@ -28,8 +28,8 @@ export function TeamChallengeDetailPage() {
   const { challengeId = '' } = useParams();
   const navigate = useNavigate();
   const challengeQuery = useQuery({
-    queryKey: ['team-challenge', challengeId],
-    queryFn: () => get<TeamChallengeDetailItem>(`/api/v1/teams/challenges/${challengeId}`),
+    queryKey: teamQueryKeys.challengeDetail(challengeId),
+    queryFn: () => getTeamChallenge(challengeId),
     enabled: Boolean(challengeId),
   });
   const challenge = challengeQuery.data;
