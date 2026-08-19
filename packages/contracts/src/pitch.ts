@@ -45,7 +45,7 @@ const optionalEmailSchema = z.preprocess(
 );
 
 function validateCoordinatePair(
-  value: { latitude?: number; longitude?: number },
+  value: { latitude?: number | undefined; longitude?: number | undefined },
   ctx: z.RefinementCtx,
 ) {
   const hasLatitude = value.latitude !== undefined;
