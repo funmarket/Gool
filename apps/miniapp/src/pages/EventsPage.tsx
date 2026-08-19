@@ -34,7 +34,11 @@ export function EventsPage() {
         <div className="vintage-empty mt-5">
           <strong>No community selected.</strong>
           <small>Create or join a HOOMA community to see Play and Watch events.</small>
-          <button type="button" className="vintage-outline-cta mt-4" onClick={() => navigate('/community/new')}>
+          <button
+            type="button"
+            className="vintage-outline-cta mt-4"
+            onClick={() => navigate('/community/new')}
+          >
             Create or join
           </button>
         </div>
