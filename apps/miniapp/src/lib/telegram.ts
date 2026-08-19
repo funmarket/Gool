@@ -5,6 +5,7 @@ import {
   locationManager,
   mainButton,
   miniApp,
+  retrieveRawInitData,
   themeParams,
   viewport,
 } from '@tma.js/sdk-react';
@@ -28,6 +29,14 @@ export async function bootTelegram() {
     if (import.meta.env.DEV) {
       console.info('Telegram SDK running in browser fallback mode', error);
     }
+  }
+}
+
+export function hasTelegramLaunchData() {
+  try {
+    return Boolean(retrieveRawInitData());
+  } catch {
+    return false;
   }
 }
 
