@@ -22,7 +22,6 @@ type ThemeContextValue = {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 const STORAGE_KEY = 'hooma-theme';
-const LEGACY_STORAGE_KEY = 'gool-theme';
 
 function telegramTheme(): 'dark' | 'light' {
   try {
@@ -59,16 +58,7 @@ function validStoredTheme(value: string | null): ThemeMode | null {
 }
 
 function storedTheme(): ThemeMode {
-  const current = validStoredTheme(localStorage.getItem(STORAGE_KEY));
-  if (current) return current;
-
-  const legacy = validStoredTheme(localStorage.getItem(LEGACY_STORAGE_KEY));
-  if (legacy) {
-    localStorage.setItem(STORAGE_KEY, legacy);
-    return legacy;
-  }
-
-  return 'telegram';
+  return validStoredTheme(localStorage.getItem(STORAGE_KEY)) ?? 'telegram';
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
