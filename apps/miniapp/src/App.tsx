@@ -134,6 +134,7 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={routeElement(<HomePage />)} />
+          <Route path="/telegram" element={routeElement(<HomePage />)} />
           <Route path="/events" element={routeElement(<EventsPage />)} />
           <Route path="/play" element={routeElement(<PlayPage />)} />
           <Route path="/places" element={routeElement(<PlacesPage />)} />
