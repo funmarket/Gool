@@ -89,14 +89,20 @@ export class PitchService {
       );
     }
     pitchPublicationSchema.parse(publicationCandidate(current));
-    const submitted = await this.repo.transitionOwned(userId, pitchId, ['DRAFT', 'REJECTED'], {
-      status: 'PENDING_REVIEW',
-      submittedAt: new Date(),
-      publishedAt: null,
-      reviewedAt: null,
-      reviewedByUserId: null,
-      rejectionReason: null,
-    });
+    const submitted = await this.repo.transitionOwned(
+      userId,
+      pitchId,
+      ['DRAFT', 'REJECTED'],
+      current.updatedAt,
+      {
+        status: 'PENDING_REVIEW',
+        submittedAt: new Date(),
+        publishedAt: null,
+        reviewedAt: null,
+        reviewedByUserId: null,
+        rejectionReason: null,
+      },
+    );
     if (!submitted) {
       throw new AppError(
         409,
@@ -108,11 +114,17 @@ export class PitchService {
   }
 
   async deactivate(userId: string, pitchId: string) {
-    await this.getOwned(userId, pitchId);
-    const deactivated = await this.repo.transitionOwned(userId, pitchId, ['PUBLISHED'], {
-      status: 'INACTIVE',
-      publishedAt: null,
-    });
+    const current = await this.getOwned(userId, pitchId);
+    const deactivated = await this.repo.transitionOwned(
+      userId,
+      pitchId,
+      ['PUBLISHED'],
+      current.updatedAt,
+      {
+        status: 'INACTIVE',
+        publishedAt: null,
+      },
+    );
     if (!deactivated) {
       throw new AppError(
         409,
@@ -133,14 +145,20 @@ export class PitchService {
       );
     }
     pitchPublicationSchema.parse(publicationCandidate(current));
-    const reactivated = await this.repo.transitionOwned(userId, pitchId, ['INACTIVE'], {
-      status: 'PENDING_REVIEW',
-      submittedAt: new Date(),
-      publishedAt: null,
-      reviewedAt: null,
-      reviewedByUserId: null,
-      rejectionReason: null,
-    });
+    const reactivated = await this.repo.transitionOwned(
+      userId,
+      pitchId,
+      ['INACTIVE'],
+      current.updatedAt,
+      {
+        status: 'PENDING_REVIEW',
+        submittedAt: new Date(),
+        publishedAt: null,
+        reviewedAt: null,
+        reviewedByUserId: null,
+        rejectionReason: null,
+      },
+    );
     if (!reactivated) {
       throw new AppError(
         409,
