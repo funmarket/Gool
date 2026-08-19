@@ -2,15 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { CalendarDays, MapPin, Trophy } from 'lucide-react';
 import { TeamLineupPitch } from '../components/teams/TeamLineupPitch';
-import { get } from '../shared/api/http-client';
+import { getTeamGame, teamQueryKeys } from '../features/teams/api';
 import { eventDate } from '../lib/format';
-import type { TeamGameDetailItem } from '../types/domain';
 
 export function TeamGameDetailPage() {
   const { gameId = '' } = useParams();
   const gameQuery = useQuery({
-    queryKey: ['team-game', gameId],
-    queryFn: () => get<TeamGameDetailItem>(`/api/v1/teams/games/${gameId}`),
+    queryKey: teamQueryKeys.gameDetail(gameId),
+    queryFn: () => getTeamGame(gameId),
     enabled: Boolean(gameId),
   });
   const game = gameQuery.data;
