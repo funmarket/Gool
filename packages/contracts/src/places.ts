@@ -35,8 +35,8 @@ export const placeCreateSchema = z
     address: z.string().trim().min(2).max(240),
     city: z.string().trim().max(100).optional(),
     houma: z.string().trim().max(100).optional(),
-    latitude: latitudeSchema,
-    longitude: longitudeSchema,
+    latitude: latitudeSchema.optional(),
+    longitude: longitudeSchema.optional(),
     phone: z.string().trim().max(40).optional(),
     email: z.string().trim().email().max(160).optional(),
     websiteUrl: optionalUrl,
@@ -55,6 +55,15 @@ export const placeCreateSchema = z
       .optional(),
   })
   .superRefine((input, ctx) => {
+    const hasLatitude = input.latitude !== undefined;
+    const hasLongitude = input.longitude !== undefined;
+    if (hasLatitude !== hasLongitude) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Latitude and longitude must be provided together when location coordinates are available.',
+        path: [hasLatitude ? 'longitude' : 'latitude'],
+      });
+    }
     if (!input.phone && !input.email) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
