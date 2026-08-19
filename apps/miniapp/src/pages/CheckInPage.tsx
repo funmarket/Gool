@@ -1,24 +1,17 @@
 import { useMutation } from '@tanstack/react-query';
 import { CheckCircle2, LocateFixed, Ticket } from 'lucide-react';
 import { useParams } from 'react-router-dom';
-import { post } from '../shared/api/http-client';
+import { checkInToWatchEvent } from '../features/watch/api';
 import { requestTelegramLocation, notify } from '../lib/telegram';
-type Result = {
-  unlockedDeals: Array<{
-    id: string;
-    title: string;
-    description?: string | null;
-    redemptionCode?: string | null;
-  }>;
-};
+
 export function CheckInPage() {
   const { eventId = '' } = useParams();
   const m = useMutation({
     mutationFn: async () => {
-      const l = await requestTelegramLocation();
-      return post<Result>(`/api/v1/watch/events/${eventId}/check-in`, {
-        latitude: l.latitude,
-        longitude: l.longitude,
+      const location = await requestTelegramLocation();
+      return checkInToWatchEvent(eventId, {
+        latitude: location.latitude,
+        longitude: location.longitude,
       });
     },
     onSuccess: () => notify('success'),
@@ -46,17 +39,17 @@ export function CheckInPage() {
           </div>
           <div className="mt-3 grid gap-3">
             {m.data.unlockedDeals.length ? (
-              m.data.unlockedDeals.map((d) => (
-                <div className="surface-card p-4" key={d.id}>
+              m.data.unlockedDeals.map((deal) => (
+                <div className="surface-card p-4" key={deal.id}>
                   <Ticket style={{ color: 'var(--accent)' }} />
-                  <div className="mt-2 font-black">{d.title}</div>
-                  <div className="text-sm muted">{d.description}</div>
-                  {d.redemptionCode && (
+                  <div className="mt-2 font-black">{deal.title}</div>
+                  <div className="text-sm muted">{deal.description}</div>
+                  {deal.redemptionCode && (
                     <div
                       className="mt-3 rounded-xl border border-dashed p-3 text-center font-mono font-black"
                       style={{ borderColor: 'var(--accent)' }}
                     >
-                      {d.redemptionCode}
+                      {deal.redemptionCode}
                     </div>
                   )}
                 </div>
