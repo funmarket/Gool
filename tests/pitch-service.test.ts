@@ -45,7 +45,8 @@ function listing(status: PitchListingStatus): PitchOwnerRecord {
 class FakePitchRepository implements PitchRepository {
   constructor(public current: PitchOwnerRecord) {}
 
-  listPublic(_input: PitchListQuery) {
+  listPublic(input: PitchListQuery) {
+    void input;
     return Promise.resolve({ items: [], nextCursor: null });
   }
 
@@ -53,7 +54,9 @@ class FakePitchRepository implements PitchRepository {
     return Promise.resolve(this.current.status === 'PUBLISHED' ? this.current : null);
   }
 
-  listOwned(_userId: string, _input: PitchOwnerListQuery) {
+  listOwned(userId: string, input: PitchOwnerListQuery) {
+    void userId;
+    void input;
     return Promise.resolve({ items: [this.current], nextCursor: null });
   }
 
@@ -63,22 +66,27 @@ class FakePitchRepository implements PitchRepository {
     );
   }
 
-  create(_userId: string, _input: PitchCreateInput) {
+  create(userId: string, input: PitchCreateInput) {
+    void userId;
+    void input;
     return Promise.resolve(this.current);
   }
 
   updateOwned(
-    _userId: string,
-    _pitchId: string,
+    userId: string,
+    pitchId: string,
     allowedStatuses: PitchListingStatus[],
-    _input: PitchUpdateInput,
+    input: PitchUpdateInput,
   ) {
+    void userId;
+    void pitchId;
+    void input;
     return Promise.resolve(allowedStatuses.includes(this.current.status) ? this.current : null);
   }
 
   transitionOwned(
-    _userId: string,
-    _pitchId: string,
+    userId: string,
+    pitchId: string,
     fromStatuses: PitchListingStatus[],
     data: {
       status: PitchListingStatus;
@@ -89,6 +97,8 @@ class FakePitchRepository implements PitchRepository {
       rejectionReason?: string | null;
     },
   ) {
+    void userId;
+    void pitchId;
     if (!fromStatuses.includes(this.current.status)) return Promise.resolve(null);
     this.current = { ...this.current, ...data, updatedAt: new Date() };
     return Promise.resolve(this.current);
