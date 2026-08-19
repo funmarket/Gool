@@ -33,11 +33,11 @@ export const placeCreateSchema = z
     category: z.enum(placeCategories).default('Sports cafe & lounge'),
     description: z.string().trim().max(800).optional(),
     address: z.string().trim().min(2).max(240),
-    city: z.string().trim().max(100).optional(),
-    houma: z.string().trim().max(100).optional(),
+    city: z.string().trim().min(1).max(100),
+    houma: z.string().trim().min(1).max(100),
     latitude: latitudeSchema.optional(),
     longitude: longitudeSchema.optional(),
-    phone: z.string().trim().max(40).optional(),
+    phone: z.string().trim().min(1).max(40),
     email: z.string().trim().email().max(160).optional(),
     websiteUrl: optionalUrl,
     photoUrl: requiredUrl,
@@ -62,13 +62,6 @@ export const placeCreateSchema = z
         code: z.ZodIssueCode.custom,
         message: 'Latitude and longitude must be provided together when location coordinates are available.',
         path: [hasLatitude ? 'longitude' : 'latitude'],
-      });
-    }
-    if (!input.phone && !input.email) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Provide at least one public contact method.',
-        path: ['phone'],
       });
     }
   });
