@@ -1,0 +1,81 @@
+enum AdminNotificationType {
+  WATCH_PLACE_REVIEW
+  PITCH_LISTING_REVIEW
+  USER_MODERATION
+  COMMUNITY_MODERATION
+}
+
+enum AdminNotificationStatus {
+  UNREAD
+  READ
+  RESOLVED
+}
+
+enum ModerationTargetType {
+  USER
+  COMMUNITY
+}
+
+enum DisciplinaryCard {
+  YELLOW
+  RED
+}
+
+enum ListingReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model PlaceReview {
+  id                String              @id @default(cuid())
+  placeId           String
+  submittedByUserId String
+  status            ListingReviewStatus @default(PENDING)
+  submittedAt       DateTime            @default(now())
+  reviewedAt        DateTime?
+  reviewedByUserId  String?
+  rejectionReason   String?             @db.VarChar(500)
+
+  @@index([placeId, status, submittedAt])
+  @@index([status, submittedAt])
+  @@index([reviewedByUserId])
+}
+
+model AdminNotification {
+  id               String                  @id @default(cuid())
+  type             AdminNotificationType
+  status           AdminNotificationStatus @default(UNREAD)
+  entityType       String                  @db.VarChar(64)
+  entityId         String
+  title            String                  @db.VarChar(160)
+  createdAt        DateTime                @default(now())
+  readAt           DateTime?
+  resolvedAt       DateTime?
+  resolvedByUserId String?
+
+  @@index([status, createdAt])
+  @@index([type, status, createdAt])
+  @@index([entityType, entityId])
+}
+
+model ModerationAction {
+  id                    String               @id @default(cuid())
+  targetType            ModerationTargetType
+  targetUserId          String?
+  targetCommunityId     String?
+  card                  DisciplinaryCard
+  reason                String               @db.VarChar(1000)
+  issuedByUserId        String
+  issuedAt              DateTime             @default(now())
+  expiresAt             DateTime
+  escalatedFromActionId String?
+  revokedAt             DateTime?
+  revokedByUserId       String?
+  revocationReason      String?              @db.VarChar(500)
+
+  @@index([targetUserId, issuedAt])
+  @@index([targetCommunityId, issuedAt])
+  @@index([card, expiresAt, revokedAt])
+  @@index([issuedByUserId, issuedAt])
+}
