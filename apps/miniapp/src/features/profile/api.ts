@@ -1,4 +1,4 @@
-import type { ProfileUpdateInput } from '@hooma/contracts';
+import { profileUpdateSchema } from '@hooma/contracts';
 import { get, patch } from '../../shared/api/http-client';
 import type { Club, Me } from '../../types/domain';
 
@@ -11,8 +11,8 @@ export function getCurrentProfile() {
   return get<Me>('/api/v1/me');
 }
 
-export function updateCurrentProfile(input: ProfileUpdateInput) {
-  return patch<Me>('/api/v1/me/profile', input);
+export function updateCurrentProfile(input: unknown) {
+  return patch<Me>('/api/v1/me/profile', profileUpdateSchema.parse(input));
 }
 
 export function listFavoriteClubOptions() {
