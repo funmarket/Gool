@@ -45,10 +45,7 @@ const textExtensions = new Set([
 ]);
 
 const legacyProductToken = String.fromCharCode(103, 111, 111, 108);
-const legacyProductPattern = new RegExp(
-  `(^|[^a-z0-9])${legacyProductToken}($|[^a-z0-9])`,
-  'i',
-);
+const legacyProductPattern = new RegExp(`(^|[^a-z0-9])${legacyProductToken}($|[^a-z0-9])`, 'i');
 function hasLegacyProductIdentifier(value) {
   return legacyProductPattern.test(value);
 }
@@ -166,4 +163,6 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('Architecture check passed: HOOMA naming and Cash + Telegram Stars boundaries are intact.');
+console.log(
+  'Architecture check passed: HOOMA naming and Cash + Telegram Stars boundaries are intact.',
+);
