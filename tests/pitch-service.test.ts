@@ -101,7 +101,9 @@ class FakePitchRepository implements PitchRepository {
     void userId;
     void pitchId;
     if (!fromStatuses.includes(this.current.status)) return Promise.resolve(null);
-    if (this.current.updatedAt.getTime() !== expectedUpdatedAt.getTime()) return Promise.resolve(null);
+    if (this.current.updatedAt.getTime() !== expectedUpdatedAt.getTime()) {
+      return Promise.resolve(null);
+    }
     this.current = { ...this.current, ...data, updatedAt: new Date() };
     return Promise.resolve(this.current);
   }
