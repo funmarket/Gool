@@ -4,7 +4,19 @@ import { buildApp } from './app.js';
 
 const container = buildContainer();
 const app = buildApp(container);
-const server = app.listen(env.PORT, () => console.log(`HOOMA API listening on :${env.PORT}`));
+const server = app.listen(env.PORT, () => {
+  console.log(`HOOMA API listening on :${env.PORT}`);
+
+  if (env.APP_BASE_URL) {
+    const telegramWebAppUrl = `${env.APP_BASE_URL.replace(/\/$/, '')}/telegram`;
+    void container.telegram
+      .setChatMenuButton(telegramWebAppUrl)
+      .then(() => console.log(`Telegram Web App menu configured for ${telegramWebAppUrl}`))
+      .catch((error) => {
+        console.error('Telegram Web App menu configuration failed', error);
+      });
+  }
+});
 
 async function shutdown(signal: string) {
   console.log(`HOOMA API received ${signal}; shutting down.`);
