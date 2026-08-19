@@ -5,11 +5,12 @@ import { WatchHero } from '../components/hero/WatchHero';
 import { WatchCreateButton } from '../components/watch/WatchCreateButton';
 import { WatchSearchControls } from '../components/watch/WatchSearchControls';
 import { VintageCollectorTicket } from '../components/ticket/VintageCollectorTicket';
+import { listWatchClubs, watchQueryKeys } from '../features/watch/api';
 import { get } from '../shared/api/http-client';
 import { useCommunity } from '../providers/CommunityProvider';
 import { watchEventMatchesFilters } from '../lib/watch-event-filters';
 import { isOfficialWatchPlace, watchPlaceLocation } from '../lib/watch-place-display';
-import type { Club, CursorPage, EventItem } from '../types/domain';
+import type { CursorPage, EventItem } from '../types/domain';
 
 function dateParts(value: string) {
   const date = new Date(value);
@@ -26,8 +27,8 @@ export function WatchPage() {
   const [search, setSearch] = useState('');
 
   const clubs = useQuery({
-    queryKey: ['clubs'],
-    queryFn: () => get<Club[]>('/api/v1/watch/clubs?limit=100'),
+    queryKey: watchQueryKeys.clubs(),
+    queryFn: () => listWatchClubs(100),
   });
   const events = useQuery({
     queryKey: ['events', active?.id, 'WATCH'],

@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { get, post } from '../shared/api/http-client';
+import { listWatchClubs, listWatchHubs, watchQueryKeys } from '../features/watch/api';
+import { post } from '../shared/api/http-client';
 import { majorToMinor, moneyInputStep } from '../lib/format';
 import { notify } from '../lib/telegram';
 import { useCommunity } from '../providers/CommunityProvider';
-import type { Club, EventItem, FanHub } from '../types/domain';
+import type { EventItem } from '../types/domain';
 
 export function CreateEventPage() {
   const { active } = useCommunity();
@@ -36,13 +37,13 @@ export function CreateEventPage() {
   const [fanHubId, setFanHubId] = useState('');
 
   const clubs = useQuery({
-    queryKey: ['clubs'],
-    queryFn: () => get<Club[]>('/api/v1/watch/clubs?limit=100'),
+    queryKey: watchQueryKeys.clubs(),
+    queryFn: () => listWatchClubs(100),
     enabled: type === 'WATCH',
   });
   const fanHubs = useQuery({
-    queryKey: ['watch-hubs', active?.id],
-    queryFn: () => get<FanHub[]>(`/api/v1/watch/hubs?communityId=${active?.id}`),
+    queryKey: watchQueryKeys.hubs(active?.id),
+    queryFn: () => listWatchHubs(active!.id),
     enabled: type === 'WATCH' && Boolean(active),
   });
 
