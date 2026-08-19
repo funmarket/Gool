@@ -161,6 +161,8 @@ export const pitchRejectSchema = z.object({
   reason: z.string().trim().min(2).max(500),
 });
 
+export type PitchVenueType = z.infer<typeof pitchVenueTypeSchema>;
+export type PitchListingStatus = z.infer<typeof pitchListingStatusSchema>;
 export type PitchCreateInput = z.infer<typeof pitchCreateSchema>;
 export type PitchCreateRequest = z.input<typeof pitchCreateSchema>;
 export type PitchUpdateInput = z.infer<typeof pitchUpdateSchema>;
