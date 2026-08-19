@@ -9,11 +9,7 @@ import {
 } from 'react';
 import { themeParams } from '@tma.js/sdk-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  getCurrentProfile,
-  profileQueryKeys,
-  updateCurrentProfile,
-} from '../features/profile/api';
+import { getCurrentProfile, profileQueryKeys, updateCurrentProfile } from '../features/profile/api';
 
 type ThemeMode = 'telegram' | 'dark' | 'light';
 type ThemeContextValue = {
