@@ -81,8 +81,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const resolved = mode === 'telegram' ? telegramResolved : mode;
 
   const persistTheme = useMutation({
-    mutationFn: (next: ThemeMode) =>
-      updateCurrentProfile({ themeOverride: toServerTheme(next) }),
+    mutationFn: (next: ThemeMode) => updateCurrentProfile({ themeOverride: toServerTheme(next) }),
     onSuccess: (updated) => queryClient.setQueryData(profileQueryKeys.me(), updated),
   });
 
