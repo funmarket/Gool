@@ -32,6 +32,16 @@ export class HttpTelegramBotApi implements TelegramBotApi {
     return payload.result;
   }
 
+  async setChatMenuButton(webAppUrl: string) {
+    await this.call<boolean>('setChatMenuButton', {
+      menu_button: {
+        type: 'web_app',
+        text: 'Open HOOMA',
+        web_app: { url: webAppUrl },
+      },
+    });
+  }
+
   createStarsInvoiceLink(input: {
     title: string;
     description: string;
