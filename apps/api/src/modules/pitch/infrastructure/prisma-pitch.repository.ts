@@ -238,6 +238,7 @@ export class PrismaPitchRepository implements PitchRepository {
     userId: string,
     pitchId: string,
     fromStatuses: PitchListingStatus[],
+    expectedUpdatedAt: Date,
     data: {
       status: PitchListingStatus;
       submittedAt?: Date | null;
@@ -253,6 +254,7 @@ export class PrismaPitchRepository implements PitchRepository {
         ownerUserId: userId,
         deletedAt: null,
         status: { in: fromStatuses },
+        updatedAt: expectedUpdatedAt,
       },
       data,
     });
