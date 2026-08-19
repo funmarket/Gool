@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { placeCategories } from '@hooma/contracts';
 import { useNavigate } from 'react-router-dom';
-import { notify, requestTelegramLocation } from '../lib/telegram';
+import { notify } from '../lib/telegram';
 import { post } from '../shared/api/http-client';
 import { useCommunity } from '../providers/CommunityProvider';
 import type { Place } from '../types/domain';
 
 type MenuDraft = { name: string; priceLabel: string };
+type RequiredField = 'community' | 'name' | 'photoUrl' | 'address' | 'city' | 'houma' | 'phone';
+type FieldErrors = Partial<Record<RequiredField, string>>;
 
 const emptyMenu: MenuDraft[] = [
   { name: '', priceLabel: '' },
@@ -25,8 +27,6 @@ export function AddPlacePage() {
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
   const [houma, setHouma] = useState('');
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
@@ -34,16 +34,29 @@ export function AddPlacePage() {
   const [contactName, setContactName] = useState('');
   const [claimNote, setClaimNote] = useState('');
   const [menuItems, setMenuItems] = useState<MenuDraft[]>(emptyMenu);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
-  const canSubmit = Boolean(
-    active &&
-    name.trim().length >= 2 &&
-    address.trim().length >= 2 &&
-    latitude &&
-    longitude &&
-    photoUrl.trim() &&
-    (phone.trim() || email.trim()),
-  );
+  const clearFieldError = (field: RequiredField) => {
+    setFieldErrors((current) => {
+      if (!current[field]) return current;
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+  };
+
+  const validateRequiredFields = () => {
+    const errors: FieldErrors = {};
+    if (!active) errors.community = 'Select or create a HOOMA community before adding a Place.';
+    if (name.trim().length < 2) errors.name = 'Enter the venue or business name.';
+    if (!photoUrl.trim()) errors.photoUrl = 'Add a real venue photo.';
+    if (address.trim().length < 2) errors.address = 'Enter the full real address.';
+    if (!city.trim()) errors.city = 'Enter the city.';
+    if (!houma.trim()) errors.houma = 'Enter the Houma.';
+    if (!phone.trim()) errors.phone = 'Enter the public phone number.';
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const create = useMutation({
     mutationFn: () =>
@@ -53,11 +66,9 @@ export function AddPlacePage() {
         category: category.trim(),
         description: description.trim() || undefined,
         address: address.trim(),
-        city: city.trim() || undefined,
-        houma: houma.trim() || undefined,
-        latitude: Number(latitude),
-        longitude: Number(longitude),
-        phone: phone.trim() || undefined,
+        city: city.trim(),
+        houma: houma.trim(),
+        phone: phone.trim(),
         email: email.trim() || undefined,
         websiteUrl: websiteUrl.trim() || undefined,
         photoUrl: photoUrl.trim(),
@@ -71,7 +82,7 @@ export function AddPlacePage() {
         ownerClaim: {
           businessName: name.trim(),
           contactName: contactName.trim() || undefined,
-          contactPhone: phone.trim() || undefined,
+          contactPhone: phone.trim(),
           contactEmail: email.trim() || undefined,
           note: claimNote.trim() || undefined,
         },
@@ -83,15 +94,12 @@ export function AddPlacePage() {
     onError: () => notify('error'),
   });
 
-  const handleCurrentLocation = async () => {
-    try {
-      const location = await requestTelegramLocation();
-      setLatitude(String(location.latitude));
-      setLongitude(String(location.longitude));
-      notify('success');
-    } catch {
+  const handleSubmit = () => {
+    if (!validateRequiredFields()) {
       notify('error');
+      return;
     }
+    create.mutate();
   };
 
   const updateMenu = (index: number, field: keyof MenuDraft, value: string) => {
@@ -100,22 +108,31 @@ export function AddPlacePage() {
     );
   };
 
+  const fieldError = (field: RequiredField) =>
+    fieldErrors[field] ? <span className="mt-1 block text-xs" role="alert">{fieldErrors[field]}</span> : null;
+
   return (
     <div className="page-shell vintage-page">
       <div className="section-kicker">Business owner</div>
       <h1 className="section-title">Add a Place</h1>
       <div className="surface-card mt-5 p-4">
         <div className="grid gap-3">
+          {fieldError('community')}
           <label className="text-xs font-black">
-            Business name
+            Business name *
             <input
               className="hooma-input mt-1"
               value={name}
-              onChange={(event) => setName(event.target.value)}
+              onChange={(event) => {
+                setName(event.target.value);
+                clearFieldError('name');
+              }}
+              aria-invalid={Boolean(fieldErrors.name)}
             />
+            {fieldError('name')}
           </label>
           <label className="text-xs font-black">
-            Type
+            Type *
             <select
               className="hooma-input mt-1"
               value={category}
@@ -135,9 +152,14 @@ export function AddPlacePage() {
             <input
               className="hooma-input mt-1"
               value={photoUrl}
-              onChange={(event) => setPhotoUrl(event.target.value)}
+              onChange={(event) => {
+                setPhotoUrl(event.target.value);
+                clearFieldError('photoUrl');
+              }}
               placeholder="https://..."
+              aria-invalid={Boolean(fieldErrors.photoUrl)}
             />
+            {fieldError('photoUrl')}
           </label>
           <label className="text-xs font-black">
             About
@@ -148,77 +170,67 @@ export function AddPlacePage() {
             />
           </label>
           <label className="text-xs font-black">
-            Address
+            Full address *
             <input
               className="hooma-input mt-1"
               value={address}
-              onChange={(event) => setAddress(event.target.value)}
+              onChange={(event) => {
+                setAddress(event.target.value);
+                clearFieldError('address');
+              }}
+              aria-invalid={Boolean(fieldErrors.address)}
             />
+            {fieldError('address')}
           </label>
           <div className="grid grid-cols-2 gap-3">
             <label className="text-xs font-black">
-              City
+              City *
               <input
                 className="hooma-input mt-1"
                 value={city}
-                onChange={(event) => setCity(event.target.value)}
+                onChange={(event) => {
+                  setCity(event.target.value);
+                  clearFieldError('city');
+                }}
+                aria-invalid={Boolean(fieldErrors.city)}
               />
+              {fieldError('city')}
             </label>
             <label className="text-xs font-black">
-              Houma
+              Houma *
               <input
                 className="hooma-input mt-1"
                 value={houma}
-                onChange={(event) => setHouma(event.target.value)}
+                onChange={(event) => {
+                  setHouma(event.target.value);
+                  clearFieldError('houma');
+                }}
+                aria-invalid={Boolean(fieldErrors.houma)}
               />
+              {fieldError('houma')}
             </label>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <label className="text-xs font-black">
-              Latitude
-              <input
-                className="hooma-input mt-1"
-                value={latitude}
-                onChange={(event) => setLatitude(event.target.value)}
-              />
-            </label>
-            <label className="text-xs font-black">
-              Longitude
-              <input
-                className="hooma-input mt-1"
-                value={longitude}
-                onChange={(event) => setLongitude(event.target.value)}
-              />
-            </label>
-          </div>
-          <button
-            type="button"
-            className="ghost-button"
-            onClick={() => void handleCurrentLocation()}
-          >
-            Use current location
-          </button>
-          <div className="grid grid-cols-2 gap-3">
-            <label className="text-xs font-black">
-              Phone *
-              <input
-                className="hooma-input mt-1"
-                value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-              />
-            </label>
-            <label className="text-xs font-black">
-              Email *
-              <input
-                className="hooma-input mt-1"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-              />
-            </label>
-          </div>
-          <p className="text-xs leading-5 muted">
-            Provide at least one public contact method: phone or email.
-          </p>
+          <label className="text-xs font-black">
+            Public phone *
+            <input
+              className="hooma-input mt-1"
+              value={phone}
+              onChange={(event) => {
+                setPhone(event.target.value);
+                clearFieldError('phone');
+              }}
+              aria-invalid={Boolean(fieldErrors.phone)}
+            />
+            {fieldError('phone')}
+          </label>
+          <label className="text-xs font-black">
+            Public email
+            <input
+              className="hooma-input mt-1"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+          </label>
           <label className="text-xs font-black">
             Website
             <input
@@ -264,10 +276,10 @@ export function AddPlacePage() {
           </label>
           <button
             className="accent-button mt-2 w-full"
-            disabled={!canSubmit || create.isPending}
-            onClick={() => create.mutate()}
+            disabled={create.isPending}
+            onClick={handleSubmit}
           >
-            Add place
+            {create.isPending ? 'Adding place…' : 'Add place'}
           </button>
         </div>
       </div>
