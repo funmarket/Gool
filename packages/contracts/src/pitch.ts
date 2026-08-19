@@ -44,42 +44,46 @@ const optionalEmailSchema = z.preprocess(
   z.string().trim().email().max(160).optional(),
 );
 
-const pitchDraftFieldsSchema = z
-  .object({
-    name: z.string().trim().min(2).max(120).optional(),
-    description: optionalTrimmedString(1200),
-    photoUrl: optionalUrlSchema,
-    venueType: pitchVenueTypeSchema.optional(),
-    city: optionalTrimmedString(100),
-    houma: optionalTrimmedString(100),
-    fullAddress: optionalTrimmedString(240),
-    latitude: latitudeSchema.optional(),
-    longitude: longitudeSchema.optional(),
-    hourlyRateMinor: minorAmountSchema.optional(),
-    currency: currencySchema.optional(),
-    publicPhone: optionalTrimmedString(40),
-    publicEmail: optionalEmailSchema,
-  })
-  .superRefine((value, ctx) => {
-    const hasLatitude = value.latitude !== undefined;
-    const hasLongitude = value.longitude !== undefined;
-    if (hasLatitude !== hasLongitude) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [hasLatitude ? 'longitude' : 'latitude'],
-        message: 'Latitude and longitude must be provided together.',
-      });
-    }
-  });
+function validateCoordinatePair(
+  value: { latitude?: number; longitude?: number },
+  ctx: z.RefinementCtx,
+) {
+  const hasLatitude = value.latitude !== undefined;
+  const hasLongitude = value.longitude !== undefined;
+  if (hasLatitude !== hasLongitude) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: [hasLatitude ? 'longitude' : 'latitude'],
+      message: 'Latitude and longitude must be provided together.',
+    });
+  }
+}
 
-export const pitchCreateSchema = pitchDraftFieldsSchema.extend({
-  name: z.string().trim().min(2).max(120),
+const pitchDraftFieldsSchema = z.object({
+  name: z.string().trim().min(2).max(120).optional(),
+  description: optionalTrimmedString(1200),
+  photoUrl: optionalUrlSchema,
+  venueType: pitchVenueTypeSchema.optional(),
+  city: optionalTrimmedString(100),
+  houma: optionalTrimmedString(100),
+  fullAddress: optionalTrimmedString(240),
+  latitude: latitudeSchema.optional(),
+  longitude: longitudeSchema.optional(),
+  hourlyRateMinor: minorAmountSchema.optional(),
+  currency: currencySchema.optional(),
+  publicPhone: optionalTrimmedString(40),
+  publicEmail: optionalEmailSchema,
 });
 
-export const pitchUpdateSchema = pitchDraftFieldsSchema.refine(
-  (value) => Object.keys(value).length > 0,
-  'At least one Pitch field is required.',
-);
+export const pitchCreateSchema = pitchDraftFieldsSchema
+  .extend({
+    name: z.string().trim().min(2).max(120),
+  })
+  .superRefine(validateCoordinatePair);
+
+export const pitchUpdateSchema = pitchDraftFieldsSchema
+  .superRefine(validateCoordinatePair)
+  .refine((value) => Object.keys(value).length > 0, 'At least one Pitch field is required.');
 
 export const pitchPublicationSchema = z
   .object({
@@ -98,20 +102,12 @@ export const pitchPublicationSchema = z
     publicEmail: optionalEmailSchema,
   })
   .superRefine((value, ctx) => {
+    validateCoordinatePair(value, ctx);
     if (!value.publicPhone && !value.publicEmail) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['publicPhone'],
         message: 'Provide at least one public contact method.',
-      });
-    }
-    const hasLatitude = value.latitude !== undefined;
-    const hasLongitude = value.longitude !== undefined;
-    if (hasLatitude !== hasLongitude) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [hasLatitude ? 'longitude' : 'latitude'],
-        message: 'Latitude and longitude must be provided together.',
       });
     }
   });
