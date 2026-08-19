@@ -6,6 +6,9 @@ import { Layout } from './components/Layout';
 const AdminPage = lazy(() =>
   import('./pages/AdminPage').then((module) => ({ default: module.AdminPage })),
 );
+const AddPlacePage = lazy(() =>
+  import('./pages/AddPlacePage').then((module) => ({ default: module.AddPlacePage })),
+);
 const CheckInPage = lazy(() =>
   import('./pages/CheckInPage').then((module) => ({ default: module.CheckInPage })),
 );
@@ -44,6 +47,9 @@ const FundMePage = lazy(() =>
 const HomePage = lazy(() =>
   import('./pages/HomePage').then((module) => ({ default: module.HomePage })),
 );
+const EventsPage = lazy(() =>
+  import('./pages/EventsPage').then((module) => ({ default: module.EventsPage })),
+);
 const MembersPage = lazy(() =>
   import('./pages/MembersPage').then((module) => ({ default: module.MembersPage })),
 );
@@ -58,6 +64,12 @@ const NotFoundPage = lazy(() =>
 );
 const PlayPage = lazy(() =>
   import('./pages/PlayPage').then((module) => ({ default: module.PlayPage })),
+);
+const PlacesPage = lazy(() =>
+  import('./pages/PlacesPage').then((module) => ({ default: module.PlacesPage })),
+);
+const PlaceDetailPage = lazy(() =>
+  import('./pages/PlaceDetailPage').then((module) => ({ default: module.PlaceDetailPage })),
 );
 const PitchPage = lazy(() =>
   import('./pages/PitchPage').then((module) => ({ default: module.PitchPage })),
@@ -122,9 +134,16 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={routeElement(<HomePage />)} />
+          <Route path="/events" element={routeElement(<EventsPage />)} />
           <Route path="/play" element={routeElement(<PlayPage />)} />
+          <Route path="/places" element={routeElement(<PlacesPage />)} />
+          <Route path="/places/new" element={routeElement(<AddPlacePage />)} />
+          <Route path="/places/:placeId" element={routeElement(<PlaceDetailPage />)} />
           <Route path="/pitch" element={routeElement(<PitchPage />)} />
           <Route path="/watch" element={routeElement(<WatchPage />)} />
+          <Route path="/watch/places" element={routeElement(<PlacesPage />)} />
+          <Route path="/watch/places/new" element={routeElement(<AddPlacePage />)} />
+          <Route path="/watch/places/:placeId" element={routeElement(<PlaceDetailPage />)} />
           <Route path="/community" element={routeElement(<CommunityPage />)} />
           <Route path="/teams" element={routeElement(<TeamsPage />)} />
           <Route path="/teams/:teamId" element={routeElement(<TeamProfilePage />)} />

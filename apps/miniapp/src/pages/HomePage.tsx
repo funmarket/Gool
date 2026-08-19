@@ -82,7 +82,7 @@ export function HomePage() {
             <div className="vintage-kicker">Next up</div>
             <h2 className="vintage-section-title">Events</h2>
           </div>
-          <button type="button" className="vintage-text-button" onClick={() => navigate('/play')}>
+          <button type="button" className="vintage-text-button" onClick={() => navigate('/events')}>
             See all →
           </button>
         </div>
@@ -160,7 +160,7 @@ export function HomePage() {
 
       <section className="vintage-home-section">
         <div className="vintage-section-heading vintage-section-heading-inline">
-          <h2 className="vintage-kicker vintage-kicker-title">Trending Now</h2>
+          <h2 className="vintage-kicker vintage-kicker-title">HOOMA NOW</h2>
         </div>
         <div className="vintage-empty vintage-feed-empty">
           <strong>Football feed waiting for live data.</strong>

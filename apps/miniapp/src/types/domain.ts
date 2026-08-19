@@ -58,6 +58,48 @@ export type Club = {
   logoUrl?: string | null;
 };
 
+export type FanHub = {
+  id: string;
+  placeId?: string | null;
+  communityId?: string | null;
+  name: string;
+  venueName: string;
+  address?: string | null;
+  latitude?: string | number | null;
+  longitude?: string | number | null;
+  verified: boolean;
+  place?: Place | null;
+  clubs?: Array<{ club: Club }>;
+};
+
+export type PlaceMenuItem = {
+  id: string;
+  name: string;
+  priceLabel?: string | null;
+  sortOrder?: number;
+};
+
+export type Place = {
+  id: string;
+  communityId?: string | null;
+  name: string;
+  category: string;
+  description?: string | null;
+  address: string;
+  city?: string | null;
+  houma?: string | null;
+  latitude: string | number;
+  longitude: string | number;
+  phone?: string | null;
+  email?: string | null;
+  websiteUrl?: string | null;
+  photoUrl?: string | null;
+  status: 'COMMUNITY_SUGGESTED' | 'OWNER_CLAIMED' | 'VERIFIED';
+  fanHubs?: FanHub[];
+  menuItems?: PlaceMenuItem[];
+  claims?: Array<{ id: string; status: 'PENDING' | 'APPROVED' | 'REJECTED' }>;
+};
+
 export type EventItem = {
   id: string;
   communityId: string;
@@ -87,8 +129,10 @@ export type EventItem = {
   watchDetails?: {
     homeClub?: Club | null;
     awayClub?: Club | null;
+    fanHub?: FanHub | null;
     homeClubId?: string | null;
     awayClubId?: string | null;
+    fanHubId?: string | null;
   } | null;
   community?: Pick<Community, 'id' | 'name' | 'avatarUrl'>;
   rsvps?: Array<{
@@ -200,11 +244,13 @@ export type FundPage = CursorPage<FundItem>;
 export type Me = Person & {
   telegramUserId: string;
   profile?: {
+    photoUrl?: string | null;
     skillLevel: string;
     skillRating: number;
     preferredPositions: string[];
     favoriteClubId?: string | null;
     favoriteClub?: Club | null;
+    profileAudience: 'SPECTATOR' | 'FAN';
     bio?: string | null;
   } | null;
   preference?: { activeCommunityId?: string | null; themeOverride?: string | null } | null;

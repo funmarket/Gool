@@ -3,6 +3,8 @@ import { CalendarIcon } from '../../icons/CalendarIcon';
 import { PinIcon } from '../../icons/PinIcon';
 import { UsersIcon } from '../../icons/UsersIcon';
 import { OfficialStarIcon } from '../../icons/OfficialStarIcon';
+import ticketTemplate from '../../assets/watch/watch-collector-ticket-template.png';
+import hoomaLogo from '../../assets/hooma-logo.png';
 import './VintageCollectorTicket.css';
 
 export type VintageCollectorTicketProps = {
@@ -21,6 +23,7 @@ export type VintageCollectorTicketProps = {
   stubLabel: string;
   venuePhotoUrl?: string | null | undefined;
   suggestedByCommunity?: boolean;
+  isLive?: boolean;
   onClick?: () => void;
 };
 
@@ -37,70 +40,87 @@ function TeamMark({ name, url }: { name: string; url?: string | null | undefined
 }
 
 export function VintageCollectorTicket(props: VintageCollectorTicketProps) {
+  const venueStatusLabel = props.officialVenue
+    ? 'Official venue'
+    : props.suggestedByCommunity
+      ? 'Suggested by community'
+      : null;
   const content = (
     <>
-      {props.venuePhotoUrl && (
+      <img className="vc-ticket-template" src={ticketTemplate} alt="" aria-hidden="true" />
+      <div className="vc-ticket-content">
         <div className="vc-ticket-photo">
-          <img src={props.venuePhotoUrl} alt={props.venueName} />
-        </div>
-      )}
-      <div className="vc-ticket-main">
-        <div className="vc-ticket-top">
-          <span className="vc-ticket-next-label">Next match</span>
-          <span className="vc-ticket-series">
-            HOOMA / No. {String(props.collectorNumber).padStart(4, '0')}
-          </span>
-        </div>
-        <div className="vc-ticket-match">
-          <TeamMark name={props.teamAName} url={props.teamALogoUrl} />
-          <div className="vc-ticket-title-wrap">
-            <strong className="vc-ticket-title">{props.matchTitle}</strong>
-            <div className="vc-ticket-versus">
-              <b>{props.teamAName}</b>
-              <span>vs</span>
-              <em>{props.teamBName}</em>
-            </div>
-          </div>
-          <TeamMark name={props.teamBName} url={props.teamBLogoUrl} />
-        </div>
-        <div className="vc-ticket-info">
-          <div className="vc-ticket-info-cell">
-            <PinIcon size={20} />
-            <div>
-              <strong>{props.venueName}</strong>
-              <small>{props.venueLocation}</small>
-            </div>
-          </div>
-          <div className="vc-ticket-info-cell vc-ticket-date">
-            <CalendarIcon size={20} />
-            <div>
-              <strong>{props.dateLabel}</strong>
-              <small>{props.timeLabel}</small>
-            </div>
-          </div>
-        </div>
-        <div className="vc-ticket-footer">
-          <span className="vc-ticket-going">
-            <UsersIcon size={21} />
-            <strong>{props.goingCount}</strong> going
-          </span>
-          {props.officialVenue ? (
-            <span className="vc-ticket-badge">
-              <OfficialStarIcon size={14} />
-              Official venue
+          {props.venuePhotoUrl ? (
+            <img src={props.venuePhotoUrl} alt={props.venueName} />
+          ) : (
+            <span className="vc-ticket-photo-fallback">
+              <BallIcon size={24} />
+              Venue photo not provided
             </span>
-          ) : props.suggestedByCommunity ? (
-            <span className="vc-ticket-badge vc-ticket-badge-muted">Suggested by community</span>
+          )}
+          {venueStatusLabel ? (
+            <span className="vc-ticket-photo-badge">
+              <OfficialStarIcon size={14} />
+              {venueStatusLabel}
+            </span>
           ) : null}
         </div>
+        <div className="vc-ticket-main">
+          <div className="vc-ticket-top">
+            <span className="vc-ticket-next-label">Collector series</span>
+            <span className="vc-ticket-series">
+              No. {String(props.collectorNumber).padStart(4, '0')} ★
+            </span>
+          </div>
+          <div className="vc-ticket-match">
+            <TeamMark name={props.teamAName} url={props.teamALogoUrl} />
+            <div className="vc-ticket-title-wrap">
+              {props.isLive ? <span className="vc-ticket-live">Live</span> : null}
+              <strong className="vc-ticket-title">{props.matchTitle}</strong>
+              <div className="vc-ticket-versus">
+                <b>{props.teamAName}</b>
+                <span>vs</span>
+                <em>{props.teamBName}</em>
+              </div>
+            </div>
+            <TeamMark name={props.teamBName} url={props.teamBLogoUrl} />
+          </div>
+          <div className="vc-ticket-info">
+            <div className="vc-ticket-info-cell">
+              <PinIcon size={20} />
+              <div>
+                <strong>{props.venueName}</strong>
+                {props.venueLocation ? <small>{props.venueLocation}</small> : null}
+              </div>
+            </div>
+            <div className="vc-ticket-info-cell vc-ticket-date">
+              <CalendarIcon size={20} />
+              <div>
+                <strong>{props.dateLabel}</strong>
+                <small>{props.timeLabel}</small>
+              </div>
+            </div>
+          </div>
+          <div className="vc-ticket-footer">
+            <span className="vc-ticket-going">
+              <UsersIcon size={21} />
+              <strong>{props.goingCount}</strong> going
+            </span>
+            {props.officialVenue ? (
+              <span className="vc-ticket-badge">Official venue</span>
+            ) : props.suggestedByCommunity ? (
+              <span className="vc-ticket-badge vc-ticket-badge-muted">Suggested by community</span>
+            ) : null}
+          </div>
+        </div>
+        <aside className="vc-ticket-stub" aria-hidden>
+          <span className="vc-ticket-stub-ball">
+            <img src={hoomaLogo} alt="" />
+          </span>
+          <span className="vc-ticket-stub-copy">{props.stubLabel}</span>
+          <small>{props.dateLabel}</small>
+        </aside>
       </div>
-      <aside className="vc-ticket-stub" aria-hidden>
-        <span className="vc-ticket-stub-ball">
-          <BallIcon size={26} />
-        </span>
-        <span className="vc-ticket-stub-copy">{props.stubLabel}</span>
-        <small>{props.dateLabel}</small>
-      </aside>
     </>
   );
 

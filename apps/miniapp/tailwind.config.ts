@@ -25,6 +25,11 @@ export default {
       borderRadius: {
         ultra: '22px',
       },
+      fontSize: {
+        xs: ['14px', { lineHeight: '1.35' }],
+        sm: ['15px', { lineHeight: '1.45' }],
+        base: ['17px', { lineHeight: '1.5' }],
+      },
     },
   },
   plugins: [],

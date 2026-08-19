@@ -30,12 +30,13 @@
   display: block;
 }
 .matchday-action-button-pro strong {
-  font-weight: 950;
+  font-size: var(--font-action);
+  font-weight: 600;
 }
 .matchday-action-button-pro small {
   margin-top: 0.2rem;
   color: var(--hv-muted);
-  font-size: 0.72rem;
+  font-size: var(--font-secondary);
 }
 .matchday-action-button-pro > i {
   font-style: normal;

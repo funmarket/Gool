@@ -16,8 +16,8 @@
   align-items: center;
   gap: 0.4rem;
   color: var(--hv-lime);
-  font-weight: 900;
-  font-size: 0.82rem;
+  font-weight: 600;
+  font-size: var(--font-meta);
 }
 .venue-info-title-pro svg {
   width: 1rem;
@@ -28,8 +28,8 @@
   white-space: pre-line;
   overflow-wrap: anywhere;
   color: #d6d1c7;
-  font-size: 0.78rem;
-  line-height: 1.55;
+  font-size: var(--font-secondary);
+  line-height: 1.45;
 }
 .venue-info-tile-pro button {
   margin-top: 0.65rem;
@@ -40,6 +40,6 @@
   background: #080906;
   color: var(--hv-gold);
   font: inherit;
-  font-size: 0.72rem;
-  font-weight: 800;
+  font-size: var(--font-action);
+  font-weight: 600;
 }

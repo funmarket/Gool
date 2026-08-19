@@ -70,6 +70,68 @@ async function main() {
     update: {},
     create: { name: 'Real Madrid', slug: 'real-madrid', countryCode: 'ES' },
   });
+  const place =
+    (await prisma.place.findFirst({
+      where: { communityId: community.id, name: 'Arena Cafe', deletedAt: null },
+    })) ??
+    (await prisma.place.create({
+      data: {
+        communityId: community.id,
+        createdByUserId: user.id,
+        name: 'Arena Cafe',
+        category: 'Sports cafe & lounge',
+        description: 'Local spot for live matches, food, and watch-night energy.',
+        address: 'Demo City, Houma: Central',
+        city: 'Demo City',
+        houma: 'Central',
+        latitude: 36.8065,
+        longitude: 10.1815,
+        phone: '+216 71 980 123',
+        email: 'hello@arenacafe.test',
+        photoUrl:
+          'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=900&q=80',
+        status: 'OWNER_CLAIMED',
+      },
+    }));
+  if (!(await prisma.placeMenuItem.findFirst({ where: { placeId: place.id, deletedAt: null } }))) {
+    await prisma.placeMenuItem.createMany({
+      data: [
+        { placeId: place.id, name: 'Espresso', priceLabel: '4 TND', sortOrder: 0 },
+        { placeId: place.id, name: 'Mint Tea', priceLabel: '4 TND', sortOrder: 1 },
+        { placeId: place.id, name: 'Pizza', priceLabel: '18 TND', sortOrder: 2 },
+        { placeId: place.id, name: 'Sandwich', priceLabel: '12 TND', sortOrder: 3 },
+      ],
+    });
+  }
+  let fanHub =
+    (await prisma.fanHub.findFirst({
+      where: { communityId: community.id, venueName: 'HOOMA Fan Hub' },
+    })) ??
+    (await prisma.fanHub.create({
+      data: {
+        placeId: place.id,
+        communityId: community.id,
+        createdByUserId: user.id,
+        name: place.name,
+        venueName: place.name,
+        address: place.address,
+        latitude: place.latitude,
+        longitude: place.longitude,
+      },
+    }));
+  if (fanHub.placeId !== place.id) {
+    fanHub = await prisma.fanHub.update({
+      where: { id: fanHub.id },
+      data: {
+        placeId: place.id,
+        name: place.name,
+        venueName: place.name,
+        address: place.address,
+        latitude: place.latitude,
+        longitude: place.longitude,
+      },
+    });
+  }
   const homeTicketStartsAt = new Date(Date.now() + 12 * 60 * 60_000);
   const homeTicketEvent = await prisma.event.findFirst({
     where: {
@@ -88,8 +150,10 @@ async function main() {
           startsAt: homeTicketStartsAt,
           endsAt: new Date(homeTicketStartsAt.getTime() + 2 * 60 * 60_000),
           timezone: 'UTC',
-          venueName: 'HOOMA Fan Hub',
-          address: 'Demo City, Houma: Central',
+          venueName: fanHub.venueName,
+          address: fanHub.address,
+          latitude: fanHub.latitude,
+          longitude: fanHub.longitude,
           capacity: 80,
           waitlistEnabled: true,
           cashRsvpPolicy: 'CONFIRM_IMMEDIATELY',
@@ -98,12 +162,14 @@ async function main() {
                 update: {
                   homeClubId: real.id,
                   awayClubId: barca.id,
+                  fanHubId: fanHub.id,
                 },
               }
             : {
                 create: {
                   homeClubId: real.id,
                   awayClubId: barca.id,
+                  fanHubId: fanHub.id,
                 },
               },
           chatRoom: homeTicketEvent.chatRoom
@@ -131,12 +197,20 @@ async function main() {
           startsAt: homeTicketStartsAt,
           endsAt: new Date(homeTicketStartsAt.getTime() + 2 * 60 * 60_000),
           timezone: 'UTC',
-          venueName: 'HOOMA Fan Hub',
-          address: 'Demo City, Houma: Central',
+          venueName: fanHub.venueName,
+          address: fanHub.address,
+          latitude: fanHub.latitude,
+          longitude: fanHub.longitude,
           capacity: 80,
           waitlistEnabled: true,
           cashRsvpPolicy: 'CONFIRM_IMMEDIATELY',
-          watchDetails: { create: { homeClubId: real.id, awayClubId: barca.id } },
+          watchDetails: {
+            create: {
+              homeClubId: real.id,
+              awayClubId: barca.id,
+              fanHubId: fanHub.id,
+            },
+          },
           chatRoom: {
             create: {
               opensAt: new Date(homeTicketStartsAt.getTime() - 24 * 60 * 60_000),
@@ -200,9 +274,18 @@ async function main() {
         title: 'Clásico watch night',
         startsAt: new Date(Date.now() + 4 * 24 * 60 * 60_000),
         timezone: 'UTC',
-        venueName: 'HOOMA Fan Hub',
+        venueName: fanHub.venueName,
+        address: fanHub.address,
+        latitude: fanHub.latitude,
+        longitude: fanHub.longitude,
         capacity: 80,
-        watchDetails: { create: { homeClubId: barca.id, awayClubId: real.id } },
+        watchDetails: {
+          create: {
+            homeClubId: barca.id,
+            awayClubId: real.id,
+            fanHubId: fanHub.id,
+          },
+        },
         chatRoom: {
           create: {
             opensAt: new Date(Date.now() + 3 * 24 * 60 * 60_000),

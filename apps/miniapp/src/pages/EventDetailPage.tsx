@@ -21,6 +21,7 @@ import { CheckInIcon } from '../icons/CheckInIcon';
 import { DollarIcon } from '../icons/DollarIcon';
 import { del, get, post } from '../shared/api/http-client';
 import { eventDate, money } from '../lib/format';
+import { isOfficialWatchPlace, watchPlaceLocation } from '../lib/watch-place-display';
 import { notify } from '../lib/telegram';
 import { useTelegramMainButton } from '../hooks/useTelegramMainButton';
 import type { EventItem, Me, PaymentSummary } from '../types/domain';
@@ -135,6 +136,12 @@ export function EventDetailPage() {
   });
   const meQuery = useQuery({ queryKey: ['me'], queryFn: () => get<Me>('/api/v1/me') });
   const event = eventQuery.data;
+  const watchPlaceId = event?.watchDetails?.fanHub?.place?.id;
+  const placeEventsQuery = useQuery({
+    queryKey: ['place-events', watchPlaceId],
+    queryFn: () => get<EventItem[]>(`/api/v1/watch/places/${watchPlaceId}/events`),
+    enabled: event?.type === 'WATCH' && Boolean(watchPlaceId),
+  });
   const rsvp = event?.rsvps.find(
     (item) =>
       item.userId === meQuery.data?.id &&
@@ -198,6 +205,9 @@ export function EventDetailPage() {
   if (event.type === 'WATCH') {
     const home = event.watchDetails?.homeClub;
     const away = event.watchDetails?.awayClub;
+    const fanHub = event.watchDetails?.fanHub;
+    const place = fanHub?.place;
+    const officialVenue = isOfficialWatchPlace(place, fanHub);
     const parts = dateParts(event.startsAt);
     const share = async () => {
       if (navigator.share)
@@ -212,25 +222,25 @@ export function EventDetailPage() {
       {
         key: 'address',
         label: 'Address',
-        value: event.address || 'Address not provided',
+        value: place?.address || event.address || fanHub?.address || 'Address not provided',
         icon: <PinIcon size={17} />,
       },
       {
-        key: 'houma',
+        key: 'fanHub',
         label: 'Houma',
-        value: event.houma || event.community?.name || 'Houma not provided',
+        value: place?.houma || fanHub?.name || event.community?.name || 'Houma not provided',
         icon: <UsersIcon size={17} />,
       },
       {
         key: 'contact',
         label: 'Contact',
-        value: event.venuePhone || 'Contact not provided',
+        value: [place?.phone, place?.email].filter(Boolean).join('\n') || 'Contact not provided',
         icon: <PhoneIcon size={17} />,
-        ...(event.venuePhone
+        ...(place?.phone
           ? {
               actionLabel: 'Call',
               onAction: () => {
-                window.location.href = `tel:${event.venuePhone}`;
+                window.location.href = `tel:${place.phone}`;
               },
             }
           : {}),
@@ -238,10 +248,21 @@ export function EventDetailPage() {
       {
         key: 'about',
         label: 'About',
-        value: event.venueAbout || event.description || 'No additional venue information provided.',
+        value:
+          place?.description || event.description || 'No additional venue information provided.',
         icon: <InfoIcon size={17} />,
       },
     ];
+    const menuItems =
+      place?.menuItems
+        ?.filter((item) => item.name)
+        .map((item) => ({
+          id: item.id,
+          name: item.name,
+          priceLabel: item.priceLabel || '',
+        })) ?? [];
+    const upcomingPlaceEvents =
+      placeEventsQuery.data?.filter((item) => item.id !== event.id).slice(0, 3) ?? [];
     return (
       <div className="page-shell vintage-page">
         <div className="grid gap-4">
@@ -252,19 +273,28 @@ export function EventDetailPage() {
             teamBName={away?.name || 'Away'}
             teamALogoUrl={home?.logoUrl}
             teamBLogoUrl={away?.logoUrl}
-            venueName={event.venueName || 'Venue TBA'}
-            venueLocation={event.address || event.houma || event.community?.name || 'Location TBA'}
+            venueName={place?.name || event.venueName || fanHub?.venueName || 'Venue TBA'}
+            venueLocation={
+              watchPlaceLocation(place) ||
+              place?.address ||
+              event.address ||
+              fanHub?.address ||
+              event.community?.name ||
+              'Location TBA'
+            }
             dateLabel={parts.date}
             timeLabel={parts.time}
             goingCount={confirmedCount}
-            officialVenue={event.officialVenue === true}
+            officialVenue={officialVenue}
+            suggestedByCommunity={Boolean(fanHub) && !officialVenue}
             stubLabel={event.title}
+            venuePhotoUrl={place?.photoUrl}
           />
           <div className="mt-4">
             <VenueDetailHeader
-              venueName={event.venueName || event.title}
-              venueType={event.venueType || 'Watch venue'}
-              venuePhotoUrl={event.venuePhotoUrl}
+              venueName={place?.name || event.venueName || fanHub?.venueName || event.title}
+              venueType={place?.category || (fanHub ? 'Fan hub' : 'Watch venue')}
+              venuePhotoUrl={place?.photoUrl}
               goingCount={confirmedCount}
               dateLabel={`${parts.date} · ${parts.time}`}
               rsvpLabel={
@@ -274,7 +304,7 @@ export function EventDetailPage() {
                     : rsvp.status.replaceAll('_', ' ')
                   : null
               }
-              officialVenue={event.officialVenue === true}
+              officialVenue={officialVenue}
               joinLabel={rsvp ? 'Cancel RSVP' : 'Join event'}
               onJoin={handleRsvp}
               onShare={() => void share()}
@@ -284,14 +314,14 @@ export function EventDetailPage() {
           <div className="mt-4">
             <VenueInfoGrid items={infoItems} />
           </div>
-          {event.venueMenu?.length ? <VenueMenuRow items={event.venueMenu} /> : null}
-          {event.upcomingVenueEvents?.length ? (
+          {menuItems.length ? <VenueMenuRow items={menuItems} /> : null}
+          {upcomingPlaceEvents.length ? (
             <section className="mt-6">
               <div className="vintage-section-heading">
                 <h2 className="vintage-section-title">Upcoming watch events at this place</h2>
               </div>
               <div className="grid gap-3">
-                {event.upcomingVenueEvents.map((item) => {
+                {upcomingPlaceEvents.map((item) => {
                   const d = dateParts(item.startsAt);
                   return (
                     <UpcomingEventRow
@@ -301,10 +331,9 @@ export function EventDetailPage() {
                       dayNumber={d.day}
                       monthLabel={d.month}
                       timeLabel={d.time}
-                      goingCount={item.goingCount}
-                      homeTeam={item.homeTeam}
-                      awayTeam={item.awayTeam}
-                      competitionIconUrl={item.competitionIconUrl}
+                      goingCount={item._count?.rsvps ?? 0}
+                      homeTeam={item.watchDetails?.homeClub?.name}
+                      awayTeam={item.watchDetails?.awayClub?.name}
                       onClick={() => navigate(`/events/${item.id}`)}
                     />
                   );

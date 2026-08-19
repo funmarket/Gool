@@ -38,6 +38,11 @@ enum SkillLevel {
   MIXED
 }
 
+enum ProfileAudience {
+  SPECTATOR
+  FAN
+}
+
 enum PlayerPosition {
   GK
   CB
@@ -250,6 +255,18 @@ enum TeamMatchFormat {
   ELEVEN_V_ELEVEN
 }
 
+enum PlaceStatus {
+  COMMUNITY_SUGGESTED
+  OWNER_CLAIMED
+  VERIFIED
+}
+
+enum PlaceOwnerClaimStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id             String    @id @default(cuid())
   telegramUserId String    @unique @db.VarChar(32)
@@ -286,6 +303,8 @@ model User {
   formations              Formation[]            @relation("FormationCreator")
   formationSlots          FormationSlot[]
   fanHubs                 FanHub[]               @relation("FanHubCreator")
+  createdPlaces           Place[]                @relation("PlaceCreator")
+  placeOwnerClaims        PlaceOwnerClaim[]      @relation("PlaceOwnerClaimUser")
   venueDeals              VenueDeal[]            @relation("VenueDealCreator")
   checkIns                CheckIn[]
   eventChatMessages       EventChatMessage[]
@@ -310,6 +329,7 @@ model PlayerProfile {
   skillRating        Int              @default(50)
   preferredPositions PlayerPosition[] @default([])
   favoriteClubId     String?
+  profileAudience    ProfileAudience  @default(SPECTATOR)
   bio                String?          @db.VarChar(280)
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
@@ -375,6 +395,7 @@ model Community {
   rideRequests        RideRequest[]
   fundraisers         Fundraiser[]
   fanHubs             FanHub[]
+  places              Place[]
   venueDeals          VenueDeal[]
   paymentIntents      PaymentIntent[]
   paymentDefaults     CommunityPaymentDefault[]
@@ -493,15 +514,18 @@ model WatchEventDetails {
   eventId    String   @id
   homeClubId String?
   awayClubId String?
+  fanHubId   String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   event    Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
   homeClub FootballClub? @relation("WatchHomeClub", fields: [homeClubId], references: [id], onDelete: SetNull)
   awayClub FootballClub? @relation("WatchAwayClub", fields: [awayClubId], references: [id], onDelete: SetNull)
+  fanHub   FanHub?       @relation(fields: [fanHubId], references: [id], onDelete: SetNull)
 
   @@index([homeClubId])
   @@index([awayClubId])
+  @@index([fanHubId])
 }
 
 model EventRsvp {
@@ -1161,6 +1185,7 @@ model TeamGame {
 
 model FanHub {
   id              String    @id @default(cuid())
+  placeId         String?
   communityId     String?
   createdByUserId String
   name            String    @db.VarChar(120)
@@ -1174,15 +1199,88 @@ model FanHub {
   updatedAt       DateTime  @updatedAt
   deletedAt       DateTime?
 
-  community Community?   @relation(fields: [communityId], references: [id], onDelete: Cascade)
-  createdBy User         @relation("FanHubCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
-  clubs     FanHubClub[]
-  deals     VenueDeal[]
-  checkIns  CheckIn[]
+  place       Place?              @relation(fields: [placeId], references: [id], onDelete: SetNull)
+  community   Community?          @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  createdBy   User                @relation("FanHubCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  clubs       FanHubClub[]
+  deals       VenueDeal[]
+  checkIns    CheckIn[]
+  watchEvents WatchEventDetails[]
 
   @@index([communityId, verified])
+  @@index([placeId])
   @@index([createdByUserId])
   @@index([geoCell])
+  @@index([deletedAt])
+}
+
+model Place {
+  id              String      @id @default(cuid())
+  communityId     String?
+  createdByUserId String
+  name            String      @db.VarChar(120)
+  category        String      @db.VarChar(80)
+  description     String?     @db.VarChar(800)
+  address         String      @db.VarChar(240)
+  city            String?     @db.VarChar(100)
+  houma           String?     @db.VarChar(100)
+  latitude        Decimal     @db.Decimal(10, 7)
+  longitude       Decimal     @db.Decimal(10, 7)
+  phone           String?     @db.VarChar(40)
+  email           String?     @db.VarChar(160)
+  websiteUrl      String?
+  photoUrl        String?
+  status          PlaceStatus @default(COMMUNITY_SUGGESTED)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deletedAt       DateTime?
+
+  community Community?        @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  createdBy User              @relation("PlaceCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  fanHubs   FanHub[]
+  claims    PlaceOwnerClaim[]
+  menuItems PlaceMenuItem[]
+
+  @@index([communityId, status, createdAt])
+  @@index([createdByUserId])
+  @@index([city, houma])
+  @@index([deletedAt])
+}
+
+model PlaceOwnerClaim {
+  id           String                @id @default(cuid())
+  placeId      String
+  userId       String
+  status       PlaceOwnerClaimStatus @default(PENDING)
+  businessName String?               @db.VarChar(120)
+  contactName  String?               @db.VarChar(120)
+  contactPhone String?               @db.VarChar(40)
+  contactEmail String?               @db.VarChar(160)
+  note         String?               @db.VarChar(500)
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  user  User  @relation("PlaceOwnerClaimUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([placeId, userId])
+  @@index([userId, status])
+  @@index([placeId, status])
+}
+
+model PlaceMenuItem {
+  id         String    @id @default(cuid())
+  placeId    String
+  name       String    @db.VarChar(80)
+  priceLabel String?   @db.VarChar(40)
+  sortOrder  Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  @@index([placeId, sortOrder])
   @@index([deletedAt])
 }
 

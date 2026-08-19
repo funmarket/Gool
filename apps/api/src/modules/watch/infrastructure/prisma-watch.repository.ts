@@ -48,6 +48,11 @@ export class PrismaWatchRepository implements WatchRepository {
         ],
       },
       include: {
+        place: {
+          include: {
+            menuItems: { where: { deletedAt: null }, orderBy: { sortOrder: 'asc' } },
+          },
+        },
         clubs: { include: { club: true } },
         deals: { where: { deletedAt: null } },
       },
@@ -77,7 +82,14 @@ export class PrismaWatchRepository implements WatchRepository {
       }
       return tx.fanHub.findUniqueOrThrow({
         where: { id: hub.id },
-        include: { clubs: { include: { club: true } } },
+        include: {
+          place: {
+            include: {
+              menuItems: { where: { deletedAt: null }, orderBy: { sortOrder: 'asc' } },
+            },
+          },
+          clubs: { include: { club: true } },
+        },
       });
     });
   }

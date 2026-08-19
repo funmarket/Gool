@@ -33,6 +33,7 @@
   background: transparent;
   color: var(--hv-white);
   font: inherit;
+  font-size: var(--font-secondary);
 }
 .watch-controls-search input::placeholder {
   color: #88847b;
@@ -54,7 +55,8 @@
   border-color: var(--hv-lime);
   color: var(--hv-lime);
   font: inherit;
-  font-weight: 900;
+  font-size: var(--font-meta);
+  font-weight: 600;
 }
 .watch-controls-club {
   position: relative;
@@ -64,7 +66,8 @@
   padding: 0 0.75rem;
   border-color: rgba(199, 154, 43, 0.55);
   color: var(--hv-gold);
-  font-weight: 900;
+  font-size: var(--font-meta);
+  font-weight: 600;
 }
 .watch-controls-club select {
   appearance: none;
@@ -74,7 +77,7 @@
   background: transparent;
   color: var(--hv-gold);
   font: inherit;
-  font-weight: 900;
+  font-weight: 600;
   padding-right: 0.2rem;
 }
 .watch-controls-club select option {

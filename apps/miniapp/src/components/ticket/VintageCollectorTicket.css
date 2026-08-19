@@ -1,78 +1,22 @@
 .vc-ticket {
+  --ticket-ink: #0a0a0a;
+  --ticket-paper: #f5edd6;
+  --ticket-gold: #c8a951;
+  --ticket-brown: #6f4f1d;
+  --ticket-official: #3d602f;
+  --ticket-lime: #8fd600;
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 4.5rem;
+  display: block;
   width: 100%;
+  aspect-ratio: 2.85 / 1;
   overflow: hidden;
-  border: 1.5px solid #b3883c;
-  border-radius: 10px;
-  background:
-    radial-gradient(circle at 12% 17%, rgba(73, 48, 16, 0.12) 0 0.75px, transparent 1.1px),
-    radial-gradient(circle at 68% 67%, rgba(73, 48, 16, 0.09) 0 0.7px, transparent 1px),
-    repeating-linear-gradient(11deg, rgba(91, 67, 30, 0.028) 0 1px, transparent 1px 7px),
-    linear-gradient(145deg, #f0e2c2 0%, #e5d2aa 48%, #d3bc88 100%);
-  background-size:
-    13px 12px,
-    19px 17px,
-    auto,
-    100% 100%;
-  color: #17130b;
-  box-shadow:
-    0 14px 30px rgba(0, 0, 0, 0.42),
-    inset 0 0 30px rgba(70, 43, 9, 0.08),
-    inset 0 0 0 1px rgba(255, 249, 225, 0.35);
+  border: 0;
+  border-radius: clamp(0.65rem, 2vw, 1rem);
+  background: #050503;
+  color: var(--ticket-ink);
   text-align: left;
-}
-
-.vc-ticket::before {
-  content: '';
-  position: absolute;
-  inset: 5px;
-  z-index: 4;
-  pointer-events: none;
-  border: 1px solid rgba(75, 52, 22, 0.72);
-  border-radius: 6px;
-  box-shadow: inset 0 0 0 2px rgba(184, 137, 54, 0.24);
-  clip-path: polygon(
-    0 7px,
-    7px 7px,
-    7px 0,
-    42% 0,
-    43% 3px,
-    57% 3px,
-    58% 0,
-    calc(100% - 7px) 0,
-    calc(100% - 7px) 7px,
-    100% 7px,
-    100% calc(100% - 7px),
-    calc(100% - 7px) calc(100% - 7px),
-    calc(100% - 7px) 100%,
-    58% 100%,
-    57% calc(100% - 3px),
-    43% calc(100% - 3px),
-    42% 100%,
-    7px 100%,
-    7px calc(100% - 7px),
-    0 calc(100% - 7px)
-  );
-}
-
-.vc-ticket::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  pointer-events: none;
-  opacity: 0.17;
-  background:
-    repeating-linear-gradient(0deg, transparent 0 5px, rgba(57, 38, 12, 0.045) 6px),
-    radial-gradient(circle at 8% 72%, rgba(54, 35, 11, 0.7) 0 0.55px, transparent 0.8px),
-    radial-gradient(circle at 68% 22%, rgba(54, 35, 11, 0.55) 0 0.45px, transparent 0.8px);
-  background-size:
-    100% 6px,
-    9px 9px,
-    13px 11px;
-  mix-blend-mode: multiply;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.42);
+  isolation: isolate;
 }
 
 .vc-ticket-button {
@@ -81,174 +25,278 @@
   padding: 0;
   cursor: pointer;
 }
+
+.vc-ticket-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 .vc-ticket-button:active {
   transform: scale(0.996);
 }
 
-.vc-ticket-photo {
-  grid-column: 1;
-  position: relative;
-  z-index: 1;
-  border-bottom: 1px solid rgba(23, 19, 11, 0.28);
-  background: #120f09;
+.vc-ticket-template,
+.vc-ticket-content {
+  position: absolute;
+  inset: 0;
 }
+
+.vc-ticket-template {
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+
+.vc-ticket-content {
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 30% 60% 10%;
+  padding: 4.1% 4.6% 4.4% 4.5%;
+  gap: 1.7%;
+}
+
+.vc-ticket-photo {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 3%;
+  background: #090906;
+}
+
 .vc-ticket-photo img {
   display: block;
   width: 100%;
-  height: auto;
-  max-height: 17rem;
-  object-fit: contain;
-  margin: auto;
-  filter: sepia(0.07) contrast(1.04) saturate(0.88);
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: sepia(0.07) contrast(1.04) saturate(0.92);
+}
+
+.vc-ticket-photo-fallback {
+  display: grid;
+  place-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  height: 100%;
+  padding: 0.75rem;
+  color: rgba(245, 237, 214, 0.78);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(200, 169, 81, 0.14), transparent 34%), #0a0a0a;
+  font-size: clamp(0.45rem, 1.5vw, var(--font-meta));
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.vc-ticket-photo-badge {
+  position: absolute;
+  left: 6.5%;
+  bottom: 6%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  max-width: 74%;
+  padding: 0.34rem 0.46rem 0.29rem;
+  border: 1px solid rgba(200, 169, 81, 0.8);
+  border-radius: 0.38rem;
+  color: #e1c36e;
+  background: rgba(5, 5, 3, 0.82);
+  font-family: var(--hv-font-condensed);
+  font-size: clamp(0.42rem, 1.45vw, var(--font-meta));
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  line-height: 1.05;
+  text-transform: uppercase;
 }
 
 .vc-ticket-main {
-  grid-column: 1;
   min-width: 0;
-  position: relative;
-  z-index: 2;
-  padding: 0.92rem 1rem 0.95rem;
-}
-.vc-ticket-photo + .vc-ticket-main {
-  padding-top: 0.84rem;
+  display: grid;
+  grid-template-rows: 15% 40% 26% 19%;
+  padding: 0 1.6% 0 0.4%;
 }
 
 .vc-ticket-top {
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: space-between;
-  gap: 0.65rem;
-  min-height: 1.4rem;
+  gap: 0.6rem;
+  border-bottom: 1px solid rgba(78, 55, 18, 0.42);
+  font-family: var(--hv-font-condensed);
+  line-height: 1;
 }
 
-.vc-ticket-next-label {
-  display: inline-flex;
-  align-items: center;
-  min-height: 1.45rem;
-  padding: 0.13rem 0.46rem 0.08rem;
-  border-radius: 2px;
-  color: #d9c595;
-  background: #17140e;
-  border: 1px solid rgba(70, 49, 18, 0.55);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
-  font-family: var(--hv-font-display);
-  font-size: 0.68rem;
-  letter-spacing: 0.055em;
+.vc-ticket-next-label,
+.vc-ticket-series {
+  color: rgba(10, 10, 10, 0.88);
+  font-size: clamp(0.42rem, 1.45vw, var(--font-meta));
+  font-weight: 900;
+  letter-spacing: 0.19em;
   text-transform: uppercase;
 }
+
 .vc-ticket-series {
-  color: rgba(55, 39, 17, 0.7);
-  font-size: 0.48rem;
-  font-weight: 850;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .vc-ticket-match {
   display: grid;
-  grid-template-columns: 3.55rem minmax(0, 1fr) 3.55rem;
+  grid-template-columns: 15% minmax(0, 1fr) 15%;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.48rem 0 0.76rem;
+  gap: 1.8%;
+  min-height: 0;
+  border-bottom: 1px solid rgba(78, 55, 18, 0.42);
 }
+
 .vc-ticket-team-mark {
-  width: 3.55rem;
-  height: 3.55rem;
   display: grid;
   place-items: center;
-  color: #19150d;
+  width: 100%;
+  aspect-ratio: 1;
+  color: var(--ticket-ink);
   font-family: var(--hv-font-display);
+  font-size: clamp(0.55rem, 1.9vw, 1rem);
   font-weight: 950;
-  font-size: 0.72rem;
-  background: radial-gradient(circle, rgba(255, 248, 226, 0.24), transparent 70%);
+  line-height: 1;
 }
+
 .vc-ticket-team-mark img {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 92%;
+  max-height: 92%;
   width: auto;
   height: auto;
   object-fit: contain;
-  filter: saturate(0.94) contrast(1.04) drop-shadow(0 1px 0 rgba(255, 255, 255, 0.15));
+  filter: saturate(0.96) contrast(1.04) drop-shadow(0 1px 0 rgba(255, 255, 255, 0.15));
 }
+
 .vc-ticket-title-wrap {
   min-width: 0;
   text-align: center;
 }
+
+.vc-ticket-live {
+  display: inline-flex;
+  margin-bottom: 0.12rem;
+  padding: 0.08rem 0.28rem 0.06rem;
+  border-radius: 999px;
+  color: #0a0a0a;
+  background: var(--ticket-lime);
+  font-size: clamp(0.38rem, 1.1vw, 0.58rem);
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
 .vc-ticket-title {
-  display: block;
-  font-family: var(--hv-font-display);
-  font-size: clamp(2.55rem, 7.9vw, 4.45rem);
-  line-height: 0.79;
-  letter-spacing: 0.012em;
-  text-transform: uppercase;
-  overflow-wrap: anywhere;
+  display: -webkit-box;
+  max-height: 2.05em;
+  overflow: hidden;
   color: #11100d;
-  text-shadow: 0.5px 0.5px 0 rgba(255, 255, 255, 0.18);
-}
-.vc-ticket-versus {
-  margin-top: 0.52rem;
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-  gap: 0.4rem;
-  font-family: var(--hv-font-condensed);
-  font-size: clamp(0.74rem, 2.55vw, 1.05rem);
-  font-weight: 900;
-  letter-spacing: 0.035em;
+  font-family: var(--hv-font-display);
+  font-size: clamp(1.15rem, 5.2vw, 4.35rem);
+  font-weight: 950;
+  letter-spacing: 0.012em;
+  line-height: 0.92;
   text-transform: uppercase;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
-.vc-ticket-versus b {
-  color: #215ca8;
-  font-style: normal;
+
+.vc-ticket-versus {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: clamp(0.16rem, 0.8vw, 0.48rem);
+  margin-top: clamp(0.12rem, 0.8vw, 0.48rem);
+  overflow: hidden;
+  font-family: var(--hv-font-condensed);
+  font-size: clamp(0.44rem, 1.75vw, 1.1rem);
+  font-weight: 950;
+  letter-spacing: 0.035em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
+
+.vc-ticket-versus b,
 .vc-ticket-versus em {
-  color: #a7312f;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-style: normal;
 }
+
+.vc-ticket-versus b {
+  color: #1f559d;
+}
+
+.vc-ticket-versus em {
+  color: #9c2e2d;
+}
+
 .vc-ticket-versus span {
-  color: #211a0d;
+  color: var(--ticket-ink);
   font-size: 0.7em;
 }
 
 .vc-ticket-info {
   display: grid;
-  grid-template-columns: 1.08fr 0.92fr;
-  border-top: 1px solid rgba(23, 19, 11, 0.4);
-  border-bottom: 1px solid rgba(23, 19, 11, 0.28);
+  grid-template-columns: 61% 39%;
+  min-height: 0;
+  border-bottom: 1px solid rgba(78, 55, 18, 0.36);
 }
+
 .vc-ticket-info-cell {
   display: grid;
-  grid-template-columns: 1.35rem minmax(0, 1fr);
-  gap: 0.5rem;
-  align-items: start;
-  padding: 0.7rem 0.25rem 0.67rem;
+  grid-template-columns: clamp(0.8rem, 2.4vw, 1.55rem) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(0.18rem, 0.85vw, 0.52rem);
+  min-width: 0;
+  padding-right: 3%;
 }
+
 .vc-ticket-info-cell + .vc-ticket-info-cell {
-  border-left: 1px solid rgba(23, 19, 11, 0.3);
-  padding-left: 0.78rem;
+  border-left: 1px solid rgba(78, 55, 18, 0.38);
+  padding-left: 8%;
 }
+
 .vc-ticket-info-cell > svg {
-  margin-top: 0.06rem;
-  stroke-width: 2;
-  color: #17130b;
+  color: var(--ticket-ink);
+  width: clamp(0.72rem, 2.4vw, 1.35rem);
+  height: clamp(0.72rem, 2.4vw, 1.35rem);
+  stroke-width: 2.3;
 }
+
 .vc-ticket-info-cell strong,
 .vc-ticket-info-cell small {
   display: block;
-}
-.vc-ticket-info-cell strong {
-  font-size: 0.8rem;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ticket-ink);
   line-height: 1.12;
+  text-overflow: ellipsis;
+}
+
+.vc-ticket-info-cell strong {
+  font-size: clamp(0.46rem, 1.7vw, var(--font-secondary));
   font-weight: 850;
+  white-space: nowrap;
 }
+
 .vc-ticket-info-cell small {
-  margin-top: 0.18rem;
-  font-size: 0.67rem;
-  line-height: 1.25;
-  color: #2b2417;
+  margin-top: 0.14rem;
+  font-size: clamp(0.38rem, 1.35vw, var(--font-meta));
+  font-weight: 650;
 }
+
 .vc-ticket-date small {
-  font-size: 0.75rem;
   font-weight: 760;
 }
 
@@ -256,204 +304,134 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.55rem;
-  min-height: 2.3rem;
-  padding-top: 0.64rem;
-  font-size: 0.7rem;
+  gap: 0.45rem;
+  min-width: 0;
+  padding-top: 1.7%;
 }
+
 .vc-ticket-going {
   display: inline-flex;
   align-items: center;
-  gap: 0.34rem;
+  gap: clamp(0.12rem, 0.55vw, 0.35rem);
+  color: var(--ticket-ink);
+  font-size: clamp(0.44rem, 1.5vw, var(--font-secondary));
+  line-height: 1;
   white-space: nowrap;
 }
+
 .vc-ticket-going svg {
-  stroke-width: 2;
+  width: clamp(0.82rem, 2.6vw, 1.35rem);
+  height: clamp(0.82rem, 2.6vw, 1.35rem);
+  color: var(--ticket-lime);
+  stroke-width: 2.5;
 }
+
 .vc-ticket-going strong {
-  font-size: 0.92rem;
+  font-size: clamp(0.56rem, 1.85vw, var(--font-secondary));
+  font-weight: 950;
 }
+
 .vc-ticket-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.3rem 0.48rem 0.24rem;
-  border: 1.5px solid #496b38;
-  color: #3d602f;
-  font-family: var(--hv-font-display);
-  font-size: 0.64rem;
-  letter-spacing: 0.065em;
+  max-width: 58%;
+  overflow: hidden;
+  padding: clamp(0.13rem, 0.7vw, 0.35rem) clamp(0.22rem, 1vw, 0.58rem);
+  border: 1.5px solid var(--ticket-official);
+  border-radius: 0.22rem;
+  color: var(--ticket-official);
+  font-family: var(--hv-font-condensed);
+  font-size: clamp(0.38rem, 1.3vw, var(--font-meta));
+  font-weight: 950;
+  letter-spacing: 0.075em;
+  line-height: 1;
+  text-overflow: ellipsis;
   text-transform: uppercase;
-  border-radius: 3px;
-  transform: rotate(-0.5deg);
-  box-shadow: inset 0 0 0 1px rgba(64, 91, 47, 0.12);
+  white-space: nowrap;
 }
+
 .vc-ticket-badge-muted {
-  border-color: #806127;
-  color: #6e521f;
+  border-color: #826226;
+  color: #775923;
 }
 
 .vc-ticket-stub {
-  grid-column: 2;
-  grid-row: 1 / span 3;
-  position: relative;
-  z-index: 3;
   min-width: 0;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 24% 1fr auto;
   align-items: center;
   justify-items: center;
-  gap: 0.58rem;
-  padding: 0.78rem 0.25rem;
-  color: #c49a4a;
-  background:
-    radial-gradient(circle at 50% 10%, rgba(193, 151, 73, 0.15), transparent 26%),
-    repeating-linear-gradient(0deg, transparent 0 5px, rgba(200, 155, 72, 0.025) 6px),
-    linear-gradient(180deg, #10100e, #070806 58%, #0e0e0c);
-  border-left: 1.5px dashed rgba(119, 84, 28, 0.82);
-  box-shadow:
-    inset 6px 0 15px rgba(0, 0, 0, 0.34),
-    inset 0 0 0 1px rgba(196, 154, 74, 0.08);
+  gap: 3%;
+  color: var(--ticket-gold);
+  padding: 0 4%;
 }
-.vc-ticket-stub::before,
-.vc-ticket-stub::after {
-  content: '';
-  position: absolute;
-  left: -8px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #050604;
-  border: 1px solid rgba(154, 112, 41, 0.62);
-}
-.vc-ticket-stub::before {
-  top: -7px;
-}
-.vc-ticket-stub::after {
-  bottom: -7px;
-}
+
 .vc-ticket-stub-ball {
   display: grid;
   place-items: center;
-  width: 2.45rem;
-  height: 2.45rem;
-  border: 1px solid rgba(196, 154, 74, 0.5);
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 3px #090a08;
+  width: 80%;
+  aspect-ratio: 1;
 }
-.vc-ticket-stub-ball svg {
-  stroke-width: 1.45;
+
+.vc-ticket-stub-ball img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: sepia(0.42) saturate(1.2) contrast(1.1);
 }
-.vc-ticket-stub-copy {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  max-height: 8.8rem;
-  overflow: hidden;
-  font-family: var(--hv-font-display);
-  font-size: 0.78rem;
-  line-height: 1;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-  text-align: center;
-}
+
+.vc-ticket-stub-copy,
 .vc-ticket-stub small {
-  color: #aa8748;
-  font-size: 0.48rem;
-  font-weight: 850;
-  letter-spacing: 0.09em;
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--ticket-gold);
+  font-family: var(--hv-font-condensed);
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-align: center;
   text-transform: uppercase;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  max-height: 4.2rem;
-  overflow: hidden;
+}
+
+.vc-ticket-stub-copy {
+  max-height: 74%;
+  font-size: clamp(0.42rem, 1.45vw, 0.92rem);
+}
+
+.vc-ticket-stub small {
+  max-height: 28%;
+  font-size: clamp(0.34rem, 1vw, 0.56rem);
 }
 
 @media (max-width: 520px) {
   .vc-ticket {
-    grid-template-columns: minmax(0, 1fr) 3.75rem;
+    border-radius: 0.55rem;
   }
-  .vc-ticket-main {
-    padding: 0.74rem 0.72rem 0.78rem;
-  }
-  .vc-ticket-series {
-    display: none;
-  }
-  .vc-ticket-match {
-    grid-template-columns: 2.82rem minmax(0, 1fr) 2.82rem;
-    gap: 0.37rem;
-    padding-top: 0.36rem;
-  }
-  .vc-ticket-team-mark {
-    width: 2.82rem;
-    height: 2.82rem;
-  }
-  .vc-ticket-title {
-    font-size: clamp(1.95rem, 9.5vw, 2.7rem);
-  }
-  .vc-ticket-versus {
-    font-size: 0.66rem;
-    gap: 0.24rem;
-  }
-  .vc-ticket-info-cell {
-    grid-template-columns: 1.1rem minmax(0, 1fr);
-    gap: 0.34rem;
-    padding: 0.6rem 0.16rem;
-  }
-  .vc-ticket-info-cell + .vc-ticket-info-cell {
-    padding-left: 0.54rem;
-  }
-  .vc-ticket-info-cell > svg {
-    width: 16px;
-    height: 16px;
-  }
-  .vc-ticket-info-cell strong {
-    font-size: 0.68rem;
-  }
-  .vc-ticket-info-cell small {
-    font-size: 0.58rem;
-  }
-  .vc-ticket-date small {
-    font-size: 0.65rem;
-  }
-  .vc-ticket-footer {
-    font-size: 0.62rem;
-  }
-  .vc-ticket-going svg {
-    width: 18px;
-    height: 18px;
-  }
-  .vc-ticket-badge {
-    max-width: 7rem;
-    font-size: 0.53rem;
-  }
-  .vc-ticket-stub-copy {
-    font-size: 0.67rem;
-  }
-}
 
-@media (min-width: 620px) {
-  .vc-ticket:has(.vc-ticket-photo) {
-    grid-template-columns: minmax(10.5rem, 31%) minmax(0, 1fr) 4.5rem;
+  .vc-ticket-content {
+    padding: 4.8% 5.2% 4.8% 5%;
+    gap: 1.2%;
   }
-  .vc-ticket-photo {
-    grid-column: 1;
-    grid-row: 1;
+
+  .vc-ticket-photo-badge {
+    max-width: 82%;
+    padding: 0.16rem 0.24rem 0.13rem;
   }
-  .vc-ticket-photo + .vc-ticket-main {
-    grid-column: 2;
-    grid-row: 1;
+
+  .vc-ticket-next-label {
+    letter-spacing: 0.11em;
   }
-  .vc-ticket-stub {
-    grid-column: 3;
-    grid-row: 1;
+
+  .vc-ticket-title {
+    font-size: clamp(0.95rem, 5.8vw, 1.55rem);
   }
-  .vc-ticket-photo {
-    border-bottom: 0;
-    border-right: 1px solid rgba(23, 19, 11, 0.24);
-    display: grid;
-    place-items: center;
-  }
-  .vc-ticket-photo img {
-    max-height: 14rem;
+
+  .vc-ticket-badge {
+    max-width: 52%;
+    letter-spacing: 0.035em;
   }
 }

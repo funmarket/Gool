@@ -5,7 +5,7 @@ import { get, post } from '../shared/api/http-client';
 import { majorToMinor, moneyInputStep } from '../lib/format';
 import { notify } from '../lib/telegram';
 import { useCommunity } from '../providers/CommunityProvider';
-import type { Club, EventItem } from '../types/domain';
+import type { Club, EventItem, FanHub } from '../types/domain';
 
 export function CreateEventPage() {
   const { active } = useCommunity();
@@ -33,11 +33,17 @@ export function CreateEventPage() {
   >('CONFIRM_IMMEDIATELY');
   const [homeClubId, setHomeClubId] = useState('');
   const [awayClubId, setAwayClubId] = useState('');
+  const [fanHubId, setFanHubId] = useState('');
 
   const clubs = useQuery({
     queryKey: ['clubs'],
     queryFn: () => get<Club[]>('/api/v1/watch/clubs?limit=100'),
     enabled: type === 'WATCH',
+  });
+  const fanHubs = useQuery({
+    queryKey: ['watch-hubs', active?.id],
+    queryFn: () => get<FanHub[]>(`/api/v1/watch/hubs?communityId=${active?.id}`),
+    enabled: type === 'WATCH' && Boolean(active),
   });
 
   const defaultCashEnabled =
@@ -54,8 +60,10 @@ export function CreateEventPage() {
     title.trim().length >= 2 &&
     date &&
     (type !== 'PLAY' || !isPaid || cashAccepted) &&
-    (type !== 'WATCH' || !homeClubId || homeClubId !== awayClubId),
+    (type !== 'WATCH' || ((!homeClubId || homeClubId !== awayClubId) && Boolean(fanHubId))),
   );
+
+  const selectedFanHub = fanHubs.data?.find((hub) => hub.id === fanHubId);
 
   const create = useMutation({
     mutationFn: () => {
@@ -66,7 +74,6 @@ export function CreateEventPage() {
         description: description.trim() || undefined,
         startsAt: new Date(date).toISOString(),
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        venueName: venue.trim() || undefined,
         capacity: Number(capacity) || undefined,
         waitlistEnabled: true,
         cashRsvpPolicy,
@@ -81,6 +88,7 @@ export function CreateEventPage() {
         return post<EventItem>('/api/v1/events', {
           ...common,
           type: 'PLAY',
+          venueName: venue.trim() || undefined,
           pitchType,
           skillLevel: 'MIXED',
           format,
@@ -95,6 +103,7 @@ export function CreateEventPage() {
         type: 'WATCH',
         homeClubId: homeClubId || undefined,
         awayClubId: awayClubId || undefined,
+        fanHubId,
       });
     },
     onSuccess: (event) => {
@@ -158,15 +167,60 @@ export function CreateEventPage() {
             />
           </label>
 
-          <label className="text-xs font-black">
-            Venue
-            <input
-              className="hooma-input mt-1"
-              value={venue}
-              onChange={(event) => setVenue(event.target.value)}
-              placeholder="Pitch / pub / fan hub"
-            />
-          </label>
+          {type === 'WATCH' ? (
+            <>
+              <label className="text-xs font-black">
+                Fan hub
+                <select
+                  className="hooma-input mt-1"
+                  value={fanHubId}
+                  onChange={(event) => setFanHubId(event.target.value)}
+                >
+                  <option value="">Select a fan hub</option>
+                  {fanHubs.data?.map((hub) => (
+                    <option key={hub.id} value={hub.id}>
+                      {hub.place?.name || hub.name} · {hub.place?.houma || hub.venueName}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {selectedFanHub ? (
+                <div
+                  className="rounded-2xl border p-4 text-xs leading-5"
+                  style={{ borderColor: 'var(--border)' }}
+                >
+                  <div className="font-black">Selected fan hub</div>
+                  <div className="mt-1">
+                    {selectedFanHub.place?.name || selectedFanHub.name} ·{' '}
+                    {selectedFanHub.place?.category || selectedFanHub.venueName}
+                  </div>
+                  <div className="muted">
+                    {selectedFanHub.place?.address ||
+                      selectedFanHub.address ||
+                      'Address will follow the hub'}
+                  </div>
+                </div>
+              ) : fanHubs.data && fanHubs.data.length === 0 ? (
+                <button
+                  type="button"
+                  className="ghost-button"
+                  onClick={() => navigate('/watch/places/new')}
+                >
+                  Add a Place before creating a Watch event
+                </button>
+              ) : null}
+            </>
+          ) : (
+            <label className="text-xs font-black">
+              Venue
+              <input
+                className="hooma-input mt-1"
+                value={venue}
+                onChange={(event) => setVenue(event.target.value)}
+                placeholder="Pitch venue"
+              />
+            </label>
+          )}
 
           <label className="text-xs font-black">
             Capacity

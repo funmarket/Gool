@@ -19,7 +19,7 @@ export function MorePage() {
         {active && ['OWNER', 'ADMIN'].includes(active.role) && (
           <ActionRow
             icon={<ShieldCheck />}
-            title="Admin"
+            title="Coach Control Room"
             onClick={() => navigate('/admin')}
             variant="vintage"
           />

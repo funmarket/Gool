@@ -12,6 +12,36 @@ import type {
   RsvpRepository,
 } from '../application/event-repository.js';
 
+type WatchFanHubLocation = {
+  venueName: string;
+  address: string | null;
+  latitude: Prisma.Decimal;
+  longitude: Prisma.Decimal;
+};
+
+const watchDetailsInclude = {
+  homeClub: true,
+  awayClub: true,
+  fanHub: {
+    include: {
+      place: {
+        include: {
+          menuItems: { where: { deletedAt: null }, orderBy: { sortOrder: 'asc' as const } },
+        },
+      },
+    },
+  },
+};
+
+export function eventLocationFromFanHub(fanHub: WatchFanHubLocation) {
+  return {
+    venueName: fanHub.venueName,
+    address: fanHub.address,
+    latitude: fanHub.latitude,
+    longitude: fanHub.longitude,
+  };
+}
+
 export class PrismaEventRepository implements EventRepository {
   constructor(private readonly db: DatabaseClient) {}
 
@@ -44,7 +74,7 @@ export class PrismaEventRepository implements EventRepository {
       include: {
         community: { select: { id: true, name: true, avatarUrl: true } },
         playDetails: true,
-        watchDetails: { include: { homeClub: true, awayClub: true } },
+        watchDetails: { include: watchDetailsInclude },
         paymentMethods: { where: { enabled: true }, orderBy: { sortOrder: 'asc' } },
         rsvps: {
           where: { userId },
@@ -85,6 +115,36 @@ export class PrismaEventRepository implements EventRepository {
   async create(userId: string, input: EventCreateInput) {
     return this.db.$transaction(
       async (tx) => {
+        const watchFanHub =
+          input.type === 'WATCH' && input.fanHubId
+            ? await tx.fanHub.findFirst({
+                where: { id: input.fanHubId, deletedAt: null },
+                select: {
+                  id: true,
+                  communityId: true,
+                  venueName: true,
+                  address: true,
+                  latitude: true,
+                  longitude: true,
+                },
+              })
+            : null;
+        if (input.type === 'WATCH' && !watchFanHub) {
+          throw new AppError(404, 'FAN_HUB_NOT_FOUND', 'Fan Hub not found');
+        }
+        if (
+          input.type === 'WATCH' &&
+          watchFanHub &&
+          watchFanHub.communityId !== null &&
+          watchFanHub.communityId !== input.communityId
+        ) {
+          throw new AppError(
+            409,
+            'FAN_HUB_COMMUNITY_MISMATCH',
+            'The selected Fan Hub is not available to this community.',
+          );
+        }
+
         const event = await tx.event.create({
           data: {
             communityId: input.communityId,
@@ -95,10 +155,14 @@ export class PrismaEventRepository implements EventRepository {
             startsAt: input.startsAt,
             endsAt: input.endsAt || null,
             timezone: input.timezone,
-            venueName: input.venueName || null,
-            address: input.address || null,
-            latitude: input.latitude ?? null,
-            longitude: input.longitude ?? null,
+            ...(input.type === 'WATCH' && watchFanHub
+              ? eventLocationFromFanHub(watchFanHub)
+              : {
+                  venueName: input.venueName || null,
+                  address: input.address || null,
+                  latitude: input.latitude ?? null,
+                  longitude: input.longitude ?? null,
+                }),
             capacity: input.capacity ?? null,
             waitlistEnabled: input.waitlistEnabled,
             cashRsvpPolicy: input.cashRsvpPolicy,
@@ -130,6 +194,7 @@ export class PrismaEventRepository implements EventRepository {
               eventId: event.id,
               homeClubId: input.homeClubId || null,
               awayClubId: input.awayClubId || null,
+              fanHubId: input.fanHubId || null,
             },
           });
         }
@@ -145,7 +210,12 @@ export class PrismaEventRepository implements EventRepository {
 
         return tx.event.findUniqueOrThrow({
           where: { id: event.id },
-          include: { playDetails: true, watchDetails: true, paymentMethods: true, chatRoom: true },
+          include: {
+            playDetails: true,
+            watchDetails: { include: watchDetailsInclude },
+            paymentMethods: true,
+            chatRoom: true,
+          },
         });
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
@@ -185,6 +255,31 @@ export class PrismaEventRepository implements EventRepository {
           }
         }
 
+        const locationInputPresent =
+          input.venueName !== undefined ||
+          input.address !== undefined ||
+          input.latitude !== undefined ||
+          input.longitude !== undefined;
+        const watchFanHub =
+          event.type === 'WATCH' && locationInputPresent
+            ? await tx.watchEventDetails.findUnique({
+                where: { eventId },
+                select: {
+                  fanHub: {
+                    select: {
+                      venueName: true,
+                      address: true,
+                      latitude: true,
+                      longitude: true,
+                    },
+                  },
+                },
+              })
+            : null;
+        const watchLocationData = watchFanHub?.fanHub
+          ? eventLocationFromFanHub(watchFanHub.fanHub)
+          : null;
+
         const updated = await tx.event.update({
           where: { id: eventId },
           data: {
@@ -193,10 +288,15 @@ export class PrismaEventRepository implements EventRepository {
             ...(input.startsAt !== undefined ? { startsAt: input.startsAt } : {}),
             ...(input.endsAt !== undefined ? { endsAt: input.endsAt } : {}),
             ...(input.timezone !== undefined ? { timezone: input.timezone } : {}),
-            ...(input.venueName !== undefined ? { venueName: input.venueName } : {}),
-            ...(input.address !== undefined ? { address: input.address } : {}),
-            ...(input.latitude !== undefined ? { latitude: input.latitude } : {}),
-            ...(input.longitude !== undefined ? { longitude: input.longitude } : {}),
+            ...(watchLocationData ??
+              (event.type === 'WATCH'
+                ? {}
+                : {
+                    ...(input.venueName !== undefined ? { venueName: input.venueName } : {}),
+                    ...(input.address !== undefined ? { address: input.address } : {}),
+                    ...(input.latitude !== undefined ? { latitude: input.latitude } : {}),
+                    ...(input.longitude !== undefined ? { longitude: input.longitude } : {}),
+                  })),
             ...(input.capacity !== undefined ? { capacity: input.capacity } : {}),
             ...(input.waitlistEnabled !== undefined
               ? { waitlistEnabled: input.waitlistEnabled }
@@ -274,7 +374,7 @@ export class PrismaEventRepository implements EventRepository {
             },
           },
         },
-        watchDetails: { include: { homeClub: true, awayClub: true } },
+        watchDetails: { include: watchDetailsInclude },
         paymentMethods: { where: { enabled: true }, orderBy: { sortOrder: 'asc' } },
         rsvps: {
           include: { user: { include: { profile: true } }, paymentIntent: true },

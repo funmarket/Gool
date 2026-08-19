@@ -33,6 +33,10 @@
   --shadow: 0 18px 42px rgba(0, 0, 0, 0.34);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --font-body: 17px;
+  --font-action: 17px;
+  --font-secondary: 15px;
+  --font-meta: 14px;
 }
 
 * {
@@ -49,6 +53,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
+  font-size: var(--font-body);
   color: var(--text);
   background:
     radial-gradient(circle at 78% -8%, rgba(201, 155, 43, 0.075), transparent 30rem),
@@ -76,6 +81,8 @@ select {
 }
 button {
   color: inherit;
+  font-size: var(--font-action);
+  font-weight: 600;
 }
 button,
 a {
@@ -237,7 +244,8 @@ a {
     color: var(--cream);
   }
   .section-kicker {
-    @apply text-[11px] font-extrabold uppercase tracking-[0.16em];
+    @apply font-extrabold uppercase tracking-[0.16em];
+    font-size: var(--font-meta);
     color: var(--accent);
   }
   .muted {
@@ -270,7 +278,9 @@ a {
     box-shadow: 0 0 0 3px rgba(183, 227, 29, 0.075);
   }
   .accent-button {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-black transition active:scale-[.985] disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-3.5 transition active:scale-[.985] disabled:opacity-50;
+    font-size: var(--font-action);
+    font-weight: 600;
     color: #101405;
     background: linear-gradient(180deg, #c8ee37, #9fc31d);
     border: 1px solid #d8ef62;
@@ -280,7 +290,9 @@ a {
       0 7px 20px rgba(0, 0, 0, 0.24);
   }
   .ghost-button {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-extrabold transition active:scale-[.985];
+    @apply inline-flex items-center justify-center gap-2 px-4 py-3.5 transition active:scale-[.985];
+    font-size: var(--font-action);
+    font-weight: 600;
     color: var(--text);
     background: #090a08;
     border: 1px solid rgba(210, 166, 45, 0.34);
@@ -298,7 +310,8 @@ a {
     color: var(--text);
   }
   .chip {
-    @apply inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold;
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 font-extrabold;
+    font-size: var(--font-meta);
     color: var(--cream);
     background: rgba(255, 255, 255, 0.025);
     border: 1px solid rgba(210, 166, 45, 0.28);

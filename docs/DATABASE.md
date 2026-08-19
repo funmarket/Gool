@@ -66,7 +66,9 @@ Historical provider checkout IDs and financial records are persistence data. Do 
 
 ### Watch/Fan Hub
 
-`FanHub`, `FanHubClub`, `VenueDeal`, `CheckIn`
+`Place`, `PlaceOwnerClaim`, `PlaceMenuItem`, `FanHub`, `FanHubClub`, `WatchEventDetails.fanHubId`, `VenueDeal`, `CheckIn`
+
+`Place` is the physical business/venue profile: name, category, photo, contact details, address, city, houma, coordinates, owner-claim status, and menu preview items. A `FanHub` can link to a `Place` when that physical location hosts watch events. Watch events attach to `FanHub` through `WatchEventDetails.fanHubId`, while venue profile details are projected through the linked Place.
 
 ### Chat
 

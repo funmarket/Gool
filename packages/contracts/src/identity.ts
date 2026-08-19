@@ -1,5 +1,6 @@
 import { z } from 'zod';
 export const profileUpdateSchema = z.object({
+  photoUrl: z.string().trim().url().max(1000).nullable().optional(),
   skillLevel: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'MIXED']).optional(),
   skillRating: z.number().int().min(1).max(100).optional(),
   preferredPositions: z
@@ -7,6 +8,9 @@ export const profileUpdateSchema = z.object({
     .max(5)
     .optional(),
   favoriteClubId: z.string().nullable().optional(),
+  profileAudience: z.enum(['SPECTATOR', 'FAN']).optional(),
   bio: z.string().trim().max(280).nullable().optional(),
   themeOverride: z.enum(['TELEGRAM', 'LIGHT', 'DARK']).optional(),
 });
+
+export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;

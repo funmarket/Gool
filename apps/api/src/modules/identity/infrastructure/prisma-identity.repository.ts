@@ -1,4 +1,5 @@
 import type { DatabaseClient } from '../../../infrastructure/database/prisma.js';
+import type { ProfileUpdateInput } from '@hooma/contracts';
 import type { IdentityRepository } from '../application/identity-repository.js';
 import type { TelegramIdentityInput } from '../domain/types.js';
 
@@ -58,11 +59,35 @@ export class PrismaIdentityRepository implements IdentityRepository {
     });
   }
 
-  async updateProfile(userId: string, input: Record<string, unknown>) {
-    const { themeOverride, ...profile } = input;
+  async updateProfile(userId: string, input: ProfileUpdateInput) {
+    const { themeOverride, photoUrl, favoriteClubId, ...profile } = input;
+    const profileUpdate = {
+      ...(profile.skillLevel !== undefined ? { skillLevel: profile.skillLevel } : {}),
+      ...(profile.skillRating !== undefined ? { skillRating: profile.skillRating } : {}),
+      ...(profile.preferredPositions !== undefined
+        ? { preferredPositions: profile.preferredPositions }
+        : {}),
+      ...(profile.profileAudience !== undefined
+        ? { profileAudience: profile.profileAudience }
+        : {}),
+      ...(profile.bio !== undefined ? { bio: profile.bio } : {}),
+      ...(favoriteClubId !== undefined
+        ? {
+            favoriteClub: favoriteClubId
+              ? { connect: { id: favoriteClubId } }
+              : { disconnect: true },
+          }
+        : {}),
+    };
     return this.db.$transaction(async (tx) => {
-      if (Object.keys(profile).length) {
-        await tx.playerProfile.update({ where: { userId }, data: profile });
+      if (photoUrl !== undefined) {
+        await tx.user.update({
+          where: { id: userId },
+          data: { photoUrl },
+        });
+      }
+      if (Object.keys(profileUpdate).length) {
+        await tx.playerProfile.update({ where: { userId }, data: profileUpdate });
       }
       if (themeOverride) {
         await tx.userPreference.update({

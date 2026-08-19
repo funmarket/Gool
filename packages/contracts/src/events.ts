@@ -31,6 +31,7 @@ const play = z.object({
 const watch = z.object({
   homeClubId: z.string().optional(),
   awayClubId: z.string().optional(),
+  fanHubId: z.string().min(1),
 });
 export const eventCreateSchema = z
   .discriminatedUnion('type', [

@@ -44,8 +44,8 @@
   border: 1px solid var(--hv-gold);
   background: rgba(4, 5, 3, 0.86);
   color: var(--hv-cream);
-  font-size: 0.64rem;
-  font-weight: 900;
+  font-size: var(--font-meta);
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   border-radius: 5px;
@@ -63,6 +63,7 @@
 .venue-detail-header-type {
   margin: 0.3rem 0 0;
   color: var(--hv-muted);
+  font-size: var(--font-secondary);
 }
 .venue-detail-header-meta {
   display: flex;
@@ -72,7 +73,7 @@
   padding: 0.7rem 0;
   border-top: 1px solid rgba(232, 221, 196, 0.16);
   color: var(--hv-muted);
-  font-size: 0.84rem;
+  font-size: var(--font-secondary);
 }
 .venue-detail-header-meta b {
   color: var(--hv-lime);
@@ -89,8 +90,8 @@
   border: 1px solid rgba(183, 227, 29, 0.4);
   border-radius: 4px;
   color: var(--hv-lime);
-  font-size: 0.72rem;
-  font-weight: 850;
+  font-size: var(--font-meta);
+  font-weight: 600;
   text-transform: uppercase;
 }
 .venue-detail-join,
@@ -99,7 +100,8 @@
   min-height: 3.2rem;
   border-radius: 7px;
   font: inherit;
-  font-weight: 900;
+  font-size: var(--font-action);
+  font-weight: 600;
 }
 .venue-detail-join {
   border: 1px solid #d6ef57;

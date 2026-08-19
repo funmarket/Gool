@@ -83,7 +83,9 @@ Owns football-specific match settings, team balancing and formations. It does no
 
 ### Watch
 
-Owns club references, Fan Hubs, venue deals and distance-gated check-ins. A community-specific Fan Hub cannot be attached to a different community's Watch Event.
+Owns club references, Places, Fan Hubs, venue deals and distance-gated check-ins. A Place is the physical business profile for cafes, lounges, and venues: photo, contact details, about text, address, houma, coordinates, menu preview, and owner-claim metadata. A Fan Hub is the Watch participation layer that may point at a Place and can be associated with clubs and Watch events.
+
+Watch events persist their authoritative venue via `WatchEventDetails.fanHubId`, and a community-specific Fan Hub cannot be attached to a different community's Watch Event. Event detail/list projections should use the linked Place for venue profile fields instead of duplicating venue photo/contact/menu data on Event rows. Watch-owned Place UI routes live under `/watch/places`; compatibility routes may point at the same page but must not become a second Place system.
 
 ### Requests
 

@@ -27,7 +27,7 @@ export function ActionRow({
     >
       <span className="icon-well">{icon}</span>
       <span className="min-w-0 flex-1">
-        <span className="block text-[17px] font-black tracking-[-.015em]">{title}</span>
+        <span className="block text-[17px] font-semibold tracking-[-.015em]">{title}</span>
         {subtitle && <span className="mt-1 block text-xs font-semibold muted">{subtitle}</span>}
       </span>
       {trailing || <ChevronRight size={22} className="muted" />}

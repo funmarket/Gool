@@ -77,13 +77,13 @@ Current Home includes:
 - Match Day hero
 - Events presentation
 - Quick Actions
-- Trending Now placeholder
+- HOOMA NOW placeholder
 
 ### Known gaps / regressions
 
-- `Trending Now` is still a placeholder and is not yet wired to the planned football-data feed.
+- `HOOMA NOW` is still a placeholder and is not yet wired to the planned football-data feed.
 - `ULTRAS` is not yet implemented in the current source.
-- Home `Events -> See all` currently routes to Play even though Home can surface Watch events; this should be corrected when cleanup begins.
+- Home `Events -> See all` now routes to the combined Events landing page so both Play and Watch events can be browsed from one place.
 - Quick Action status text for Requests/Ride/FundMe has returned in source even though the approved UI direction removed those counters/status labels.
 
 ## Play — Implemented core / Player Listings scaffold
@@ -104,23 +104,30 @@ Player Listings:
 - the production Player Listings backend/data path is not yet implemented
 - current Players content should therefore be treated as a scaffold, not a completed feature
 
-## Watch — Implemented backend core with verified integration issues
+## Watch / Places / Fan Hubs — Implemented core
 
 Implemented backend/domain capabilities include:
 
 - clubs
+- Places as physical business/venue profiles with owner-claim metadata
+- Place menu items, required photo URL, required public contact method, about/address/Houma fields
 - Fan Hubs
+- linked Place -> Fan Hub creation from the Mini App `Add a Place` flow
+- authoritative fan-hub association on Watch events
 - membership-aware hub browsing
+- Place-backed Watch cards and Event Detail venue/profile/menu projection
+- canonical Watch Places routes: `/watch/places`, `/watch/places/new`, `/watch/places/:placeId`
+- dedicated Place Detail page with real upcoming Watch events queried by Place
+- Watch feed collector tickets rendered through the supplied reusable empty-ticket shell
 - 250m check-in distance gate
 - community/Fan Hub/Event consistency validation
 - time-bounded venue-deal visibility/unlocking
 
-### Verified issues requiring correction
+### Remaining Watch gaps
 
-1. **Watch event/Fan Hub association:** the current Watch frontend can pair events and Fan Hubs by array position rather than by an authoritative event-to-venue relationship. This can show incorrect venue information or an incorrect `Official Venue` presentation.
-2. **Event Detail venue DTO mismatch:** the Watch/Event Detail UI expects venue fields such as venue photo, Houma, phone, About, menu, official-venue state, and upcoming venue events that the Event API does not currently project as an authoritative detail DTO.
-
-Watch should not be considered fully integration-clean until those two issues are corrected.
+- Venue owner claims are recorded as pending, but there is not yet a Coach/Admin approval UI.
+- Place photo capture intentionally accepts a URL. Native upload/storage is not part of the current Watch implementation.
+- Venue deals exist in the backend, but the Mini App does not yet expose a complete owner-facing deal-management workflow.
 
 ## Teams — Implemented core
 
@@ -161,9 +168,9 @@ Planned behavior includes:
 - controlled global official-team selection rather than arbitrary free-text fake teams
 - official team identity plus ULTRAS community identity
 - vertical supporter-community banner feed
-- Home ULTRAS banner entry above Trending Now
+- Home ULTRAS banner entry above HOOMA NOW
 
-## Trending Now — Planned / placeholder only
+## HOOMA NOW — Planned / placeholder only
 
 The Home section exists visually, but the real football-data feed is not yet implemented.
 
@@ -263,6 +270,8 @@ Current routes/pages include the major flows for:
 - Home
 - Play
 - Watch
+- Places
+- Add a Place
 - HOOMA/community
 - Pitch
 - Teams
