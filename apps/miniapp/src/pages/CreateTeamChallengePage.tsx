@@ -2,9 +2,13 @@ import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CalendarDays, MapPin, Send, Shield } from 'lucide-react';
-import { get, post } from '../shared/api/http-client';
+import {
+  createTeamChallenge,
+  getTeam,
+  listManagedTeams,
+  teamQueryKeys,
+} from '../features/teams/api';
 import { notify } from '../lib/telegram';
-import type { TeamChallengeItem, TeamDetailItem, TeamManagedPage } from '../types/domain';
 
 export function CreateTeamChallengePage() {
   const { teamId = '' } = useParams();
@@ -15,13 +19,13 @@ export function CreateTeamChallengePage() {
   const [message, setMessage] = useState('');
 
   const target = useQuery({
-    queryKey: ['team', teamId],
-    queryFn: () => get<TeamDetailItem>(`/api/v1/teams/${teamId}`),
+    queryKey: teamQueryKeys.detail(teamId),
+    queryFn: () => getTeam(teamId),
     enabled: Boolean(teamId),
   });
   const managed = useQuery({
-    queryKey: ['teams', 'managed'],
-    queryFn: () => get<TeamManagedPage>('/api/v1/teams/managed'),
+    queryKey: teamQueryKeys.managed(),
+    queryFn: listManagedTeams,
   });
 
   const availableChallengers = useMemo(
@@ -32,10 +36,10 @@ export function CreateTeamChallengePage() {
 
   const createChallenge = useMutation({
     mutationFn: () =>
-      post<TeamChallengeItem>('/api/v1/teams/challenges', {
+      createTeamChallenge({
         challengerTeamId: selectedChallengerId,
         challengedTeamId: teamId,
-        ...(startsAt ? { proposedStartsAt: new Date(startsAt).toISOString() } : {}),
+        ...(startsAt ? { proposedStartsAt: new Date(startsAt) } : {}),
         ...(venue.trim() ? { proposedVenue: venue.trim() } : {}),
         ...(message.trim() ? { message: message.trim() } : {}),
       }),
