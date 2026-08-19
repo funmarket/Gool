@@ -1,19 +1,19 @@
 # GitHub Setup
 
-Canonical repository: `funmarket/Gool`.
+Canonical repository: `funmarket/HOOMA`.
 
 ## First push
 
-Do not initialize or upload a second generated codebase. The canonical cleaned `GOOL/` directory is the only source tree that should be committed.
+Do not initialize or upload a second generated codebase. The canonical cleaned `HOOMA/` directory is the only source tree that should be committed.
 
 After all pre-GitHub gates pass:
 
 ```bash
 git init
 git add .
-git commit -m "feat: establish GOOL application foundation"
+git commit -m "feat: establish HOOMA application foundation"
 git branch -M main
-git remote add origin git@github.com:funmarket/Gool.git
+git remote add origin git@github.com:funmarket/HOOMA.git
 git push -u origin main
 ```
 
