@@ -1,4 +1,5 @@
 export interface TelegramBotApi {
+  setChatMenuButton(webAppUrl: string): Promise<void>;
   createStarsInvoiceLink(input: {
     title: string;
     description: string;
