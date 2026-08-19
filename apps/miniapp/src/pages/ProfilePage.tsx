@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  getCurrentProfile,
+  listFavoriteClubOptions,
+  profileQueryKeys,
+  updateCurrentProfile,
+} from '../features/profile/api';
 import { notify } from '../lib/telegram';
-import { get, patch } from '../shared/api/http-client';
 import type { Club, Me } from '../types/domain';
 
 const POSITION_OPTIONS = ['GK', 'CB', 'FB', 'WB', 'DM', 'CM', 'AM', 'W', 'ST', 'ANY'] as const;
@@ -174,7 +179,7 @@ function ProfileForm({ me, clubs }: { me: Me; clubs: Club[] }) {
 
   const mutation = useMutation({
     mutationFn: () =>
-      patch<Me>('/api/v1/me/profile', {
+      updateCurrentProfile({
         photoUrl: photoUrl.trim() || null,
         skillLevel: skill,
         favoriteClubId: favoriteClubId || null,
@@ -183,7 +188,7 @@ function ProfileForm({ me, clubs }: { me: Me; clubs: Club[] }) {
         preferredPositions,
       }),
     onSuccess: (updated) => {
-      queryClient.setQueryData(['me'], updated);
+      queryClient.setQueryData(profileQueryKeys.me(), updated);
       notify('success');
     },
     onError: () => notify('error'),
@@ -329,10 +334,10 @@ function ProfileForm({ me, clubs }: { me: Me; clubs: Club[] }) {
 }
 
 export function ProfilePage() {
-  const meQuery = useQuery({ queryKey: ['me'], queryFn: () => get<Me>('/api/v1/me') });
+  const meQuery = useQuery({ queryKey: profileQueryKeys.me(), queryFn: getCurrentProfile });
   const clubsQuery = useQuery({
-    queryKey: ['clubs'],
-    queryFn: () => get<Club[]>('/api/v1/watch/clubs'),
+    queryKey: profileQueryKeys.favoriteClubOptions(),
+    queryFn: listFavoriteClubOptions,
   });
 
   return (
