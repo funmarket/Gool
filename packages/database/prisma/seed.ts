@@ -18,10 +18,10 @@ async function main() {
     },
   });
   const community = await prisma.community.upsert({
-    where: { slug: 'gool-central' },
+    where: { slug: 'hooma-central' },
     update: {},
     create: {
-      slug: 'gool-central',
+      slug: 'hooma-central',
       name: 'HOOMA Central',
       description: 'Demo football community for local development.',
       city: 'Demo City',
