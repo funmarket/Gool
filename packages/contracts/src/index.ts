@@ -11,3 +11,4 @@ export * from './places.js';
 export * from './formations.js';
 export * from './chat.js';
 export * from './teams.js';
+export * from './pitch.js';
