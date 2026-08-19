@@ -267,6 +267,10 @@ enum PlaceOwnerClaimStatus {
   REJECTED
 }
 
+enum PlatformRole {
+  PLATFORM_ADMIN
+}
+
 model User {
   id             String    @id @default(cuid())
   telegramUserId String    @unique @db.VarChar(32)
@@ -318,6 +322,7 @@ model User {
   declinedTeamChallenges  TeamChallenge[]        @relation("TeamChallengeDecliner")
   cancelledTeamChallenges TeamChallenge[]        @relation("TeamChallengeCanceller")
   teamChallengeMessages   TeamChallengeMessage[]
+  platformRoleAssignments PlatformRoleAssignment[]
 
   @@index([createdAt])
   @@index([deletedAt])
@@ -1371,6 +1376,19 @@ model EventChatMessage {
   @@index([roomId, createdAt, id])
   @@index([userId])
   @@index([deletedAt])
+}
+
+model PlatformRoleAssignment {
+  id        String       @id @default(cuid())
+  userId    String
+  role      PlatformRole
+  grantedAt DateTime     @default(now())
+  revokedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, role])
+  @@index([role, revokedAt])
 }
 
 model AuditLog {
