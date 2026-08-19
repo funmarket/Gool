@@ -37,7 +37,9 @@ export type PitchOwnerRecord = PitchListingRecord & {
 };
 
 export interface PitchRepository {
-  listPublic(input: PitchListQuery): Promise<{ items: PitchListingRecord[]; nextCursor: string | null }>;
+  listPublic(
+    input: PitchListQuery,
+  ): Promise<{ items: PitchListingRecord[]; nextCursor: string | null }>;
   getPublic(pitchId: string): Promise<PitchListingRecord | null>;
   listOwned(
     userId: string,
