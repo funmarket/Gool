@@ -1,0 +1,51 @@
+enum PitchVenueType {
+  FOOTBALL_PITCH
+  MINI_PITCH
+  FUTSAL
+  PRIVATE_STADIUM
+  INDOOR_FOOTBALL
+  OUTDOOR_FOOTBALL
+  OTHER_FOOTBALL
+}
+
+enum PitchListingStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  REJECTED
+  INACTIVE
+}
+
+model PitchListing {
+  id                 String             @id @default(cuid())
+  ownerUserId        String
+  name               String             @db.VarChar(120)
+  description        String?            @db.VarChar(1200)
+  photoUrl           String?
+  venueType          PitchVenueType?
+  city               String?            @db.VarChar(100)
+  houma              String?            @db.VarChar(100)
+  fullAddress        String?            @db.VarChar(240)
+  latitude           Decimal?           @db.Decimal(10, 7)
+  longitude          Decimal?           @db.Decimal(10, 7)
+  hourlyRateMinor    BigInt?
+  currency           String?            @db.VarChar(3)
+  publicPhone        String?            @db.VarChar(40)
+  publicEmail        String?            @db.VarChar(160)
+  status             PitchListingStatus @default(DRAFT)
+  submittedAt        DateTime?
+  publishedAt        DateTime?
+  reviewedAt         DateTime?
+  reviewedByUserId   String?
+  rejectionReason    String?            @db.VarChar(500)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  deletedAt          DateTime?
+
+  @@index([status, publishedAt, id])
+  @@index([ownerUserId, status, createdAt])
+  @@index([city, houma, status])
+  @@index([venueType, status])
+  @@index([reviewedByUserId])
+  @@index([deletedAt])
+}
