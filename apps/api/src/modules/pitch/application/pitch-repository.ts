@@ -57,6 +57,7 @@ export interface PitchRepository {
     userId: string,
     pitchId: string,
     fromStatuses: PitchListingStatus[],
+    expectedUpdatedAt: Date,
     data: {
       status: PitchListingStatus;
       submittedAt?: Date | null;
