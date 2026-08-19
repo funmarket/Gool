@@ -4,18 +4,7 @@ import { notify } from '../lib/telegram';
 import { get, patch } from '../shared/api/http-client';
 import type { Club, Me } from '../types/domain';
 
-const POSITION_OPTIONS = [
-  'GK',
-  'CB',
-  'FB',
-  'WB',
-  'DM',
-  'CM',
-  'AM',
-  'W',
-  'ST',
-  'ANY',
-] as const;
+const POSITION_OPTIONS = ['GK', 'CB', 'FB', 'WB', 'DM', 'CM', 'AM', 'W', 'ST', 'ANY'] as const;
 
 const AUDIENCE_OPTIONS = [
   {
