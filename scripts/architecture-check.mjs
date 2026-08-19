@@ -24,6 +24,26 @@ function fail(file, rule, detail) {
   failures.push(`${rel(file)}: ${rule}${detail ? ` (${detail})` : ''}`);
 }
 
+const textExtensions = new Set([
+  '.cjs', '.css', '.env', '.example', '.html', '.js', '.json', '.md', '.mjs', '.prisma',
+  '.sql', '.toml', '.ts', '.tsx', '.txt', '.yml', '.yaml',
+]);
+const legacyProductToken = String.fromCharCode(103, 111, 111, 108);
+const legacyProductPattern = new RegExp(legacyProductToken, 'i');
+const repositoryTextFiles = walk(root, (file) => {
+  const base = path.basename(file);
+  if (base === 'package-lock.json') return true;
+  if (base.startsWith('.env')) return true;
+  return textExtensions.has(path.extname(file).toLowerCase());
+});
+
+for (const file of repositoryTextFiles) {
+  const source = fs.readFileSync(file, 'utf8');
+  if (legacyProductPattern.test(source)) {
+    fail(file, 'legacy product identifier', 'HOOMA is the only active product identity');
+  }
+}
+
 const runtimeFiles = [
   ...walk(path.join(root, 'apps'), (file) => /\.(?:ts|tsx|js|mjs|json)$/.test(file)),
   ...walk(path.join(root, 'packages'), (file) => /\.(?:ts|tsx|js|mjs|json|prisma)$/.test(file)),
@@ -118,4 +138,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('Architecture check passed: Cash + Telegram Stars boundaries are intact.');
+console.log('Architecture check passed: HOOMA naming and Cash + Telegram Stars boundaries are intact.');
