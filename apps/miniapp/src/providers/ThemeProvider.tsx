@@ -9,8 +9,11 @@ import {
 } from 'react';
 import { themeParams } from '@tma.js/sdk-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { get, patch } from '../shared/api/http-client';
-import type { Me } from '../types/domain';
+import {
+  getCurrentProfile,
+  profileQueryKeys,
+  updateCurrentProfile,
+} from '../features/profile/api';
 
 type ThemeMode = 'telegram' | 'dark' | 'light';
 type ThemeContextValue = {
@@ -68,8 +71,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [telegramResolved, setTelegramResolved] = useState<'dark' | 'light'>(() => telegramTheme());
 
   const meQuery = useQuery({
-    queryKey: ['me'],
-    queryFn: () => get<Me>('/api/v1/me'),
+    queryKey: profileQueryKeys.me(),
+    queryFn: getCurrentProfile,
     staleTime: 60_000,
   });
 
@@ -79,8 +82,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const persistTheme = useMutation({
     mutationFn: (next: ThemeMode) =>
-      patch<Me>('/api/v1/me/profile', { themeOverride: toServerTheme(next) }),
-    onSuccess: (updated) => queryClient.setQueryData(['me'], updated),
+      updateCurrentProfile({ themeOverride: toServerTheme(next) }),
+    onSuccess: (updated) => queryClient.setQueryData(profileQueryKeys.me(), updated),
   });
 
   useEffect(() => {
