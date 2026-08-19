@@ -26,6 +26,8 @@ import { PrismaWatchRepository } from '../modules/watch/infrastructure/prisma-wa
 import { WatchService } from '../modules/watch/application/watch.service.js';
 import { PrismaPlaceRepository } from '../modules/places/infrastructure/prisma-place.repository.js';
 import { PlaceService } from '../modules/places/application/place.service.js';
+import { PrismaPitchRepository } from '../modules/pitch/infrastructure/prisma-pitch.repository.js';
+import { PitchService } from '../modules/pitch/application/pitch.service.js';
 import { PrismaPlayRepository } from '../modules/play/infrastructure/prisma-play.repository.js';
 import { PlayService } from '../modules/play/application/play.service.js';
 import { PrismaChatRepository } from '../modules/chat/infrastructure/prisma-chat.repository.js';
@@ -83,6 +85,8 @@ export function buildContainer() {
   const watch = new WatchService(watchRepository, communities);
   const placeRepository = new PrismaPlaceRepository(db);
   const places = new PlaceService(placeRepository, communities);
+  const pitchRepository = new PrismaPitchRepository(db);
+  const pitch = new PitchService(pitchRepository);
 
   const playRepository = new PrismaPlayRepository(db);
   const play = new PlayService(playRepository, communities);
@@ -113,6 +117,7 @@ export function buildContainer() {
       fundraising: fundraiserRepository,
       watch: watchRepository,
       places: placeRepository,
+      pitch: pitchRepository,
       play: playRepository,
       chat: chatRepository,
       adminRead: adminReadRepository,
@@ -129,6 +134,7 @@ export function buildContainer() {
       fundraising,
       watch,
       places,
+      pitch,
       play,
       chat,
       admin,
