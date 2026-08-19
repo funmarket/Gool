@@ -57,7 +57,11 @@ export class PitchService {
 
   async update(userId: string, pitchId: string, input: PitchUpdateInput) {
     const current = await this.getOwned(userId, pitchId);
-    if (!editableStatuses.includes(current.status as (typeof editableStatuses)[number])) {
+    if (
+      current.status !== 'DRAFT' &&
+      current.status !== 'REJECTED' &&
+      current.status !== 'INACTIVE'
+    ) {
       throw new AppError(
         409,
         'PITCH_EDIT_NOT_ALLOWED',
@@ -77,7 +81,7 @@ export class PitchService {
 
   async submit(userId: string, pitchId: string) {
     const current = await this.getOwned(userId, pitchId);
-    if (!['DRAFT', 'REJECTED'].includes(current.status)) {
+    if (current.status !== 'DRAFT' && current.status !== 'REJECTED') {
       throw new AppError(
         409,
         'PITCH_SUBMIT_NOT_ALLOWED',
