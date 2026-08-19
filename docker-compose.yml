@@ -4,10 +4,10 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: gool
+      POSTGRES_DB: hooma
     ports:
       - '5432:5432'
     volumes:
-      - gool_pg:/var/lib/postgresql/data
+      - hooma_pg:/var/lib/postgresql/data
 volumes:
-  gool_pg:
+  hooma_pg:
