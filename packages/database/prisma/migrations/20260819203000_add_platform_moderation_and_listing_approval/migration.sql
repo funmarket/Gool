@@ -31,6 +31,8 @@ ALTER TABLE "Place" ADD CONSTRAINT "Place_verified_fields_required_check" CHECK 
     AND "houma" IS NOT NULL AND length(btrim("houma")) > 0
     AND "phone" IS NOT NULL AND length(btrim("phone")) > 0
     AND "photoUrl" IS NOT NULL AND length(btrim("photoUrl")) > 0
+    AND "latitude" IS NOT NULL
+    AND "longitude" IS NOT NULL
   )
 );
 
