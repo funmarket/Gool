@@ -5,6 +5,15 @@ import { Search, SlidersHorizontal } from 'lucide-react';
 import { TeamsHero } from '../components/teams/TeamsHero';
 import { TeamDiscoveryCard } from '../components/teams/TeamDiscoveryCard';
 import { UpcomingGameCard } from '../components/teams/UpcomingGameCard';
+import {
+  acceptTeamChallenge,
+  declineTeamChallenge,
+  listIncomingChallenges,
+  listOutgoingChallenges,
+  listTeamGames,
+  listTeams,
+  teamQueryKeys,
+} from '../features/teams/api';
 import { UsersIcon } from '../icons/UsersIcon';
 import { BellIcon } from '../icons/BellIcon';
 import { CalendarIcon } from '../icons/CalendarIcon';
@@ -12,8 +21,7 @@ import { BallIcon } from '../icons/BallIcon';
 import { ChevronDownIcon } from '../icons/ChevronDownIcon';
 import { RequestFlagIcon } from '../icons/RequestFlagIcon';
 import { eventDate } from '../lib/format';
-import { get, post } from '../shared/api/http-client';
-import type { TeamChallengeItem, TeamChallengePage, TeamGamePage, TeamPage } from '../types/domain';
+import type { TeamChallengeItem } from '../types/domain';
 
 type TeamsTab = 'discover' | 'requests' | 'games';
 type RequestMode = 'incoming' | 'outgoing';
@@ -23,15 +31,6 @@ const tabs = [
   { id: 'requests' as const, label: 'Requests', icon: BellIcon },
   { id: 'games' as const, label: 'Games', icon: CalendarIcon },
 ];
-
-function teamListPath(search: string, city: string, houma: string) {
-  const params = new URLSearchParams();
-  if (search.trim()) params.set('search', search.trim());
-  if (city.trim()) params.set('city', city.trim());
-  if (houma.trim()) params.set('houma', houma.trim());
-  const query = params.toString();
-  return query ? `/api/v1/teams?${query}` : '/api/v1/teams';
-}
 
 function ChallengeRow({
   challenge,
@@ -92,37 +91,38 @@ export function TeamsPage() {
   const [houma, setHouma] = useState('');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const filters = { search, city, houma };
 
   const teams = useQuery({
-    queryKey: ['teams', { search, city, houma }],
-    queryFn: () => get<TeamPage>(teamListPath(search, city, houma)),
+    queryKey: teamQueryKeys.list(filters),
+    queryFn: () => listTeams(filters),
   });
   const incoming = useQuery({
-    queryKey: ['team-challenges', 'incoming'],
-    queryFn: () => get<TeamChallengePage>('/api/v1/teams/challenges/incoming'),
+    queryKey: teamQueryKeys.incomingChallenges(),
+    queryFn: listIncomingChallenges,
   });
   const outgoing = useQuery({
-    queryKey: ['team-challenges', 'outgoing'],
-    queryFn: () => get<TeamChallengePage>('/api/v1/teams/challenges/outgoing'),
+    queryKey: teamQueryKeys.outgoingChallenges(),
+    queryFn: listOutgoingChallenges,
   });
   const games = useQuery({
-    queryKey: ['team-games'],
-    queryFn: () => get<TeamGamePage>('/api/v1/teams/games'),
+    queryKey: teamQueryKeys.games(),
+    queryFn: listTeamGames,
   });
   const accept = useMutation({
-    mutationFn: (id: string) => post<TeamChallengeItem>(`/api/v1/teams/challenges/${id}/accept`),
+    mutationFn: acceptTeamChallenge,
     onSuccess: async (challenge) => {
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['team-challenges'] }),
-        queryClient.invalidateQueries({ queryKey: ['team-games'] }),
+        queryClient.invalidateQueries({ queryKey: teamQueryKeys.challenges() }),
+        queryClient.invalidateQueries({ queryKey: teamQueryKeys.games() }),
       ]);
       if (challenge.game?.id) navigate(`/teams/games/${challenge.game.id}`);
     },
   });
   const decline = useMutation({
-    mutationFn: (id: string) => post(`/api/v1/teams/challenges/${id}/decline`),
+    mutationFn: declineTeamChallenge,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['team-challenges'] });
+      await queryClient.invalidateQueries({ queryKey: teamQueryKeys.challenges() });
     },
   });
   const visibleRequests = requestMode === 'incoming' ? incoming.data?.items : outgoing.data?.items;
