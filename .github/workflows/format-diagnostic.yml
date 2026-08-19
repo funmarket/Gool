@@ -1,0 +1,19 @@
+name: Format diagnostic
+
+on:
+  pull_request:
+
+jobs:
+  profile-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - run: npm ci
+      - name: Print exact ProfilePage Prettier diff
+        run: |
+          npx prettier --write apps/miniapp/src/pages/ProfilePage.tsx
+          git diff -- apps/miniapp/src/pages/ProfilePage.tsx
