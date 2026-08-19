@@ -88,6 +88,7 @@ class FakePitchRepository implements PitchRepository {
     userId: string,
     pitchId: string,
     fromStatuses: PitchListingStatus[],
+    expectedUpdatedAt: Date,
     data: {
       status: PitchListingStatus;
       submittedAt?: Date | null;
@@ -100,6 +101,7 @@ class FakePitchRepository implements PitchRepository {
     void userId;
     void pitchId;
     if (!fromStatuses.includes(this.current.status)) return Promise.resolve(null);
+    if (this.current.updatedAt.getTime() !== expectedUpdatedAt.getTime()) return Promise.resolve(null);
     this.current = { ...this.current, ...data, updatedAt: new Date() };
     return Promise.resolve(this.current);
   }
@@ -144,4 +146,34 @@ test('Pitch reactivation returns to review instead of publishing directly', asyn
 
   assert.equal(result.status, 'PENDING_REVIEW');
   assert.equal(result.publishedAt, null);
+});
+
+test('Pitch submit rejects when the validated listing changes before transition', async () => {
+  const repo = new FakePitchRepository(listing('DRAFT'));
+  const originalTransition = repo.transitionOwned.bind(repo);
+  repo.transitionOwned = (
+    userId,
+    pitchId,
+    fromStatuses,
+    expectedUpdatedAt,
+    data,
+  ) => {
+    repo.current = {
+      ...repo.current,
+      photoUrl: null,
+      updatedAt: new Date(repo.current.updatedAt.getTime() + 1),
+    };
+    return originalTransition(userId, pitchId, fromStatuses, expectedUpdatedAt, data);
+  };
+  const service = new PitchService(repo);
+
+  await assert.rejects(
+    () => service.submit('user-1', 'pitch-1'),
+    (error: unknown) =>
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'PITCH_STATE_CHANGED',
+  );
+  assert.equal(repo.current.status, 'DRAFT');
 });
