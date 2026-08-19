@@ -4,18 +4,7 @@ import { notify } from '../lib/telegram';
 import { get, patch } from '../shared/api/http-client';
 import type { Club, Me } from '../types/domain';
 
-const POSITION_OPTIONS = [
-  'GK',
-  'CB',
-  'FB',
-  'WB',
-  'DM',
-  'CM',
-  'AM',
-  'W',
-  'ST',
-  'ANY',
-] as const;
+const POSITION_OPTIONS = ['GK', 'CB', 'FB', 'WB', 'DM', 'CM', 'AM', 'W', 'ST', 'ANY'] as const;
 
 const AUDIENCE_OPTIONS = [
   {
@@ -262,7 +251,11 @@ function ProfileForm({ me, clubs }: { me: Me; clubs: Club[] }) {
 
         <label className="grid gap-1.5 text-sm font-semibold text-[#f4efe2]">
           Skill level
-          <select className="hooma-input" value={skill} onChange={(event) => setSkill(event.target.value)}>
+          <select
+            className="hooma-input"
+            value={skill}
+            onChange={(event) => setSkill(event.target.value)}
+          >
             {['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'MIXED'].map((value) => (
               <option key={value}>{value}</option>
             ))}
@@ -323,7 +316,11 @@ function ProfileForm({ me, clubs }: { me: Me; clubs: Club[] }) {
           />
         </label>
 
-        <button className="accent-button" disabled={mutation.isPending} onClick={() => mutation.mutate()}>
+        <button
+          className="accent-button"
+          disabled={mutation.isPending}
+          onClick={() => mutation.mutate()}
+        >
           Save profile
         </button>
       </div>

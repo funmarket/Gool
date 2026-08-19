@@ -4,7 +4,7 @@ This file records decisions that should not be silently reversed while the produ
 
 ## Product and technical identity
 
-The current product name is **HOOMA**. GOOL is legacy branding and must not be used for new user-facing or active technical identifiers.
+The current and only active product name is **HOOMA**.
 
 The active technical namespace is also HOOMA:
 
@@ -16,11 +16,11 @@ The active technical namespace is also HOOMA:
 - active import specifiers and deployment workspace commands use `@hooma/*`
 - runtime service/log identity uses HOOMA / `hooma-api`
 
-Legacy identifiers may remain only where changing them would break compatibility, persistence, immutable history, or an external resource that has not yet gone through a controlled migration. Examples include the `gool-theme` browser-storage fallback, already-persisted payment checkout payloads, applied Prisma migration history, and physical database/volume or repository names that have not yet been explicitly migrated.
+Tracked source, configuration, documentation, development fixtures, browser-storage keys, package/workspace identifiers, service names, URLs, database names used by this repository, and repository paths must use HOOMA-only product identity. Historical Git commit metadata is not rewritten, but no retired product identifier may remain in the current tracked tree.
 
-The canonical neighborhood/local-area field is `houma`. It is domain terminology and is not a legacy GOOL identifier; do not rename it to `hooma`.
+The canonical neighborhood/local-area field is `houma`. It is domain terminology and is distinct from the HOOMA product identity; do not rename it to `hooma`.
 
-A branding cleanup must not be used as an excuse to redesign product behavior, rewrite migration history, reset databases, or rename persistent infrastructure without a migration plan.
+A naming cleanup must not be used as an excuse to redesign product behavior, rewrite already-applied migration semantics, reset databases, or rename external persistent infrastructure without a migration plan.
 
 ## Payment V1
 
@@ -37,7 +37,7 @@ Cash acceptance is explicit on each applicable Event/Ride/Fundraiser and can inh
 
 An RSVP, RideMatch or FundContribution is not considered paid merely because its business status is active. `PaymentIntent` owns payment lifecycle and the business entity keeps a reference to that intent. Cash confirmation creates an auditable `CashSettlement`; Telegram Stars settlement is authoritative only from verified server-side Telegram updates.
 
-New Telegram Stars checkout payloads use the `hooma:stars:<paymentIntentId>` form. Existing persisted `gool:stars:*` payloads remain valid because pre-checkout and settlement resolve the exact stored provider checkout ID rather than enforcing a brand prefix. Do not rewrite historical payment rows merely for branding.
+New Telegram Stars checkout payloads use the `hooma:stars:<paymentIntentId>` form. Settlement resolves the exact stored provider checkout ID rather than relying on a mutable display-brand prefix. Existing external payment records, if any, must be handled through explicit compatibility logic outside the active tracked product namespace rather than by retaining retired product labels in current source.
 
 ## Database identifiers and money
 
@@ -47,11 +47,11 @@ New Telegram Stars checkout payloads use the `hooma:stars:<paymentIntentId>` for
 - wire money: decimal integer strings when serialized from `BigInt`
 - no floating-point money in persistence or settlement logic
 
-Physical PostgreSQL database names, connection targets, and persistent volume names are operational identities. They are not renamed merely because the application namespace changes. Any future physical rename requires an explicit data-preserving migration and rollback plan.
+Physical PostgreSQL database names, connection targets, and persistent volume names are operational identities. New HOOMA infrastructure must use HOOMA naming. Any rename of an already-running external resource requires an explicit data-preserving migration and rollback plan.
 
 ## Database migration baseline
 
-The committed Prisma migrations are immutable once applied. Do not edit migration SQL or migration history for branding. Follow-up schema changes use new migrations.
+The committed Prisma migrations are immutable once applied. Do not rewrite migration semantics merely for naming. Follow-up schema changes use new migrations.
 
 Production uses `prisma migrate deploy`; never replace the migration chain with `prisma db push`.
 
@@ -60,11 +60,11 @@ Production uses `prisma migrate deploy`; never replace the migration chain with 
 The supported dependency path is:
 
 ```text
-Mini App -> central HTTP client -> controllers -> application services
+Mini App -> feature API adapter -> central HTTP client -> controllers -> application services
 -> repository ports -> infrastructure adapters -> Prisma -> PostgreSQL
 ```
 
-React never imports the database package. Controllers do not query Prisma. Application services do not import Prisma. Cross-domain operations are coordinated by application services through repository ports and one transaction handle.
+React never imports the database package. Pages do not own business-domain endpoints when a feature adapter exists. Controllers do not query Prisma. Application services do not import Prisma. Cross-domain operations are coordinated by application services through repository ports and one transaction handle.
 
 ## User-facing management terminology
 

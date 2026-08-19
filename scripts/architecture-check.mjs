@@ -25,21 +25,46 @@ function fail(file, rule, detail) {
 }
 
 const textExtensions = new Set([
-  '.cjs', '.css', '.env', '.example', '.html', '.js', '.json', '.md', '.mjs', '.prisma',
-  '.sql', '.toml', '.ts', '.tsx', '.txt', '.yml', '.yaml',
+  '.cjs',
+  '.css',
+  '.env',
+  '.example',
+  '.html',
+  '.js',
+  '.json',
+  '.md',
+  '.mjs',
+  '.prisma',
+  '.sql',
+  '.toml',
+  '.ts',
+  '.tsx',
+  '.txt',
+  '.yml',
+  '.yaml',
 ]);
+
 const legacyProductToken = String.fromCharCode(103, 111, 111, 108);
-const legacyProductPattern = new RegExp(legacyProductToken, 'i');
-const repositoryTextFiles = walk(root, (file) => {
+const legacyProductPattern = new RegExp(`(^|[^a-z0-9])${legacyProductToken}($|[^a-z0-9])`, 'i');
+function hasLegacyProductIdentifier(value) {
+  return legacyProductPattern.test(value);
+}
+
+const repositoryFiles = walk(root, () => true);
+for (const file of repositoryFiles) {
+  if (hasLegacyProductIdentifier(rel(file))) {
+    fail(file, 'legacy product identifier in path', 'HOOMA is the only active product identity');
+  }
+}
+
+const repositoryTextFiles = repositoryFiles.filter((file) => {
   const base = path.basename(file);
-  if (base === 'package-lock.json') return true;
   if (base.startsWith('.env')) return true;
   return textExtensions.has(path.extname(file).toLowerCase());
 });
-
 for (const file of repositoryTextFiles) {
   const source = fs.readFileSync(file, 'utf8');
-  if (legacyProductPattern.test(source)) {
+  if (hasLegacyProductIdentifier(source)) {
     fail(file, 'legacy product identifier', 'HOOMA is the only active product identity');
   }
 }
@@ -138,4 +163,6 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('Architecture check passed: HOOMA naming and Cash + Telegram Stars boundaries are intact.');
+console.log(
+  'Architecture check passed: HOOMA naming and Cash + Telegram Stars boundaries are intact.',
+);

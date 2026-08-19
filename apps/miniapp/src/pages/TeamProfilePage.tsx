@@ -2,15 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronRight, MapPin, Shield, Users } from 'lucide-react';
 import { TeamLineupPitch } from '../components/teams/TeamLineupPitch';
-import { get } from '../shared/api/http-client';
-import type { TeamDetailItem } from '../types/domain';
+import { getTeam, teamQueryKeys } from '../features/teams/api';
 
 export function TeamProfilePage() {
   const { teamId = '' } = useParams();
   const navigate = useNavigate();
   const teamQuery = useQuery({
-    queryKey: ['team', teamId],
-    queryFn: () => get<TeamDetailItem>(`/api/v1/teams/${teamId}`),
+    queryKey: teamQueryKeys.detail(teamId),
+    queryFn: () => getTeam(teamId),
     enabled: Boolean(teamId),
   });
   const team = teamQuery.data;
