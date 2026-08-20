@@ -1,13 +1,5 @@
+import type { PitchListingStatus, PitchVenueType } from '@hooma/contracts';
 import { get } from '../../shared/api/http-client';
-
-export type PitchVenueType =
-  | 'FOOTBALL_PITCH'
-  | 'MINI_PITCH'
-  | 'FUTSAL'
-  | 'PRIVATE_STADIUM'
-  | 'INDOOR_FOOTBALL'
-  | 'OUTDOOR_FOOTBALL'
-  | 'OTHER_FOOTBALL';
 
 export type PitchListingItem = {
   id: string;
@@ -24,7 +16,7 @@ export type PitchListingItem = {
   currency: string | null;
   publicPhone: string | null;
   publicEmail: string | null;
-  status: 'DRAFT' | 'PENDING_REVIEW' | 'PUBLISHED' | 'REJECTED' | 'INACTIVE';
+  status: PitchListingStatus;
   submittedAt: string | null;
   publishedAt: string | null;
   createdAt: string;
