@@ -21,7 +21,10 @@ export function LoginPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const { isAuthenticated, isLoading, refresh } = useAuth();
-  const returnTo = useMemo(() => safeReturnTo(params.get('returnTo')), [params]);
+  const returnTo = useMemo(
+    () => safeReturnTo(params.get('returnTo')),
+    [params]
+  );
   const [mode, setMode] = useState<Mode>('sign-in');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -46,7 +49,9 @@ export function LoginPage() {
       await refresh();
       navigate(returnTo, { replace: true });
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Authentication failed.');
+      setError(
+        cause instanceof Error ? cause.message : 'Authentication failed.'
+      );
     } finally {
       setPending(false);
     }
@@ -55,10 +60,13 @@ export function LoginPage() {
   return (
     <div className="page-shell">
       <div className="section-kicker">HOOMA account</div>
-      <h1 className="section-title">{mode === 'register' ? 'Create account' : 'Sign in'}</h1>
+      <h1 className="section-title">
+        {mode === 'register' ? 'Create account' : 'Sign in'}
+      </h1>
       <p className="mt-2 max-w-2xl text-sm muted">
-        Web credentials are a separate HOOMA login method. Telegram remains available through the
-        Telegram Mini App, and both methods can belong to the same canonical account.
+        Web credentials are a separate HOOMA login method. Telegram remains
+        available through the Telegram Mini App, and both methods can belong to
+        the same canonical account.
       </p>
 
       <section className="surface-card mx-auto mt-5 grid max-w-xl gap-4 p-5">
@@ -74,7 +82,9 @@ export function LoginPage() {
             Sign in
           </button>
           <button
-            className={mode === 'register' ? 'accent-button' : 'ghost-button'}
+            className={
+              mode === 'register' ? 'accent-button' : 'ghost-button'
+            }
             type="button"
             onClick={() => {
               setMode('register');
@@ -124,7 +134,9 @@ export function LoginPage() {
           <input
             className="hooma-input"
             type="password"
-            autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
+            autoComplete={
+              mode === 'register' ? 'new-password' : 'current-password'
+            }
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
@@ -142,7 +154,9 @@ export function LoginPage() {
           disabled={
             pending ||
             !password ||
-            (mode === 'register' ? !email.trim() || !username.trim() : !identifier.trim())
+            (mode === 'register'
+              ? !email.trim() || !username.trim()
+              : !identifier.trim())
           }
           onClick={() => void submit()}
         >
