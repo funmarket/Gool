@@ -1,14 +1,10 @@
-import { LogIn, LogOut, Settings, ShieldCheck, UserRound } from 'lucide-react';
+import { Settings, UserRound, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ActionRow } from '../components/ui/ActionRow';
-import { useAuth } from '../providers/AuthProvider';
 import { useCommunity } from '../providers/CommunityProvider';
-
 export function MorePage() {
   const navigate = useNavigate();
   const { active } = useCommunity();
-  const { method, isAuthenticated, canWebLogout, logout } = useAuth();
-
   return (
     <div className="page-shell vintage-page">
       <div className="vintage-kicker">HOOMA</div>
@@ -34,28 +30,6 @@ export function MorePage() {
           onClick={() => navigate('/settings')}
           variant="vintage"
         />
-        {!isAuthenticated && method !== 'loading' && (
-          <ActionRow
-            icon={<LogIn />}
-            title="Sign in or create account"
-            onClick={() => navigate('/login?returnTo=%2Fmore')}
-            variant="vintage"
-          />
-        )}
-        {canWebLogout && (
-          <ActionRow
-            icon={<LogOut />}
-            title="Sign out"
-            onClick={() => void logout()}
-            variant="vintage"
-          />
-        )}
-        {method === 'telegram' && (
-          <div className="reference-row px-5 py-4 text-sm muted">
-            Signed in directly through Telegram. Telegram provides the active identity for this Mini
-            App session.
-          </div>
-        )}
       </div>
     </div>
   );
