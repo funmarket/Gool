@@ -18,7 +18,7 @@ import { rateLimit } from '../middleware/rate-limit.js';
 
 export function v1Router(container: AppContainer) {
   const router = Router();
-  router.use(identityRouter(container.services.identity));
+  router.use(identityRouter(container.services.identity, container.auth));
   router.use('/communities', communityRouter(container.services.communities));
   router.use('/events', eventRouter(container.services.events));
   router.use(
