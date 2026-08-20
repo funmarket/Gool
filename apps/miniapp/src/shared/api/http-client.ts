@@ -13,7 +13,7 @@ function authHeaders() {
     const raw = retrieveRawInitData();
     if (raw) headers.authorization = `tma ${raw}`;
   } catch {
-    // Outside Telegram, the API rejects auth unless development bypass is explicitly enabled.
+    // Browser/web requests authenticate with the Better Auth session cookie instead.
   }
   return headers;
 }
@@ -47,6 +47,7 @@ export async function http<T>(path: string, options: HttpOptions = {}): Promise<
     try {
       const response = await fetch(`${API_BASE}${path}`, {
         ...requestOptions,
+        credentials: requestOptions.credentials ?? 'include',
         signal: requestOptions.signal || controller.signal,
         headers: {
           ...authHeaders(),
