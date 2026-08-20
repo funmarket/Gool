@@ -191,6 +191,13 @@ export class PaymentService {
     await this.communities.requireAdmin(input.actorUserId, context.communityId);
 
     if (!context.alreadyRefunded) {
+      if (!context.telegramUserId) {
+        throw new AppError(
+          409,
+          'STARS_TELEGRAM_IDENTITY_REQUIRED',
+          'Telegram identity is required to refund this Stars payment.',
+        );
+      }
       await this.telegram.refundStarPayment(
         context.telegramUserId,
         context.telegramPaymentChargeId,
