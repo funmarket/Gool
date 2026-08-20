@@ -35,6 +35,10 @@ function venueTypeLabel(value?: string | null) {
     .join(' ');
 }
 
+function openContactUrl(url: string) {
+  window.open(url, '_self');
+}
+
 export function PitchCard(props: PitchCardProps) {
   const navigate = useNavigate();
   const expanded = props.expanded ?? false;
@@ -61,13 +65,9 @@ export function PitchCard(props: PitchCardProps) {
     : undefined;
 
   const contactAction = props.phone
-    ? () => {
-        window.location.href = `tel:${props.phone}`;
-      }
+    ? () => openContactUrl(`tel:${props.phone}`)
     : props.email
-      ? () => {
-          window.location.href = `mailto:${props.email}`;
-        }
+      ? () => openContactUrl(`mailto:${props.email}`)
       : undefined;
 
   const stopAndRun = (action?: () => void) => (event: MouseEvent<HTMLButtonElement>) => {
