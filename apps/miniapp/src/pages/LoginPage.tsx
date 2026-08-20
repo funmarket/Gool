@@ -6,7 +6,12 @@ import { signInWeb, signUpWeb } from '../shared/auth/web-auth';
 type Mode = 'sign-in' | 'register';
 
 function safeReturnTo(value: string | null) {
-  if (!value || !value.startsWith('/') || value.startsWith('//') || value.startsWith('/login')) {
+  if (
+    !value ||
+    !value.startsWith('/') ||
+    value.startsWith('//') ||
+    value.startsWith('/login')
+  ) {
     return '/';
   }
   return value;
