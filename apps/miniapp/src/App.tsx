@@ -2,7 +2,7 @@ import { lazy, Suspense, type ReactNode } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
-import { RequireAuth } from './components/RequireAuth';
+import { AuthProvider } from './providers/AuthProvider';
 
 const AdminPage = lazy(() =>
   import('./pages/AdminPage').then((module) => ({ default: module.AdminPage })),
@@ -139,7 +139,14 @@ export default function App() {
         <Route element={<Layout />}>
           <Route path="/" element={routeElement(<HomePage />)} />
           <Route path="/telegram" element={routeElement(<HomePage />)} />
-          <Route path="/login" element={routeElement(<LoginPage />)} />
+          <Route
+            path="/login"
+            element={routeElement(
+              <AuthProvider>
+                <LoginPage />
+              </AuthProvider>,
+            )}
+          />
           <Route path="/events" element={routeElement(<EventsPage />)} />
           <Route path="/play" element={routeElement(<PlayPage />)} />
           <Route path="/places" element={routeElement(<PlacesPage />)} />
@@ -182,14 +189,7 @@ export default function App() {
           <Route path="/community/new" element={routeElement(<NewCommunityPage />)} />
           <Route path="/community/members" element={routeElement(<MembersPage />)} />
           <Route path="/admin" element={routeElement(<AdminPage />)} />
-          <Route
-            path="/profile"
-            element={routeElement(
-              <RequireAuth>
-                <ProfilePage />
-              </RequireAuth>,
-            )}
-          />
+          <Route path="/profile" element={routeElement(<ProfilePage />)} />
           <Route path="/settings" element={routeElement(<SettingsPage />)} />
           <Route path="*" element={routeElement(<NotFoundPage />)} />
         </Route>
