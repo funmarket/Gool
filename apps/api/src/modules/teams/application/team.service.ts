@@ -7,10 +7,7 @@ import type {
   TeamUpdateInput,
 } from '@hooma/contracts';
 import { AppError } from '../../../http/errors/app-error.js';
-import {
-  legacyTeamRoleHasCapability,
-  type TeamCapability,
-} from '../domain/team-access.js';
+import { legacyTeamRoleHasCapability, type TeamCapability } from '../domain/team-access.js';
 import type { TeamListInput, TeamRepository } from './team-repository.js';
 
 export class TeamService {
@@ -119,7 +116,11 @@ export class TeamService {
     return access;
   }
 
-  private async requireTeamCapability(userId: string, teamId: string, capability: TeamCapability) {
+  private async requireTeamCapability(
+    userId: string,
+    teamId: string,
+    capability: TeamCapability,
+  ) {
     const access = await this.repo.getTeamManagerAccess(userId, teamId);
     if (!access || !legacyTeamRoleHasCapability(access.role, capability)) {
       throw new AppError(404, 'TEAM_NOT_FOUND', 'Team not found.');
