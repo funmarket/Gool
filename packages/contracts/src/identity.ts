@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import { PROFILE_IDENTITY_TYPES } from './profile-personas.js';
+
+export const profileIdentityTypeSchema = z.enum(PROFILE_IDENTITY_TYPES);
+
 export const profileUpdateSchema = z.object({
   photoUrl: z.string().trim().url().max(1000).nullable().optional(),
   skillLevel: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'MIXED']).optional(),
@@ -8,7 +12,8 @@ export const profileUpdateSchema = z.object({
     .max(5)
     .optional(),
   favoriteClubId: z.string().nullable().optional(),
-  profileAudience: z.enum(['SPECTATOR', 'FAN']).optional(),
+  profileIdentityTypes: z.array(profileIdentityTypeSchema).max(PROFILE_IDENTITY_TYPES.length).optional(),
+  footballPersonaKey: z.string().trim().min(1).max(80).nullable().optional(),
   bio: z.string().trim().max(280).nullable().optional(),
   themeOverride: z.enum(['TELEGRAM', 'LIGHT', 'DARK']).optional(),
 });
