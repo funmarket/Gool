@@ -1,16 +1,9 @@
 export type LegacyTeamRole = 'OWNER' | 'ADMIN';
 
 export type TeamCapability =
-  | 'CREATE_TEAM'
-  | 'EDIT_TEAM'
-  | 'MANAGE_ROSTER'
-  | 'MANAGE_LINEUP'
-  | 'CREATE_CHALLENGE';
+  'CREATE_TEAM' | 'EDIT_TEAM' | 'MANAGE_ROSTER' | 'MANAGE_LINEUP' | 'CREATE_CHALLENGE';
 
-const LEGACY_TEAM_CAPABILITIES: Record<
-  LegacyTeamRole,
-  ReadonlySet<TeamCapability>
-> = {
+const LEGACY_TEAM_CAPABILITIES: Record<LegacyTeamRole, ReadonlySet<TeamCapability>> = {
   OWNER: new Set<TeamCapability>([
     'CREATE_TEAM',
     'EDIT_TEAM',
