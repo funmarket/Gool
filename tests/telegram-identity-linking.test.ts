@@ -72,10 +72,7 @@ test('rejects replacing current user Telegram identity', async () => {
     () => service.linkTelegramIdentity('user-1', telegramIdentity),
     (error: unknown) => {
       assert.equal((error as { status?: number }).status, 409);
-      assert.equal(
-        (error as { code?: string }).code,
-        'USER_ALREADY_HAS_TELEGRAM_IDENTITY',
-      );
+      assert.equal((error as { code?: string }).code, 'USER_ALREADY_HAS_TELEGRAM_IDENTITY');
       return true;
     },
   );
