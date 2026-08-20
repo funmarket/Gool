@@ -1,6 +1,7 @@
 import { deepSnakeToCamelObjKeys, parse, validate } from '@tma.js/init-data-node';
 import type { NextFunction, Request, Response } from 'express';
 import { env } from '../../config/env.js';
+import { AppError } from '../errors/app-error.js';
 import type { IdentityService } from '../../modules/identity/application/identity.service.js';
 import type { IdentityUser, TelegramIdentityInput } from '../../modules/identity/domain/types.js';
 
@@ -19,7 +20,17 @@ export interface AuthenticatedRequest extends Request {
   auth: AuthContext;
 }
 
-export const getAuth = (req: Request) => (req as AuthenticatedRequest).auth;
+export interface TelegramAuthOptions {
+  optional?: boolean;
+}
+
+export function getAuth(req: Request): AuthContext {
+  const auth = (req as Request & { auth?: AuthContext }).auth;
+  if (!auth) {
+    throw new AppError(401, 'AUTH_REQUIRED', 'Authentication required');
+  }
+  return auth;
+}
 
 interface TelegramIdentityFields {
   username?: string | undefined;
@@ -57,7 +68,21 @@ function telegramUserContext(
   };
 }
 
-export function telegramAuth(identity: IdentityService) {
+function authError(
+  res: Response,
+  code: 'AUTH_REQUIRED' | 'AUTH_INVALID',
+  message: string,
+) {
+  return res.status(401).json({
+    error: {
+      code,
+      message,
+      requestId: String(res.locals.requestId || 'unknown'),
+    },
+  });
+}
+
+export function telegramAuth(identity: IdentityService, options: TelegramAuthOptions = {}) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (env.NODE_ENV !== 'production' && env.DEV_AUTH_BYPASS) {
@@ -78,15 +103,14 @@ export function telegramAuth(identity: IdentityService) {
       }
 
       const authorization = req.header('authorization') || '';
+      if (!authorization) {
+        if (options.optional) return next();
+        return authError(res, 'AUTH_REQUIRED', 'Missing Telegram initData');
+      }
+
       const [scheme = '', rawInitData = ''] = authorization.split(' ', 2);
       if (scheme.toLowerCase() !== 'tma' || !rawInitData) {
-        return res.status(401).json({
-          error: {
-            code: 'AUTH_REQUIRED',
-            message: 'Missing Telegram initData',
-            requestId: String(res.locals.requestId || 'unknown'),
-          },
-        });
+        return authError(res, 'AUTH_INVALID', 'Invalid authentication credentials');
       }
 
       validate(rawInitData, env.TELEGRAM_BOT_TOKEN, {
@@ -95,13 +119,7 @@ export function telegramAuth(identity: IdentityService) {
       const initData = deepSnakeToCamelObjKeys(parse(rawInitData));
       const tgUser = initData.user;
       if (!tgUser) {
-        return res.status(401).json({
-          error: {
-            code: 'AUTH_INVALID',
-            message: 'Telegram user missing from initData',
-            requestId: String(res.locals.requestId || 'unknown'),
-          },
-        });
+        return authError(res, 'AUTH_INVALID', 'Telegram user missing from initData');
       }
 
       const telegramUserId = String(tgUser.id);
@@ -113,13 +131,7 @@ export function telegramAuth(identity: IdentityService) {
       };
       return next();
     } catch {
-      return res.status(401).json({
-        error: {
-          code: 'AUTH_INVALID',
-          message: 'Invalid or expired Telegram initData',
-          requestId: String(res.locals.requestId || 'unknown'),
-        },
-      });
+      return authError(res, 'AUTH_INVALID', 'Invalid or expired Telegram initData');
     }
   };
 }
