@@ -41,6 +41,8 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: npm
+      - name: Normalize bootstrap helper syntax
+        run: node scripts/phase-d-bootstrap-fix.mjs
       - name: Apply Phase D source changes
         run: node scripts/phase-d-apply.mjs
       - name: Install pinned Better Auth dependencies
@@ -78,7 +80,7 @@ jobs:
       - name: Validate migration from clean database
         run: npm run db:migrate:deploy
       - name: Remove temporary bootstrap files
-        run: rm scripts/phase-d-apply.mjs .github/workflows/phase-d-bootstrap.yml
+        run: rm scripts/phase-d-apply.mjs scripts/phase-d-bootstrap-fix.mjs .github/workflows/phase-d-bootstrap.yml
       - name: Commit generated Phase D implementation
         run: |
           git config user.name "github-actions[bot]"
