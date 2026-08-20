@@ -74,6 +74,9 @@ const PlaceDetailPage = lazy(() =>
 const PitchPage = lazy(() =>
   import('./pages/PitchPage').then((module) => ({ default: module.PitchPage })),
 );
+const PitchDetailPage = lazy(() =>
+  import('./pages/PitchDetailPage').then((module) => ({ default: module.PitchDetailPage })),
+);
 const ProfilePage = lazy(() =>
   import('./pages/ProfilePage').then((module) => ({ default: module.ProfilePage })),
 );
@@ -141,6 +144,7 @@ export default function App() {
           <Route path="/places/new" element={routeElement(<AddPlacePage />)} />
           <Route path="/places/:placeId" element={routeElement(<PlaceDetailPage />)} />
           <Route path="/pitch" element={routeElement(<PitchPage />)} />
+          <Route path="/pitch/:pitchId" element={routeElement(<PitchDetailPage />)} />
           <Route path="/watch" element={routeElement(<WatchPage />)} />
           <Route path="/watch/places" element={routeElement(<PlacesPage />)} />
           <Route path="/watch/places/new" element={routeElement(<AddPlacePage />)} />
