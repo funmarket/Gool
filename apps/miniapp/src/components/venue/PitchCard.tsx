@@ -167,6 +167,16 @@ export function PitchCard(props: PitchCardProps) {
             </div>
           ) : null}
 
+          {props.onToggle ? (
+            <button
+              type="button"
+              className="ghost-button mt-3 w-full"
+              onClick={stopAndRun(() => navigate(`/pitch/${props.id}`))}
+            >
+              View full details
+            </button>
+          ) : null}
+
           {contactAction ? (
             <button
               type="button"
