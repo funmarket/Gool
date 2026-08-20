@@ -1,4 +1,5 @@
 import { buildDatabase } from '../infrastructure/database/prisma.js';
+import { buildAuth } from '../auth/better-auth.js';
 import { PrismaUnitOfWork } from '../infrastructure/database/unit-of-work.js';
 import { InMemoryRateLimitStore } from '../infrastructure/rate-limit/rate-limit-store.js';
 import { HttpTelegramBotApi } from '../infrastructure/telegram/bot-api.js';
@@ -41,6 +42,7 @@ import { TeamService } from '../modules/teams/application/team.service.js';
 
 export function buildContainer() {
   const db = buildDatabase();
+  const auth = buildAuth(db);
   const uow = new PrismaUnitOfWork(db);
   const rateLimitStore = new InMemoryRateLimitStore();
   const telegram = new HttpTelegramBotApi();
@@ -107,6 +109,7 @@ export function buildContainer() {
 
   return {
     db,
+    auth,
     uow,
     rateLimitStore,
     telegram,
