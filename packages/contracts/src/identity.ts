@@ -1,4 +1,12 @@
 import { z } from 'zod';
+
+export const profileIdentityTypeSchema = z.enum(['PLAYER', 'FAN', 'GAMER']);
+
+export const selectedProfileIdentitiesSchema = z
+  .array(profileIdentityTypeSchema)
+  .max(3)
+  .refine((values) => new Set(values).size === values.length, 'Profile identities must be unique.');
+
 export const profileUpdateSchema = z.object({
   photoUrl: z.string().trim().url().max(1000).nullable().optional(),
   skillLevel: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'MIXED']).optional(),
@@ -9,6 +17,7 @@ export const profileUpdateSchema = z.object({
     .optional(),
   favoriteClubId: z.string().nullable().optional(),
   profileAudience: z.enum(['SPECTATOR', 'FAN']).optional(),
+  selectedIdentities: selectedProfileIdentitiesSchema.optional(),
   bio: z.string().trim().max(280).nullable().optional(),
   themeOverride: z.enum(['TELEGRAM', 'LIGHT', 'DARK']).optional(),
 });
@@ -36,6 +45,7 @@ export const webCredentialsLinkSchema = z.object({
   password: z.string().min(8).max(128),
 });
 
+export type ProfileIdentityType = z.infer<typeof profileIdentityTypeSchema>;
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
 export type TelegramLinkInput = z.infer<typeof telegramLinkSchema>;
 export type WebCredentialsLinkInput = z.infer<typeof webCredentialsLinkSchema>;

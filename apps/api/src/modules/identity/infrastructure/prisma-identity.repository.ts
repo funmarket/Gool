@@ -227,7 +227,7 @@ export class PrismaIdentityRepository implements IdentityRepository {
   }
 
   async updateProfile(userId: string, input: ProfileUpdateInput) {
-    const { themeOverride, photoUrl, favoriteClubId, ...profile } = input;
+    const { themeOverride, photoUrl, favoriteClubId, selectedIdentities, ...profile } = input;
     const profileUpdate = {
       ...(profile.skillLevel !== undefined ? { skillLevel: profile.skillLevel } : {}),
       ...(profile.skillRating !== undefined ? { skillRating: profile.skillRating } : {}),
@@ -293,6 +293,25 @@ export class PrismaIdentityRepository implements IdentityRepository {
             ? { themeOverride: themeOverride as 'TELEGRAM' | 'LIGHT' | 'DARK' }
             : {},
       });
+
+      if (selectedIdentities !== undefined) {
+        await tx.userProfileIdentity.deleteMany({ where: { userId } });
+        if (selectedIdentities.length) {
+          await tx.userProfileIdentity.createMany({
+            data: selectedIdentities.map((type) => ({ userId, type })),
+          });
+        }
+      } else if (profile.profileAudience !== undefined) {
+        if (profile.profileAudience === 'FAN') {
+          await tx.userProfileIdentity.upsert({
+            where: { userId_type: { userId, type: 'FAN' } },
+            create: { userId, type: 'FAN' },
+            update: {},
+          });
+        } else {
+          await tx.userProfileIdentity.deleteMany({ where: { userId, type: 'FAN' } });
+        }
+      }
 
       return tx.user.findUniqueOrThrow({
         where: { id: userId },
