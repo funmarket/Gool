@@ -49,6 +49,8 @@ export class PrismaIdentityRepository implements IdentityRepository {
       update: {
         ...optionalIdentity,
         isPremium: input.isPremium ?? false,
+        profile: { upsert: { create: {}, update: {} } },
+        preference: { upsert: { create: {}, update: {} } },
       },
       select: identityUserSelect,
     });
@@ -244,6 +246,23 @@ export class PrismaIdentityRepository implements IdentityRepository {
           }
         : {}),
     };
+    const profileCreate = {
+      ...(profile.skillLevel !== undefined ? { skillLevel: profile.skillLevel } : {}),
+      ...(profile.skillRating !== undefined ? { skillRating: profile.skillRating } : {}),
+      ...(profile.preferredPositions !== undefined
+        ? { preferredPositions: profile.preferredPositions }
+        : {}),
+      ...(profile.profileAudience !== undefined
+        ? { profileAudience: profile.profileAudience }
+        : {}),
+      ...(profile.bio !== undefined ? { bio: profile.bio } : {}),
+      ...(favoriteClubId
+        ? {
+            favoriteClub: { connect: { id: favoriteClubId } },
+          }
+        : {}),
+    };
+
     return this.db.$transaction(async (tx) => {
       if (photoUrl !== undefined) {
         await tx.user.update({
@@ -251,15 +270,30 @@ export class PrismaIdentityRepository implements IdentityRepository {
           data: { photoUrl },
         });
       }
-      if (Object.keys(profileUpdate).length) {
-        await tx.playerProfile.update({ where: { userId }, data: profileUpdate });
-      }
-      if (themeOverride) {
-        await tx.userPreference.update({
-          where: { userId },
-          data: { themeOverride: themeOverride as 'TELEGRAM' | 'LIGHT' | 'DARK' },
-        });
-      }
+
+      await tx.playerProfile.upsert({
+        where: { userId },
+        create: {
+          user: { connect: { id: userId } },
+          ...profileCreate,
+        },
+        update: profileUpdate,
+      });
+
+      await tx.userPreference.upsert({
+        where: { userId },
+        create: {
+          user: { connect: { id: userId } },
+          ...(themeOverride !== undefined
+            ? { themeOverride: themeOverride as 'TELEGRAM' | 'LIGHT' | 'DARK' }
+            : {}),
+        },
+        update:
+          themeOverride !== undefined
+            ? { themeOverride: themeOverride as 'TELEGRAM' | 'LIGHT' | 'DARK' }
+            : {},
+      });
+
       return tx.user.findUniqueOrThrow({
         where: { id: userId },
         include: { profile: { include: { favoriteClub: true } }, preference: true },
