@@ -16,6 +16,11 @@ export type WebCredentialsLinkResult =
   | { status: 'current-email-conflict' }
   | { status: 'current-username-conflict' };
 
+export type ProfileUpdateResult =
+  | { status: 'updated'; user: unknown }
+  | { status: 'football-persona-invalid' }
+  | { status: 'football-persona-club-mismatch' };
+
 export interface IdentityRepository {
   upsertTelegramUser(input: TelegramIdentityInput): Promise<IdentityUser>;
   linkTelegramIdentity(
@@ -29,5 +34,5 @@ export interface IdentityRepository {
   ): Promise<WebCredentialsLinkResult>;
   getIdentityUser(userId: string): Promise<IdentityUser | null>;
   getMe(userId: string): Promise<unknown>;
-  updateProfile(userId: string, input: ProfileUpdateInput): Promise<unknown>;
+  updateProfile(userId: string, input: ProfileUpdateInput): Promise<ProfileUpdateResult>;
 }
