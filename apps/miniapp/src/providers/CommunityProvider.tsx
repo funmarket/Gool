@@ -28,7 +28,7 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
   });
 
   const communities = useMemo(
-    () => (isAuthenticated ? query.data?.communities ?? [] : []),
+    () => (isAuthenticated ? (query.data?.communities ?? []) : []),
     [isAuthenticated, query.data?.communities],
   );
   const active = useMemo(
