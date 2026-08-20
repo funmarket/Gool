@@ -1,7 +1,4 @@
-import type {
-  EffectiveProfileIdentityType,
-  ProfileIdentityType,
-} from '@hooma/contracts';
+import type { EffectiveProfileIdentityType, ProfileIdentityType } from '@hooma/contracts';
 
 const SELECTED_IDENTITY_ORDER: ProfileIdentityType[] = ['PLAYER', 'FAN', 'GAMER'];
 
