@@ -57,7 +57,10 @@ export class PrismaIdentityRepository implements IdentityRepository {
             select: { id: true, telegramUserId: true },
           });
           if (!targetUser) return { status: 'user-not-found' as const };
-          if (targetUser.telegramUserId && targetUser.telegramUserId !== input.telegramUserId) {
+          if (
+            targetUser.telegramUserId &&
+            targetUser.telegramUserId !== input.telegramUserId
+          ) {
             return { status: 'user-already-linked' as const };
           }
 
@@ -80,14 +83,20 @@ export class PrismaIdentityRepository implements IdentityRepository {
           });
 
           return {
-            status: targetUser.telegramUserId === input.telegramUserId ? 'already-linked' : 'linked',
+            status:
+              targetUser.telegramUserId === input.telegramUserId
+                ? 'already-linked'
+                : 'linked',
             user,
           } as const;
         },
         { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
       );
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
         return { status: 'telegram-already-linked' as const };
       }
       throw error;
