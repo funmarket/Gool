@@ -80,6 +80,14 @@ const teamDetailSelect = {
   },
 } satisfies Prisma.TeamSelect;
 
+const publicTeamDetailSelect = {
+  ...teamDetailSelect,
+  lineups: {
+    ...teamDetailSelect.lineups,
+    where: { isPublished: true, deletedAt: null },
+  },
+} satisfies Prisma.TeamSelect;
+
 const challengeInclude = {
   challengerTeam: {
     select: { id: true, name: true, badgeUrl: true, city: true, houma: true, communityId: true },
@@ -164,7 +172,7 @@ export class PrismaTeamRepository implements TeamRepository {
   getPublic(teamId: string) {
     return this.db.team.findFirst({
       where: { id: teamId, status: 'ACTIVE', isPublic: true, deletedAt: null },
-      select: teamDetailSelect,
+      select: publicTeamDetailSelect,
     });
   }
 
