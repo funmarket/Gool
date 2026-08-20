@@ -83,7 +83,23 @@ export class IdentityService {
   getMe(userId: string) {
     return this.repo.getMe(userId);
   }
-  updateProfile(userId: string, input: ProfileUpdateInput) {
-    return this.repo.updateProfile(userId, input);
+  async updateProfile(userId: string, input: ProfileUpdateInput) {
+    const result = await this.repo.updateProfile(userId, input);
+    switch (result.status) {
+      case 'updated':
+        return result.user;
+      case 'football-persona-invalid':
+        throw new AppError(400, 'FOOTBALL_PERSONA_INVALID', 'Unknown football nickname.');
+      case 'football-persona-club-mismatch':
+        throw new AppError(
+          400,
+          'FOOTBALL_PERSONA_CLUB_MISMATCH',
+          'This football nickname is not available for the selected club.',
+        );
+      default: {
+        const exhaustive: never = result;
+        return exhaustive;
+      }
+    }
   }
 }
