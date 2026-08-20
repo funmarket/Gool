@@ -1,12 +1,17 @@
 import { Router } from 'express';
-import { profileUpdateSchema, telegramLinkSchema } from '@hooma/contracts';
+import {
+  profileUpdateSchema,
+  telegramLinkSchema,
+  webCredentialsLinkSchema,
+} from '@hooma/contracts';
+import type { HoomaAuth } from '../../../auth/better-auth.js';
 import type { IdentityService } from '../application/identity.service.js';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';
 import { getAuth, parseTelegramIdentity } from '../../../http/middleware/auth.js';
 import { parseBody } from '../../../http/middleware/parse.js';
 import { AppError } from '../../../http/errors/app-error.js';
 
-export function identityRouter(service: IdentityService) {
+export function identityRouter(service: IdentityService, betterAuth: HoomaAuth) {
   const router = Router();
   router.get(
     '/me',
@@ -38,6 +43,25 @@ export function identityRouter(service: IdentityService) {
 
       const user = await service.linkTelegramIdentity(auth.user.id, telegramIdentity.input);
       return res.json({ user, telegramUser: telegramIdentity.telegramUser });
+    }),
+  );
+  router.post(
+    '/me/link/web-credentials',
+    asyncHandler(async (req, res) => {
+      const auth = getAuth(req);
+      if (auth.provider !== 'telegram') {
+        throw new AppError(
+          403,
+          'WEB_CREDENTIAL_LINK_REQUIRES_TELEGRAM',
+          'Open HOOMA through Telegram to add web login credentials to this account.',
+        );
+      }
+
+      const input = parseBody(webCredentialsLinkSchema, req);
+      const context = await betterAuth.$context;
+      const hashedPassword = await context.password.hash(input.password);
+      const user = await service.linkWebCredentials(auth.user.id, input, hashedPassword);
+      return res.status(201).json({ user });
     }),
   );
   router.patch(

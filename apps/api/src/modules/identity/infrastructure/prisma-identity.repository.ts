@@ -1,6 +1,7 @@
+import { randomUUID } from 'node:crypto';
 import { Prisma } from '@prisma/client';
 import type { DatabaseClient } from '../../../infrastructure/database/prisma.js';
-import type { ProfileUpdateInput } from '@hooma/contracts';
+import type { ProfileUpdateInput, WebCredentialsLinkInput } from '@hooma/contracts';
 import type { IdentityRepository } from '../application/identity-repository.js';
 import type { TelegramIdentityInput } from '../domain/types.js';
 
@@ -23,6 +24,11 @@ function telegramIdentityData(input: TelegramIdentityInput) {
     ...(input.photoUrl !== undefined ? { photoUrl: input.photoUrl } : {}),
     ...(input.languageCode !== undefined ? { languageCode: input.languageCode } : {}),
   };
+}
+
+function constraintTarget(error: Prisma.PrismaClientKnownRequestError) {
+  const target = error.meta?.target;
+  return Array.isArray(target) ? target.map(String) : [String(target ?? '')];
 }
 
 export class PrismaIdentityRepository implements IdentityRepository {
@@ -90,6 +96,104 @@ export class PrismaIdentityRepository implements IdentityRepository {
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
         return { status: 'telegram-already-linked' as const };
+      }
+      throw error;
+    }
+  }
+
+  async linkWebCredentials(userId: string, input: WebCredentialsLinkInput, hashedPassword: string) {
+    const email = input.email.toLowerCase();
+    const authUsername = input.username.toLowerCase();
+
+    try {
+      return await this.db.$transaction(
+        async (tx) => {
+          const targetUser = await tx.user.findUnique({
+            where: { id: userId, deletedAt: null },
+            select: {
+              id: true,
+              telegramUserId: true,
+              email: true,
+              authUsername: true,
+              authName: true,
+              firstName: true,
+              lastName: true,
+              username: true,
+            },
+          });
+          if (!targetUser) return { status: 'user-not-found' as const };
+
+          const credentialAccount = await tx.authAccount.findFirst({
+            where: { userId, providerId: 'credential' },
+            select: { id: true },
+          });
+          if (credentialAccount) {
+            return { status: 'web-credentials-already-linked' as const };
+          }
+          if (targetUser.email && targetUser.email.toLowerCase() !== email) {
+            return { status: 'current-email-conflict' as const };
+          }
+          if (targetUser.authUsername && targetUser.authUsername.toLowerCase() !== authUsername) {
+            return { status: 'current-username-conflict' as const };
+          }
+
+          const emailOwner = await tx.user.findUnique({
+            where: { email },
+            select: { id: true },
+          });
+          if (emailOwner && emailOwner.id !== userId) {
+            return { status: 'email-already-linked' as const };
+          }
+          const usernameOwner = await tx.user.findUnique({
+            where: { authUsername },
+            select: { id: true },
+          });
+          if (usernameOwner && usernameOwner.id !== userId) {
+            return { status: 'username-already-linked' as const };
+          }
+
+          const authName =
+            targetUser.authName ||
+            [targetUser.firstName, targetUser.lastName].filter(Boolean).join(' ').trim() ||
+            targetUser.username ||
+            input.username;
+
+          const user = await tx.user.update({
+            where: { id: userId },
+            data: {
+              email,
+              emailVerified: false,
+              authUsername,
+              displayAuthUsername: input.username,
+              authName,
+            },
+            select: identityUserSelect,
+          });
+
+          await tx.authAccount.create({
+            data: {
+              id: randomUUID(),
+              accountId: userId,
+              providerId: 'credential',
+              userId,
+              password: hashedPassword,
+            },
+          });
+
+          return { status: 'linked' as const, user };
+        },
+        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+      );
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        const target = constraintTarget(error);
+        if (target.some((field) => field.includes('email'))) {
+          return { status: 'email-already-linked' as const };
+        }
+        if (target.some((field) => field.includes('authUsername'))) {
+          return { status: 'username-already-linked' as const };
+        }
+        return { status: 'web-credentials-already-linked' as const };
       }
       throw error;
     }
