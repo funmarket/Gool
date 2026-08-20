@@ -13,6 +13,11 @@ export type FootballPersona = {
   allowedClubId?: string;
 };
 
+export type FootballPersonaTransition =
+  | { status: 'valid'; key: string | null }
+  | { status: 'invalid' }
+  | { status: 'club-mismatch' };
+
 export const FOOTBALL_PERSONAS: readonly FootballPersona[] = [
   { key: 'en_baller', locale: 'en', emoji: '⚽🔥', label: 'Baller', group: 'FOOTBALL' },
   { key: 'en_tekkers', locale: 'en', emoji: '🎩⚽', label: 'Tekkers', group: 'FOOTBALL' },
@@ -86,4 +91,28 @@ export function isFootballPersonaAllowedForClub(
   favoriteClubId: string | null | undefined,
 ) {
   return !persona.allowedClubId || persona.allowedClubId === favoriteClubId;
+}
+
+export function resolveFootballPersonaTransition(input: {
+  currentKey: string | null;
+  requestedKey: string | null | undefined;
+  favoriteClubId: string | null;
+  favoriteClubChanged: boolean;
+}): FootballPersonaTransition {
+  const { currentKey, requestedKey, favoriteClubId, favoriteClubChanged } = input;
+  const candidateKey = requestedKey !== undefined ? requestedKey : currentKey;
+  if (!candidateKey) return { status: 'valid', key: null };
+
+  const persona = getFootballPersona(candidateKey);
+  if (!persona) {
+    if (requestedKey === undefined) return { status: 'valid', key: currentKey };
+    return { status: 'invalid' };
+  }
+  if (isFootballPersonaAllowedForClub(persona, favoriteClubId)) {
+    return { status: 'valid', key: candidateKey };
+  }
+
+  const unchangedExistingPersona = favoriteClubChanged && candidateKey === currentKey;
+  if (unchangedExistingPersona) return { status: 'valid', key: null };
+  return { status: 'club-mismatch' };
 }
