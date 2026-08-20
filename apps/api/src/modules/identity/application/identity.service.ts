@@ -1,10 +1,38 @@
 import type { IdentityRepository } from './identity-repository.js';
 import type { ProfileUpdateInput } from '@hooma/contracts';
+import { AppError } from '../../../http/errors/app-error.js';
 import type { TelegramIdentityInput } from '../domain/types.js';
+
 export class IdentityService {
   constructor(private readonly repo: IdentityRepository) {}
   upsertTelegramUser(input: TelegramIdentityInput) {
     return this.repo.upsertTelegramUser(input);
+  }
+  async linkTelegramIdentity(userId: string, input: TelegramIdentityInput) {
+    const result = await this.repo.linkTelegramIdentity(userId, input);
+    switch (result.status) {
+      case 'linked':
+      case 'already-linked':
+        return result.user;
+      case 'user-not-found':
+        throw new AppError(401, 'AUTH_INVALID', 'Invalid authentication session');
+      case 'user-already-linked':
+        throw new AppError(
+          409,
+          'USER_ALREADY_HAS_TELEGRAM_IDENTITY',
+          'This HOOMA account is already linked to a different Telegram identity.',
+        );
+      case 'telegram-already-linked':
+        throw new AppError(
+          409,
+          'TELEGRAM_IDENTITY_ALREADY_LINKED',
+          'This Telegram identity is already linked to another HOOMA account.',
+        );
+      default: {
+        const exhaustive: never = result;
+        return exhaustive;
+      }
+    }
   }
   getIdentityUser(userId: string) {
     return this.repo.getIdentityUser(userId);
