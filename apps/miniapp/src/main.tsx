@@ -6,7 +6,6 @@ import App from './App';
 import './index.css';
 import './styles/vintage.css';
 import { bootTelegram, hasTelegramLaunchData } from './lib/telegram';
-import { AuthProvider } from './providers/AuthProvider';
 import { ThemeProvider } from './providers/ThemeProvider';
 import { CommunityProvider } from './providers/CommunityProvider';
 
@@ -45,11 +44,9 @@ async function start() {
         {telegramReady ? (
           <ThemeProvider>
             <BrowserRouter>
-              <AuthProvider>
-                <CommunityProvider>
-                  <App />
-                </CommunityProvider>
-              </AuthProvider>
+              <CommunityProvider>
+                <App />
+              </CommunityProvider>
             </BrowserRouter>
           </ThemeProvider>
         ) : (
