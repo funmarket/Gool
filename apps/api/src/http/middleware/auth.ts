@@ -68,11 +68,7 @@ function telegramUserContext(
   };
 }
 
-function authError(
-  res: Response,
-  code: 'AUTH_REQUIRED' | 'AUTH_INVALID',
-  message: string,
-) {
+function authError(res: Response, code: 'AUTH_REQUIRED' | 'AUTH_INVALID', message: string) {
   return res.status(401).json({
     error: {
       code,
