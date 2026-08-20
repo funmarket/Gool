@@ -6,12 +6,7 @@ import { signInWeb, signUpWeb } from '../shared/auth/web-auth';
 type Mode = 'sign-in' | 'register';
 
 function safeReturnTo(value: string | null) {
-  if (
-    !value ||
-    !value.startsWith('/') ||
-    value.startsWith('//') ||
-    value.startsWith('/login')
-  ) {
+  if (!value || !value.startsWith('/') || value.startsWith('//') || value.startsWith('/login')) {
     return '/';
   }
   return value;
@@ -31,16 +26,10 @@ export function LoginPage() {
   const [error, setError] = useState('');
   const isRegister = mode === 'register';
   const heading = isRegister ? 'Create account' : 'Sign in';
-  const submitLabel = isRegister
-    ? 'Create HOOMA account'
-    : 'Sign in to HOOMA';
-  const missingIdentity = isRegister
-    ? !email.trim() || !username.trim()
-    : !identifier.trim();
+  const submitLabel = isRegister ? 'Create HOOMA account' : 'Sign in to HOOMA';
+  const missingIdentity = isRegister ? !email.trim() || !username.trim() : !identifier.trim();
   const submitDisabled = pending || !password || missingIdentity;
-  const passwordAutoComplete = isRegister
-    ? 'new-password'
-    : 'current-password';
+  const passwordAutoComplete = isRegister ? 'new-password' : 'current-password';
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) navigate(returnTo, { replace: true });
@@ -58,8 +47,7 @@ export function LoginPage() {
       await refresh();
       navigate(returnTo, { replace: true });
     } catch (cause) {
-      const message =
-        cause instanceof Error ? cause.message : 'Authentication failed.';
+      const message = cause instanceof Error ? cause.message : 'Authentication failed.';
       setError(message);
     } finally {
       setPending(false);
@@ -71,9 +59,8 @@ export function LoginPage() {
       <div className="section-kicker">HOOMA account</div>
       <h1 className="section-title">{heading}</h1>
       <p className="mt-2 max-w-2xl text-sm muted">
-        Web credentials are a separate HOOMA login method. Telegram remains
-        available through the Telegram Mini App, and both methods can belong to
-        the same canonical account.
+        Web credentials are a separate HOOMA login method. Telegram remains available through the
+        Telegram Mini App, and both methods can belong to the same canonical account.
       </p>
 
       <section className="surface-card mx-auto mt-5 grid max-w-xl gap-4 p-5">
