@@ -47,7 +47,7 @@ jobs:
         run: node scripts/phase-d-apply.mjs
       - name: Install pinned Better Auth dependencies
         run: npm install --save-exact -w @hooma/api better-auth@1.6.29 @better-auth/prisma-adapter@1.6.29
-      - name: Format changed sources
+      - name: Format changed application sources
         run: >-
           npx prettier --write
           apps/api/src/auth/better-auth.ts
@@ -58,11 +58,12 @@ jobs:
           apps/api/src/modules/identity/application/identity-repository.ts
           apps/api/src/modules/identity/application/identity.service.ts
           apps/api/src/modules/identity/infrastructure/prisma-identity.repository.ts
-          packages/database/prisma/schema.prisma
           tests/hybrid-auth-schema.test.ts
           .github/workflows/ci.yml
           apps/api/package.json
           package-lock.json
+      - name: Format Prisma schema
+        run: npm -w @hooma/database exec prisma format
       - name: Validate Prisma
         run: npm run db:validate
       - name: Generate Prisma client
