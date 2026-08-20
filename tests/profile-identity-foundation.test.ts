@@ -28,7 +28,10 @@ test('profile identity persistence is canonical and scoped to User', () => {
   assert.match(schema, /enum ProfileIdentityType \{\s+PLAYER\s+FAN\s+GAMER\s+\}/);
   assert.match(schema, /model UserProfileIdentity \{/);
   assert.match(schema, /@@id\(\[userId, type\]\)/);
-  assert.match(schema, /user User @relation\(fields: \[userId\], references: \[id\], onDelete: Cascade\)/);
+  assert.match(
+    schema,
+    /user User @relation\(fields: \[userId\], references: \[id\], onDelete: Cascade\)/,
+  );
 });
 
 test('legacy Fan is backfilled while Spectator remains the Ghost Rider fallback', () => {
