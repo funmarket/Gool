@@ -1,7 +1,13 @@
 import { randomUUID } from 'node:crypto';
 import { Prisma } from '@prisma/client';
 import type { DatabaseClient } from '../../../infrastructure/database/prisma.js';
-import type { ProfileUpdateInput, WebCredentialsLinkInput } from '@hooma/contracts';
+import {
+  getFootballPersona,
+  isFootballPersonaAllowedForClub,
+  normalizeProfileIdentityTypes,
+  type ProfileUpdateInput,
+  type WebCredentialsLinkInput,
+} from '@hooma/contracts';
 import type { IdentityRepository } from '../application/identity-repository.js';
 import type { TelegramIdentityInput } from '../domain/types.js';
 
@@ -14,6 +20,24 @@ const identityUserSelect = {
   photoUrl: true,
   languageCode: true,
   isPremium: true,
+} as const;
+
+const meSelect = {
+  id: true,
+  telegramUserId: true,
+  username: true,
+  authName: true,
+  email: true,
+  emailVerified: true,
+  authUsername: true,
+  displayAuthUsername: true,
+  firstName: true,
+  lastName: true,
+  photoUrl: true,
+  languageCode: true,
+  isPremium: true,
+  profile: { include: { favoriteClub: true } },
+  preference: true,
 } as const;
 
 function telegramIdentityData(input: TelegramIdentityInput) {
@@ -208,43 +232,61 @@ export class PrismaIdentityRepository implements IdentityRepository {
 
   getMe(userId: string) {
     return this.db.user.findUniqueOrThrow({
-      where: { id: userId },
-      select: {
-        id: true,
-        telegramUserId: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        photoUrl: true,
-        languageCode: true,
-        isPremium: true,
-        profile: { include: { favoriteClub: true } },
-        preference: true,
-      },
+      where: { id: userId, deletedAt: null },
+      select: meSelect,
     });
   }
 
   async updateProfile(userId: string, input: ProfileUpdateInput) {
-    const { themeOverride, photoUrl, favoriteClubId, ...profile } = input;
-    const profileUpdate = {
-      ...(profile.skillLevel !== undefined ? { skillLevel: profile.skillLevel } : {}),
-      ...(profile.skillRating !== undefined ? { skillRating: profile.skillRating } : {}),
-      ...(profile.preferredPositions !== undefined
-        ? { preferredPositions: profile.preferredPositions }
-        : {}),
-      ...(profile.profileAudience !== undefined
-        ? { profileAudience: profile.profileAudience }
-        : {}),
-      ...(profile.bio !== undefined ? { bio: profile.bio } : {}),
-      ...(favoriteClubId !== undefined
-        ? {
-            favoriteClub: favoriteClubId
-              ? { connect: { id: favoriteClubId } }
-              : { disconnect: true },
-          }
-        : {}),
-    };
+    const { themeOverride, photoUrl, favoriteClubId, profileIdentityTypes, footballPersonaKey, ...profile } =
+      input;
+
     return this.db.$transaction(async (tx) => {
+      const current = await tx.playerProfile.findUniqueOrThrow({
+        where: { userId },
+        select: { favoriteClubId: true, footballPersonaKey: true },
+      });
+
+      const effectiveFavoriteClubId =
+        favoriteClubId !== undefined ? favoriteClubId : current.favoriteClubId;
+      let nextPersonaKey =
+        footballPersonaKey !== undefined ? footballPersonaKey : current.footballPersonaKey;
+
+      if (footballPersonaKey !== undefined && footballPersonaKey !== null) {
+        const requestedPersona = getFootballPersona(footballPersonaKey);
+        if (!requestedPersona) return { status: 'football-persona-invalid' as const };
+        if (!isFootballPersonaAllowedForClub(requestedPersona, effectiveFavoriteClubId)) {
+          return { status: 'football-persona-club-mismatch' as const };
+        }
+      } else if (favoriteClubId !== undefined && nextPersonaKey) {
+        const currentPersona = getFootballPersona(nextPersonaKey);
+        if (currentPersona && !isFootballPersonaAllowedForClub(currentPersona, effectiveFavoriteClubId)) {
+          nextPersonaKey = null;
+        }
+      }
+
+      const profileUpdate = {
+        ...(profile.skillLevel !== undefined ? { skillLevel: profile.skillLevel } : {}),
+        ...(profile.skillRating !== undefined ? { skillRating: profile.skillRating } : {}),
+        ...(profile.preferredPositions !== undefined
+          ? { preferredPositions: profile.preferredPositions }
+          : {}),
+        ...(profileIdentityTypes !== undefined
+          ? { profileIdentityTypes: normalizeProfileIdentityTypes(profileIdentityTypes) }
+          : {}),
+        ...(footballPersonaKey !== undefined || nextPersonaKey !== current.footballPersonaKey
+          ? { footballPersonaKey: nextPersonaKey }
+          : {}),
+        ...(profile.bio !== undefined ? { bio: profile.bio } : {}),
+        ...(favoriteClubId !== undefined
+          ? {
+              favoriteClub: favoriteClubId
+                ? { connect: { id: favoriteClubId } }
+                : { disconnect: true },
+            }
+          : {}),
+      };
+
       if (photoUrl !== undefined) {
         await tx.user.update({
           where: { id: userId },
@@ -260,10 +302,11 @@ export class PrismaIdentityRepository implements IdentityRepository {
           data: { themeOverride: themeOverride as 'TELEGRAM' | 'LIGHT' | 'DARK' },
         });
       }
-      return tx.user.findUniqueOrThrow({
-        where: { id: userId },
-        include: { profile: { include: { favoriteClub: true } }, preference: true },
+      const user = await tx.user.findUniqueOrThrow({
+        where: { id: userId, deletedAt: null },
+        select: meSelect,
       });
+      return { status: 'updated' as const, user };
     });
   }
 }
