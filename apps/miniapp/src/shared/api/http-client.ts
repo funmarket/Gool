@@ -13,17 +13,23 @@ function authHeaders() {
     const raw = retrieveRawInitData();
     if (raw) headers.authorization = `tma ${raw}`;
   } catch {
-    // Outside Telegram, the API rejects auth unless development bypass is explicitly enabled.
+    // Browser/web requests authenticate with the Better Auth session cookie instead.
   }
   return headers;
 }
 
 function errorMessage(body: unknown, status: number): string {
-  if (typeof body === 'object' && body && 'error' in body) {
-    const error = (body as { error: unknown }).error;
-    if (typeof error === 'string') return error;
-    if (typeof error === 'object' && error && 'message' in error) {
-      return String((error as { message: unknown }).message);
+  if (typeof body === 'object' && body) {
+    if ('error' in body) {
+      const error = (body as { error: unknown }).error;
+      if (typeof error === 'string') return error;
+      if (typeof error === 'object' && error && 'message' in error) {
+        return String((error as { message: unknown }).message);
+      }
+    }
+    if ('message' in body) {
+      const message = (body as { message: unknown }).message;
+      if (typeof message === 'string' && message) return message;
     }
   }
   return `Request failed (${status})`;
@@ -47,6 +53,7 @@ export async function http<T>(path: string, options: HttpOptions = {}): Promise<
     try {
       const response = await fetch(`${API_BASE}${path}`, {
         ...requestOptions,
+        credentials: requestOptions.credentials ?? 'include',
         signal: requestOptions.signal || controller.signal,
         headers: {
           ...authHeaders(),

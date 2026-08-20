@@ -43,7 +43,37 @@ export function buildAuth(db: DatabaseClient): HoomaAuth {
     session: { modelName: 'AuthSession' },
     account: { modelName: 'AuthAccount' },
     verification: { modelName: 'AuthVerification' },
+    databaseHooks: {
+      user: {
+        create: {
+          after: async (user) => {
+            await db.$transaction([
+              db.playerProfile.upsert({
+                where: { userId: user.id },
+                create: { userId: user.id },
+                update: {},
+              }),
+              db.userPreference.upsert({
+                where: { userId: user.id },
+                create: { userId: user.id },
+                update: {},
+              }),
+            ]);
+          },
+        },
+      },
+    },
     trustedOrigins: env.APP_BASE_URL ? [env.APP_BASE_URL] : [],
+    advanced:
+      env.NODE_ENV === 'production'
+        ? {
+            defaultCookieAttributes: {
+              httpOnly: true,
+              secure: true,
+              sameSite: 'none',
+            },
+          }
+        : undefined,
     plugins: [
       username({
         minUsernameLength: 3,
