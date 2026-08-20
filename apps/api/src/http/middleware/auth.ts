@@ -27,6 +27,12 @@ export interface HybridAuthOptions {
   optional?: boolean;
 }
 
+export interface ParsedTelegramIdentity {
+  input: TelegramIdentityInput;
+  rawInitData: string;
+  telegramUser: NonNullable<AuthContext['telegramUser']>;
+}
+
 export function getAuth(req: Request): AuthContext {
   const auth = (req as Request & { auth?: AuthContext }).auth;
   if (!auth) {
@@ -71,6 +77,22 @@ function telegramUserContext(
   };
 }
 
+export function parseTelegramIdentity(rawInitData: string): ParsedTelegramIdentity {
+  validate(rawInitData, env.TELEGRAM_BOT_TOKEN, {
+    expiresIn: env.INIT_DATA_MAX_AGE_SECONDS,
+  });
+  const initData = deepSnakeToCamelObjKeys(parse(rawInitData));
+  const tgUser = initData.user;
+  if (!tgUser) throw new Error('Telegram user missing from initData');
+
+  const telegramUserId = String(tgUser.id);
+  return {
+    input: telegramIdentityInput(telegramUserId, tgUser),
+    rawInitData,
+    telegramUser: telegramUserContext(telegramUserId, tgUser),
+  };
+}
+
 function authError(res: Response, code: 'AUTH_REQUIRED' | 'AUTH_INVALID', message: string) {
   return res.status(401).json({
     error: {
@@ -88,20 +110,13 @@ async function authenticateTelegram(req: Request, identity: IdentityService) {
     throw new Error('Invalid Telegram authentication credentials');
   }
 
-  validate(rawInitData, env.TELEGRAM_BOT_TOKEN, {
-    expiresIn: env.INIT_DATA_MAX_AGE_SECONDS,
-  });
-  const initData = deepSnakeToCamelObjKeys(parse(rawInitData));
-  const tgUser = initData.user;
-  if (!tgUser) throw new Error('Telegram user missing from initData');
-
-  const telegramUserId = String(tgUser.id);
-  const user = await identity.upsertTelegramUser(telegramIdentityInput(telegramUserId, tgUser));
+  const parsed = parseTelegramIdentity(rawInitData);
+  const user = await identity.upsertTelegramUser(parsed.input);
   return {
     user,
     provider: 'telegram' as const,
-    rawInitData,
-    telegramUser: telegramUserContext(telegramUserId, tgUser),
+    rawInitData: parsed.rawInitData,
+    telegramUser: parsed.telegramUser,
   };
 }
 
