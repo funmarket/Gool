@@ -1,6 +1,7 @@
 import { profileUpdateSchema } from '@hooma/contracts';
 import { get, patch } from '../../shared/api/http-client';
-import type { Club, Me } from '../../types/domain';
+import type { Club } from '../../types/domain';
+import type { ProfileMe } from './types';
 
 export const profileQueryKeys = {
   me: () => ['me'] as const,
@@ -8,11 +9,11 @@ export const profileQueryKeys = {
 };
 
 export function getCurrentProfile() {
-  return get<Me>('/api/v1/me');
+  return get<ProfileMe>('/api/v1/me');
 }
 
 export function updateCurrentProfile(input: unknown) {
-  return patch<Me>('/api/v1/me/profile', profileUpdateSchema.parse(input));
+  return patch<ProfileMe>('/api/v1/me/profile', profileUpdateSchema.parse(input));
 }
 
 export function listFavoriteClubOptions() {
