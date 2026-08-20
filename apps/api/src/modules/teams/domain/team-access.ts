@@ -7,7 +7,10 @@ export type TeamCapability =
   | 'MANAGE_LINEUP'
   | 'CREATE_CHALLENGE';
 
-const LEGACY_TEAM_CAPABILITIES: Record<LegacyTeamRole, ReadonlySet<TeamCapability>> = {
+const LEGACY_TEAM_CAPABILITIES: Record<
+  LegacyTeamRole,
+  ReadonlySet<TeamCapability>
+> = {
   OWNER: new Set<TeamCapability>([
     'CREATE_TEAM',
     'EDIT_TEAM',
