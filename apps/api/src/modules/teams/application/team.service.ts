@@ -7,6 +7,7 @@ import type {
   TeamUpdateInput,
 } from '@hooma/contracts';
 import { AppError } from '../../../http/errors/app-error.js';
+import { legacyTeamRoleHasCapability, type TeamCapability } from '../domain/team-access.js';
 import type { TeamListInput, TeamRepository } from './team-repository.js';
 
 export class TeamService {
@@ -36,22 +37,22 @@ export class TeamService {
   }
 
   async create(userId: string, input: TeamCreateInput) {
-    await this.requireCanCreateTeam(userId, input.communityId);
+    await this.requireCommunityCapability(userId, input.communityId, 'CREATE_TEAM');
     return this.repo.create(userId, input);
   }
 
   async update(userId: string, teamId: string, input: TeamUpdateInput) {
-    await this.requireCanManageTeam(userId, teamId);
+    await this.requireTeamCapability(userId, teamId, 'EDIT_TEAM');
     return this.repo.update(teamId, input);
   }
 
   async addPlayer(userId: string, teamId: string, input: TeamPlayerCreateInput) {
-    await this.requireCanManageTeamLineup(userId, teamId);
+    await this.requireTeamCapability(userId, teamId, 'MANAGE_ROSTER');
     return this.repo.addPlayer(teamId, input);
   }
 
   async createLineup(userId: string, teamId: string, input: TeamLineupCreateInput) {
-    await this.requireCanManageTeamLineup(userId, teamId);
+    await this.requireTeamCapability(userId, teamId, 'MANAGE_LINEUP');
     return this.repo.createLineup(userId, teamId, input);
   }
 
@@ -59,7 +60,7 @@ export class TeamService {
     if (input.challengerTeamId === input.challengedTeamId) {
       throw new AppError(400, 'TEAM_CHALLENGE_SELF', 'A team cannot challenge itself.');
     }
-    await this.requireCanManageTeamChallenges(userId, input.challengerTeamId);
+    await this.requireTeamCapability(userId, input.challengerTeamId, 'CREATE_CHALLENGE');
     return this.repo.createChallenge(userId, input);
   }
 
@@ -103,25 +104,23 @@ export class TeamService {
     return this.repo.createMessage(userId, challengeId, teamIds, input);
   }
 
-  private async requireCanCreateTeam(userId: string, communityId: string) {
+  private async requireCommunityCapability(
+    userId: string,
+    communityId: string,
+    capability: TeamCapability,
+  ) {
     const access = await this.repo.getCommunityCoachAccess(userId, communityId);
-    if (!access) {
+    if (!access || !legacyTeamRoleHasCapability(access.role, capability)) {
       throw new AppError(403, 'TEAM_COACH_REQUIRED', 'Coach access required for this HOOMA.');
     }
     return access;
   }
 
-  private async requireCanManageTeam(userId: string, teamId: string) {
+  private async requireTeamCapability(userId: string, teamId: string, capability: TeamCapability) {
     const access = await this.repo.getTeamManagerAccess(userId, teamId);
-    if (!access) throw new AppError(404, 'TEAM_NOT_FOUND', 'Team not found.');
+    if (!access || !legacyTeamRoleHasCapability(access.role, capability)) {
+      throw new AppError(404, 'TEAM_NOT_FOUND', 'Team not found.');
+    }
     return access;
-  }
-
-  private requireCanManageTeamChallenges(userId: string, teamId: string) {
-    return this.requireCanManageTeam(userId, teamId);
-  }
-
-  private requireCanManageTeamLineup(userId: string, teamId: string) {
-    return this.requireCanManageTeam(userId, teamId);
   }
 }
