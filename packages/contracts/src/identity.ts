@@ -18,13 +18,21 @@ export const telegramLinkSchema = z.object({
 });
 
 export const webCredentialsLinkSchema = z.object({
-  email: z.string().trim().email().max(320).transform((value) => value.toLowerCase()),
+  email: z
+    .string()
+    .trim()
+    .email()
+    .max(320)
+    .transform((value) => value.toLowerCase()),
   username: z
     .string()
     .trim()
     .min(3)
     .max(30)
-    .regex(/^[A-Za-z0-9_.]+$/, 'Username may only contain letters, numbers, underscores, and dots.'),
+    .regex(
+      /^[A-Za-z0-9_.]+$/,
+      'Username may only contain letters, numbers, underscores, and dots.',
+    ),
   password: z.string().min(8).max(128),
 });
 
