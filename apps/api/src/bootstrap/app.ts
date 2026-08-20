@@ -47,7 +47,7 @@ export function buildApp(container: AppContainer) {
   app.use(
     '/api/v1',
     rateLimit(container.rateLimitStore, { scope: 'api', windowMs: 60_000, max: 180 }),
-    telegramAuth(container.services.identity),
+    telegramAuth(container.services.identity, { optional: true }),
     v1Router(container),
   );
   app.use(errorHandler);
