@@ -12,13 +12,16 @@ import { getWebSession, signOutWeb, type WebSession } from '../shared/auth/web-a
 
 export type AuthMethod = 'loading' | 'guest' | 'telegram' | 'session' | 'dev' | 'error';
 
-type AuthValue = {
+type AuthState = {
   method: AuthMethod;
+  session: WebSession | null;
+  error: string | null;
+};
+
+type AuthValue = AuthState & {
   isLoading: boolean;
   isAuthenticated: boolean;
   canWebLogout: boolean;
-  session: WebSession | null;
-  error: string | null;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -30,57 +33,66 @@ function currentLaunchMethod(): AuthMethod | null {
   return hasTelegramLaunchData() ? 'telegram' : null;
 }
 
+function launchState(method: AuthMethod): AuthState {
+  return { method, session: null, error: null };
+}
+
+async function resolveWebState(): Promise<AuthState> {
+  try {
+    const session = await getWebSession();
+    return { method: session ? 'session' : 'guest', session, error: null };
+  } catch (cause) {
+    return {
+      method: 'error',
+      session: null,
+      error: cause instanceof Error ? cause.message : 'Unable to verify the HOOMA session.',
+    };
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const launchMethod = currentLaunchMethod();
-  const [method, setMethod] = useState<AuthMethod>(launchMethod || 'loading');
-  const [session, setSession] = useState<WebSession | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [state, setState] = useState<AuthState>(() =>
+    launchMethod ? launchState(launchMethod) : launchState('loading'),
+  );
 
   const refresh = useCallback(async () => {
     const directMethod = currentLaunchMethod();
     if (directMethod) {
-      setSession(null);
-      setError(null);
-      setMethod(directMethod);
+      setState(launchState(directMethod));
       return;
     }
-
-    try {
-      const nextSession = await getWebSession();
-      setSession(nextSession);
-      setError(null);
-      setMethod(nextSession ? 'session' : 'guest');
-    } catch (cause) {
-      setSession(null);
-      setError(cause instanceof Error ? cause.message : 'Unable to verify the HOOMA session.');
-      setMethod('error');
-    }
+    setState(await resolveWebState());
   }, []);
 
   useEffect(() => {
-    if (!launchMethod) void refresh();
-  }, [launchMethod, refresh]);
+    if (launchMethod) return;
+
+    let active = true;
+    void resolveWebState().then((nextState) => {
+      if (active) setState(nextState);
+    });
+    return () => {
+      active = false;
+    };
+  }, [launchMethod]);
 
   const logout = useCallback(async () => {
-    if (method !== 'session') return;
+    if (state.method !== 'session') return;
     await signOutWeb();
-    setSession(null);
-    setError(null);
-    setMethod('guest');
-  }, [method]);
+    setState(launchState('guest'));
+  }, [state.method]);
 
   const value = useMemo<AuthValue>(
     () => ({
-      method,
-      isLoading: method === 'loading',
-      isAuthenticated: ['telegram', 'session', 'dev'].includes(method),
-      canWebLogout: method === 'session',
-      session,
-      error,
+      ...state,
+      isLoading: state.method === 'loading',
+      isAuthenticated: ['telegram', 'session', 'dev'].includes(state.method),
+      canWebLogout: state.method === 'session',
       refresh,
       logout,
     }),
-    [method, session, error, refresh, logout],
+    [state, refresh, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
