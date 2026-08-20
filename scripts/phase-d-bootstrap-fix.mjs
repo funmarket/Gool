@@ -13,12 +13,16 @@ const replacements = [
     "username: 'dev_' + telegramUserId,",
   ],
   [
+    "import { betterAuth } from 'better-auth';\\n",
+    "import { betterAuth, type BetterAuthOptions } from 'better-auth';\\n",
+  ],
+  [
     'export function buildAuth(db: DatabaseClient) {\\n',
     "export type HoomaAuth = ReturnType<typeof betterAuth>;\\n\\nexport function buildAuth(db: DatabaseClient): HoomaAuth {\\n",
   ],
   [
-    '\\n\\nexport type HoomaAuth = ReturnType<typeof buildAuth>;\\n`,',
-    '\\n`,',
+    "    ],\\n  });\\n}\\n\\nexport type HoomaAuth = ReturnType<typeof buildAuth>;\\n`,",
+    "    ],\\n  } as BetterAuthOptions);\\n}\\n`,",
   ],
 ];
 
@@ -30,4 +34,4 @@ for (const [before, after] of replacements) {
 }
 
 fs.writeFileSync(file, source);
-console.log('Normalized Phase D bootstrap helper syntax and exported auth types.');
+console.log('Normalized Phase D helper syntax and Better Auth public option typing.');
