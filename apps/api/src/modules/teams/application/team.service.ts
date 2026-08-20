@@ -7,7 +7,10 @@ import type {
   TeamUpdateInput,
 } from '@hooma/contracts';
 import { AppError } from '../../../http/errors/app-error.js';
-import { legacyTeamRoleHasCapability, type TeamCapability } from '../domain/team-access.js';
+import {
+  legacyTeamRoleHasCapability,
+  type TeamCapability,
+} from '../domain/team-access.js';
 import type { TeamListInput, TeamRepository } from './team-repository.js';
 
 export class TeamService {
