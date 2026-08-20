@@ -2,9 +2,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
 
+const mainEntry = fs.readFileSync('apps/miniapp/src/main.tsx', 'utf8');
 const httpClient = fs.readFileSync('apps/miniapp/src/shared/api/http-client.ts', 'utf8');
 const authProvider = fs.readFileSync('apps/miniapp/src/providers/AuthProvider.tsx', 'utf8');
 const loginPage = fs.readFileSync('apps/miniapp/src/pages/LoginPage.tsx', 'utf8');
+const morePage = fs.readFileSync('apps/miniapp/src/pages/MorePage.tsx', 'utf8');
 const communityProvider = fs.readFileSync(
   'apps/miniapp/src/providers/CommunityProvider.tsx',
   'utf8',
@@ -17,7 +19,7 @@ test('web API calls include Better Auth session credentials without replacing Te
   assert.match(httpClient, /headers\.authorization = `tma \$\{raw\}`/);
 });
 
-test('frontend auth state keeps Telegram, web session, and Guest as distinct modes', () => {
+test('web auth state keeps Telegram, web session, and Guest as distinct modes', () => {
   assert.match(authProvider, /'guest' \| 'telegram' \| 'session'/);
   assert.match(authProvider, /hasTelegramLaunchData\(\)/);
   assert.match(authProvider, /getWebSession\(\)/);
@@ -29,11 +31,19 @@ test('web login supports independent registration and email-or-username sign in'
   assert.match(loginPage, /safeReturnTo/);
 });
 
-test('guest providers and Profile route respect the auth boundary', () => {
-  assert.match(communityProvider, /enabled: isAuthenticated/);
+test('Telegram Mini App boot and community state are not blocked by web auth', () => {
+  assert.doesNotMatch(mainEntry, /AuthProvider/);
+  assert.doesNotMatch(communityProvider, /useAuth/);
+  assert.doesNotMatch(communityProvider, /enabled: isAuthenticated/);
+  assert.doesNotMatch(morePage, /useAuth/);
+  assert.match(appRoutes, /path="\/telegram"/);
+  assert.match(appRoutes, /path="\/profile" element=\{routeElement\(<ProfilePage \/>\)\}/);
+  assert.doesNotMatch(appRoutes, /RequireAuth/);
+});
+
+test('web authentication is isolated to the dedicated login route', () => {
   assert.match(appRoutes, /path="\/login"/);
-  assert.match(appRoutes, /<RequireAuth>/);
-  assert.match(appRoutes, /<ProfilePage \/>/);
+  assert.match(appRoutes, /<AuthProvider>[\s\S]*?<LoginPage \/>[\s\S]*?<\/AuthProvider>/);
 });
 
 test('web signup initializes HOOMA profile rows and production cookie attributes', () => {
