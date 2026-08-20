@@ -7,6 +7,7 @@ import {
   isFootballPersonaAllowedForClub,
   normalizeProfileIdentityTypes,
   profileUpdateSchema,
+  resolveFootballPersonaTransition,
   type FootballPersona,
 } from '@hooma/contracts';
 
@@ -59,6 +60,30 @@ test('club-restricted persona validation uses canonical club ids', () => {
 
   assert.equal(isFootballPersonaAllowedForClub(persona, 'club-arsenal-canonical'), true);
   assert.equal(isFootballPersonaAllowedForClub(persona, 'club-liverpool-canonical'), false);
+});
+
+test('unknown explicitly submitted persona is rejected', () => {
+  assert.deepEqual(
+    resolveFootballPersonaTransition({
+      currentKey: null,
+      requestedKey: 'not_a_real_persona',
+      favoriteClubId: null,
+      favoriteClubChanged: false,
+    }),
+    { status: 'invalid' },
+  );
+});
+
+test('generic saved persona survives favorite-club changes', () => {
+  assert.deepEqual(
+    resolveFootballPersonaTransition({
+      currentKey: 'en_baller',
+      requestedKey: 'en_baller',
+      favoriteClubId: 'club-new',
+      favoriteClubChanged: true,
+    }),
+    { status: 'valid', key: 'en_baller' },
+  );
 });
 
 test('persona catalog stores stable keys rather than rendered labels as identity', () => {
