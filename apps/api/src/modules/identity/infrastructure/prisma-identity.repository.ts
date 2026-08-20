@@ -2,9 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { Prisma } from '@prisma/client';
 import type { DatabaseClient } from '../../../infrastructure/database/prisma.js';
 import {
-  getFootballPersona,
-  isFootballPersonaAllowedForClub,
   normalizeProfileIdentityTypes,
+  resolveFootballPersonaTransition,
   type ProfileUpdateInput,
   type WebCredentialsLinkInput,
 } from '@hooma/contracts';
@@ -238,8 +237,14 @@ export class PrismaIdentityRepository implements IdentityRepository {
   }
 
   async updateProfile(userId: string, input: ProfileUpdateInput) {
-    const { themeOverride, photoUrl, favoriteClubId, profileIdentityTypes, footballPersonaKey, ...profile } =
-      input;
+    const {
+      themeOverride,
+      photoUrl,
+      favoriteClubId,
+      profileIdentityTypes,
+      footballPersonaKey,
+      ...profile
+    } = input;
 
     return this.db.$transaction(async (tx) => {
       const current = await tx.playerProfile.findUniqueOrThrow({
@@ -249,20 +254,20 @@ export class PrismaIdentityRepository implements IdentityRepository {
 
       const effectiveFavoriteClubId =
         favoriteClubId !== undefined ? favoriteClubId : current.favoriteClubId;
-      let nextPersonaKey =
-        footballPersonaKey !== undefined ? footballPersonaKey : current.footballPersonaKey;
+      const favoriteClubChanged =
+        favoriteClubId !== undefined && favoriteClubId !== current.favoriteClubId;
+      const personaTransition = resolveFootballPersonaTransition({
+        currentKey: current.footballPersonaKey,
+        requestedKey: footballPersonaKey,
+        favoriteClubId: effectiveFavoriteClubId,
+        favoriteClubChanged,
+      });
 
-      if (footballPersonaKey !== undefined && footballPersonaKey !== null) {
-        const requestedPersona = getFootballPersona(footballPersonaKey);
-        if (!requestedPersona) return { status: 'football-persona-invalid' as const };
-        if (!isFootballPersonaAllowedForClub(requestedPersona, effectiveFavoriteClubId)) {
-          return { status: 'football-persona-club-mismatch' as const };
-        }
-      } else if (favoriteClubId !== undefined && nextPersonaKey) {
-        const currentPersona = getFootballPersona(nextPersonaKey);
-        if (currentPersona && !isFootballPersonaAllowedForClub(currentPersona, effectiveFavoriteClubId)) {
-          nextPersonaKey = null;
-        }
+      if (personaTransition.status === 'invalid') {
+        return { status: 'football-persona-invalid' as const };
+      }
+      if (personaTransition.status === 'club-mismatch') {
+        return { status: 'football-persona-club-mismatch' as const };
       }
 
       const profileUpdate = {
@@ -274,8 +279,9 @@ export class PrismaIdentityRepository implements IdentityRepository {
         ...(profileIdentityTypes !== undefined
           ? { profileIdentityTypes: normalizeProfileIdentityTypes(profileIdentityTypes) }
           : {}),
-        ...(footballPersonaKey !== undefined || nextPersonaKey !== current.footballPersonaKey
-          ? { footballPersonaKey: nextPersonaKey }
+        ...(footballPersonaKey !== undefined ||
+        personaTransition.key !== current.footballPersonaKey
+          ? { footballPersonaKey: personaTransition.key }
           : {}),
         ...(profile.bio !== undefined ? { bio: profile.bio } : {}),
         ...(favoriteClubId !== undefined
