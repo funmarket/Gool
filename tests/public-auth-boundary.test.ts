@@ -20,7 +20,10 @@ const fakeIdentity = {
 
 const fakeTeams = {
   listPublic() {
-    return Promise.resolve({ items: [{ id: 'public-team', name: 'Public Team' }], nextCursor: null });
+    return Promise.resolve({
+      items: [{ id: 'public-team', name: 'Public Team' }],
+      nextCursor: null,
+    });
   },
   managedTeams(userId: string) {
     return Promise.resolve({ items: [{ id: 'managed-team', managerUserId: userId }] });
