@@ -34,11 +34,7 @@ export class IdentityService {
       }
     }
   }
-  async linkWebCredentials(
-    userId: string,
-    input: WebCredentialsLinkInput,
-    hashedPassword: string,
-  ) {
+  async linkWebCredentials(userId: string, input: WebCredentialsLinkInput, hashedPassword: string) {
     const result = await this.repo.linkWebCredentials(userId, input, hashedPassword);
     switch (result.status) {
       case 'linked':
