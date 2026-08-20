@@ -41,7 +41,14 @@ jobs:
       - run: npm test
         env:
           NODE_ENV: test
-      - run: npm run format:check
+      - name: Check formatting and print profile diffs on failure
+        run: |
+          if npm run format:check; then
+            exit 0
+          fi
+          npx prettier --write apps/api/src/modules/identity/infrastructure/prisma-identity.repository.ts apps/miniapp/src/pages/ProfilePage.tsx packages/contracts/src/identity.ts packages/contracts/src/profile-personas.ts tests/profile-identity.test.ts
+          git diff -- apps/api/src/modules/identity/infrastructure/prisma-identity.repository.ts apps/miniapp/src/pages/ProfilePage.tsx packages/contracts/src/identity.ts packages/contracts/src/profile-personas.ts tests/profile-identity.test.ts
+          exit 1
       - run: npm run build
         env:
           NODE_ENV: production
