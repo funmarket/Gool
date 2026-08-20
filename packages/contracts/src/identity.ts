@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
 export const profileIdentityTypeSchema = z.enum(['PLAYER', 'FAN', 'GAMER']);
+export const effectiveProfileIdentityTypeSchema = z.enum([
+  'PLAYER',
+  'FAN',
+  'ULTRAFAN',
+  'GAMER',
+  'GHOST_RIDER',
+]);
 
 export const selectedProfileIdentitiesSchema = z
   .array(profileIdentityTypeSchema)
@@ -46,6 +53,7 @@ export const webCredentialsLinkSchema = z.object({
 });
 
 export type ProfileIdentityType = z.infer<typeof profileIdentityTypeSchema>;
+export type EffectiveProfileIdentityType = z.infer<typeof effectiveProfileIdentityTypeSchema>;
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
 export type TelegramLinkInput = z.infer<typeof telegramLinkSchema>;
 export type WebCredentialsLinkInput = z.infer<typeof webCredentialsLinkSchema>;

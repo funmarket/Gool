@@ -3,6 +3,10 @@ import { Prisma } from '@prisma/client';
 import type { DatabaseClient } from '../../../infrastructure/database/prisma.js';
 import type { ProfileUpdateInput, WebCredentialsLinkInput } from '@hooma/contracts';
 import type { IdentityRepository } from '../application/identity-repository.js';
+import {
+  normalizeSelectedProfileIdentities,
+  resolveEffectiveProfileIdentities,
+} from '../domain/profile-identities.js';
 import type { TelegramIdentityInput } from '../domain/types.js';
 
 const identityUserSelect = {
@@ -15,6 +19,41 @@ const identityUserSelect = {
   languageCode: true,
   isPremium: true,
 } as const;
+
+const meSelect = {
+  id: true,
+  telegramUserId: true,
+  username: true,
+  firstName: true,
+  lastName: true,
+  photoUrl: true,
+  languageCode: true,
+  isPremium: true,
+  profile: { include: { favoriteClub: true } },
+  preference: true,
+  profileIdentities: { select: { type: true } },
+} satisfies Prisma.UserSelect;
+
+type MeRecord = Prisma.UserGetPayload<{ select: typeof meSelect }>;
+
+function toMeView(user: MeRecord) {
+  const { profileIdentities, ...base } = user;
+  const selectedIdentities = normalizeSelectedProfileIdentities(
+    profileIdentities.map((identity) => identity.type),
+  );
+  const effectiveIdentities = resolveEffectiveProfileIdentities(selectedIdentities);
+
+  return {
+    ...base,
+    profile: base.profile
+      ? {
+          ...base.profile,
+          selectedIdentities,
+          effectiveIdentities,
+        }
+      : null,
+  };
+}
 
 function telegramIdentityData(input: TelegramIdentityInput) {
   return {
@@ -208,22 +247,12 @@ export class PrismaIdentityRepository implements IdentityRepository {
     });
   }
 
-  getMe(userId: string) {
-    return this.db.user.findUniqueOrThrow({
+  async getMe(userId: string) {
+    const user = await this.db.user.findUniqueOrThrow({
       where: { id: userId },
-      select: {
-        id: true,
-        telegramUserId: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        photoUrl: true,
-        languageCode: true,
-        isPremium: true,
-        profile: { include: { favoriteClub: true } },
-        preference: true,
-      },
+      select: meSelect,
     });
+    return toMeView(user);
   }
 
   async updateProfile(userId: string, input: ProfileUpdateInput) {
@@ -313,10 +342,11 @@ export class PrismaIdentityRepository implements IdentityRepository {
         }
       }
 
-      return tx.user.findUniqueOrThrow({
+      const user = await tx.user.findUniqueOrThrow({
         where: { id: userId },
-        include: { profile: { include: { favoriteClub: true } }, preference: true },
+        select: meSelect,
       });
+      return toMeView(user);
     });
   }
 }
