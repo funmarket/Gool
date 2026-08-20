@@ -8,7 +8,7 @@ export function useTelegramBackButton() {
   useEffect(() => {
     try {
       if (!backButton.show.isAvailable() || !backButton.hide.isAvailable()) return;
-      const isRoot = ['/', '/play', '/watch', '/community', '/more'].includes(location.pathname);
+      const isRoot = ['/', '/play', '/watch', '/community', '/pitch'].includes(location.pathname);
       if (isRoot) backButton.hide();
       else backButton.show();
       const off = backButton.onClick(() => navigate(-1));
