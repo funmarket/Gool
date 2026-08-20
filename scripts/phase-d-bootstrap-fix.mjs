@@ -36,5 +36,14 @@ for (const [before, after] of replacements) {
   source = source.replace(before, after);
 }
 
+const ciPatchStart = '// ---------------------------------------------------------------------------\n// CI needs a deterministic non-production auth secret for tests.';
+const architectureTestStart = '// ---------------------------------------------------------------------------\n// Architecture regression test: canonical User owns Better Auth state.';
+const start = source.indexOf(ciPatchStart);
+const end = source.indexOf(architectureTestStart);
+if (start < 0 || end < 0 || end <= start) {
+  throw new Error('Could not isolate the temporary CI workflow patch block');
+}
+source = source.slice(0, start) + source.slice(end);
+
 fs.writeFileSync(file, source);
-console.log('Normalized Phase D helper and preserved the Telegram-only middleware boundary.');
+console.log('Normalized Phase D helper, preserved Telegram auth, and removed workflow-file edits.');
