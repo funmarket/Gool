@@ -1,3 +1,4 @@
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Phone } from 'lucide-react';
 import { HoumaStampIcon } from '../../icons/HoumaStampIcon';
@@ -69,12 +70,12 @@ export function PitchCard(props: PitchCardProps) {
         }
       : undefined;
 
-  const stopAndRun = (action?: () => void) => (event: React.MouseEvent<HTMLButtonElement>) => {
+  const stopAndRun = (action?: () => void) => (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     action?.();
   };
 
-  const toggleFromKeyboard = (event: React.KeyboardEvent<HTMLElement>) => {
+  const toggleFromKeyboard = (event: KeyboardEvent<HTMLElement>) => {
     if (!props.onToggle) return;
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
@@ -85,6 +86,7 @@ export function PitchCard(props: PitchCardProps) {
   return (
     <article
       className={`pitch-card-pro${expanded ? ' pitch-card-pro-expanded' : ''}`}
+      data-pitch-id={props.id}
       onClick={props.onToggle}
       onKeyDown={toggleFromKeyboard}
       tabIndex={props.onToggle ? 0 : undefined}
