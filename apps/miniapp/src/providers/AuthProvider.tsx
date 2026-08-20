@@ -10,7 +10,7 @@ import {
 import { hasTelegramLaunchData } from '../lib/telegram';
 import { getWebSession, signOutWeb, type WebSession } from '../shared/auth/web-auth';
 
-export type AuthMethod = 'loading' | 'guest' | 'telegram' | 'session' | 'dev';
+export type AuthMethod = 'loading' | 'guest' | 'telegram' | 'session' | 'dev' | 'error';
 
 type AuthValue = {
   method: AuthMethod;
@@ -18,6 +18,7 @@ type AuthValue = {
   isAuthenticated: boolean;
   canWebLogout: boolean;
   session: WebSession | null;
+  error: string | null;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -33,11 +34,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const launchMethod = currentLaunchMethod();
   const [method, setMethod] = useState<AuthMethod>(launchMethod || 'loading');
   const [session, setSession] = useState<WebSession | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     const directMethod = currentLaunchMethod();
     if (directMethod) {
       setSession(null);
+      setError(null);
       setMethod(directMethod);
       return;
     }
@@ -45,10 +48,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const nextSession = await getWebSession();
       setSession(nextSession);
+      setError(null);
       setMethod(nextSession ? 'session' : 'guest');
-    } catch {
+    } catch (cause) {
       setSession(null);
-      setMethod('guest');
+      setError(cause instanceof Error ? cause.message : 'Unable to verify the HOOMA session.');
+      setMethod('error');
     }
   }, []);
 
@@ -60,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (method !== 'session') return;
     await signOutWeb();
     setSession(null);
+    setError(null);
     setMethod('guest');
   }, [method]);
 
@@ -70,10 +76,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: ['telegram', 'session', 'dev'].includes(method),
       canWebLogout: method === 'session',
       session,
+      error,
       refresh,
       logout,
     }),
-    [method, session, refresh, logout],
+    [method, session, error, refresh, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
