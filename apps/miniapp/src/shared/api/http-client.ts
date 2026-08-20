@@ -19,11 +19,17 @@ function authHeaders() {
 }
 
 function errorMessage(body: unknown, status: number): string {
-  if (typeof body === 'object' && body && 'error' in body) {
-    const error = (body as { error: unknown }).error;
-    if (typeof error === 'string') return error;
-    if (typeof error === 'object' && error && 'message' in error) {
-      return String((error as { message: unknown }).message);
+  if (typeof body === 'object' && body) {
+    if ('error' in body) {
+      const error = (body as { error: unknown }).error;
+      if (typeof error === 'string') return error;
+      if (typeof error === 'object' && error && 'message' in error) {
+        return String((error as { message: unknown }).message);
+      }
+    }
+    if ('message' in body) {
+      const message = (body as { message: unknown }).message;
+      if (typeof message === 'string' && message) return message;
     }
   }
   return `Request failed (${status})`;
