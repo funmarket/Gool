@@ -13,7 +13,7 @@ export type FootballPersona = {
   allowedClubId?: string;
 };
 
-export const FOOTBALL_PERSONAS = [
+export const FOOTBALL_PERSONAS: readonly FootballPersona[] = [
   { key: 'en_baller', locale: 'en', emoji: '⚽🔥', label: 'Baller', group: 'FOOTBALL' },
   { key: 'en_tekkers', locale: 'en', emoji: '🎩⚽', label: 'Tekkers', group: 'FOOTBALL' },
   { key: 'en_top_bins', locale: 'en', emoji: '🎯', label: 'Top Bins', group: 'FOOTBALL' },
@@ -67,7 +67,7 @@ export const FOOTBALL_PERSONAS = [
   { key: 'ar_laaib', locale: 'ar', emoji: '⚽', label: 'لعيب', group: 'ARABIC' },
   { key: 'ar_kawarji', locale: 'ar', emoji: '🔥', label: 'كوارجي', group: 'ARABIC' },
   { key: 'ar_weld_jamia', locale: 'ar', emoji: '❤️', label: 'ولد الجمعية', group: 'ARABIC' },
-] as const satisfies readonly FootballPersona[];
+];
 
 export function normalizeProfileIdentityTypes(
   values: readonly ProfileIdentityType[] | null | undefined,
