@@ -13,4 +13,9 @@ export const profileUpdateSchema = z.object({
   themeOverride: z.enum(['TELEGRAM', 'LIGHT', 'DARK']).optional(),
 });
 
+export const telegramLinkSchema = z.object({
+  initData: z.string().trim().min(1).max(8192),
+});
+
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
+export type TelegramLinkInput = z.infer<typeof telegramLinkSchema>;
