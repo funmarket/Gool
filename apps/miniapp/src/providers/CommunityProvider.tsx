@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { impact } from '../lib/telegram';
 import { get, post } from '../shared/api/http-client';
 import type { Community, CommunityListResponse } from '../types/domain';
+import { useAuth } from './AuthProvider';
 
 type Value = {
   communities: Community[];
@@ -15,9 +16,11 @@ const CommunityContext = createContext<Value | null>(null);
 
 export function CommunityProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const query = useQuery({
     queryKey: ['communities'],
     queryFn: () => get<CommunityListResponse>('/api/v1/communities'),
+    enabled: isAuthenticated,
   });
   const mutation = useMutation({
     mutationFn: (id: string) => post(`/api/v1/communities/${id}/switch`),
@@ -36,13 +39,14 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
     () => ({
       communities,
       active,
-      isLoading: query.isLoading,
+      isLoading: authLoading || (isAuthenticated && query.isLoading),
       switchCommunity: async (id) => {
+        if (!isAuthenticated) throw new Error('Sign in to switch communities.');
         impact('light');
         await mutation.mutateAsync(id);
       },
     }),
-    [communities, active, query.isLoading, mutation],
+    [communities, active, authLoading, isAuthenticated, query.isLoading, mutation],
   );
 
   return <CommunityContext.Provider value={value}>{children}</CommunityContext.Provider>;
