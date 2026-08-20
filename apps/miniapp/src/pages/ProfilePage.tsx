@@ -54,6 +54,8 @@ const PERSONA_GROUPS: Array<{ value: FootballPersonaGroup; label: string }> = [
   { value: 'CLUB', label: 'Your Club' },
 ];
 
+type SkillLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'MIXED';
+
 function fullName(me: CurrentProfile) {
   const telegramName = [me.firstName, me.lastName].filter(Boolean).join(' ').trim();
   return (
@@ -228,7 +230,7 @@ function ProfileForm({ me, clubs }: { me: CurrentProfile; clubs: Club[] }) {
   const queryClient = useQueryClient();
   const [photoUrl, setPhotoUrl] = useState(me.photoUrl || '');
   const [photoBroken, setPhotoBroken] = useState(false);
-  const [skill, setSkill] = useState(me.profile?.skillLevel || 'MIXED');
+  const [skill, setSkill] = useState<SkillLevel>(me.profile?.skillLevel || 'MIXED');
   const [favoriteClubId, setFavoriteClubId] = useState(me.profile?.favoriteClubId || '');
   const [bio, setBio] = useState(me.profile?.bio || '');
   const [profileIdentityTypes, setProfileIdentityTypes] = useState<ProfileIdentityType[]>(
@@ -395,11 +397,7 @@ function ProfileForm({ me, clubs }: { me: CurrentProfile; clubs: Club[] }) {
           <select
             className="hooma-input"
             value={skill}
-            onChange={(event) =>
-              setSkill(event.target.value as CurrentProfile['profile'] extends infer _Profile
-                ? 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'MIXED'
-                : never)
-            }
+            onChange={(event) => setSkill(event.target.value as SkillLevel)}
           >
             {['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'MIXED'].map((value) => (
               <option key={value}>{value}</option>
