@@ -38,9 +38,11 @@ enum SkillLevel {
   MIXED
 }
 
-enum ProfileAudience {
-  SPECTATOR
+enum ProfileIdentityType {
+  PLAYER
   FAN
+  GAMER
+  GHOST_RIDER
 }
 
 enum PlayerPosition {
@@ -336,15 +338,16 @@ model User {
 }
 
 model PlayerProfile {
-  userId             String           @id
-  skillLevel         SkillLevel       @default(MIXED)
-  skillRating        Int              @default(50)
-  preferredPositions PlayerPosition[] @default([])
-  favoriteClubId     String?
-  profileAudience    ProfileAudience  @default(SPECTATOR)
-  bio                String?          @db.VarChar(280)
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
+  userId               String                @id
+  skillLevel           SkillLevel            @default(MIXED)
+  skillRating          Int                   @default(50)
+  preferredPositions   PlayerPosition[]      @default([])
+  favoriteClubId       String?
+  profileIdentityTypes ProfileIdentityType[] @default([GHOST_RIDER])
+  footballPersonaKey   String?               @db.VarChar(80)
+  bio                  String?               @db.VarChar(280)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   favoriteClub FootballClub? @relation(fields: [favoriteClubId], references: [id], onDelete: SetNull)
@@ -402,7 +405,7 @@ model Community {
   memberships         Membership[]
   invites             CommunityInvite[]
   events              Event[]
-  requests            Request[]
+  requests             Request[]
   rideOffers          RideOffer[]
   rideRequests        RideRequest[]
   fundraisers         Fundraiser[]
