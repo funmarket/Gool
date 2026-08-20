@@ -37,11 +37,11 @@ const meSelect = {
 type MeRecord = Prisma.UserGetPayload<{ select: typeof meSelect }>;
 
 function toMeView(user: MeRecord) {
+  const { profileIdentities, ...base } = user;
   const selectedIdentities = normalizeSelectedProfileIdentities(
-    user.profileIdentities.map((identity) => identity.type),
+    profileIdentities.map((identity) => identity.type),
   );
   const effectiveIdentities = resolveEffectiveProfileIdentities(selectedIdentities);
-  const { profileIdentities: _profileIdentities, ...base } = user;
 
   return {
     ...base,
