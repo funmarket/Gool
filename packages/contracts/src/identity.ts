@@ -17,5 +17,17 @@ export const telegramLinkSchema = z.object({
   initData: z.string().trim().min(1).max(8192),
 });
 
+export const webCredentialsLinkSchema = z.object({
+  email: z.string().trim().email().max(320).transform((value) => value.toLowerCase()),
+  username: z
+    .string()
+    .trim()
+    .min(3)
+    .max(30)
+    .regex(/^[A-Za-z0-9_.]+$/, 'Username may only contain letters, numbers, underscores, and dots.'),
+  password: z.string().min(8).max(128),
+});
+
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
 export type TelegramLinkInput = z.infer<typeof telegramLinkSchema>;
+export type WebCredentialsLinkInput = z.infer<typeof webCredentialsLinkSchema>;
