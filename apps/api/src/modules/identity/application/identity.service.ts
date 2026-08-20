@@ -6,6 +6,9 @@ export class IdentityService {
   upsertTelegramUser(input: TelegramIdentityInput) {
     return this.repo.upsertTelegramUser(input);
   }
+  getIdentityUser(userId: string) {
+    return this.repo.getIdentityUser(userId);
+  }
   getMe(userId: string) {
     return this.repo.getMe(userId);
   }

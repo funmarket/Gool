@@ -41,6 +41,22 @@ export class PrismaIdentityRepository implements IdentityRepository {
     });
   }
 
+  getIdentityUser(userId: string) {
+    return this.db.user.findUnique({
+      where: { id: userId, deletedAt: null },
+      select: {
+        id: true,
+        telegramUserId: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        photoUrl: true,
+        languageCode: true,
+        isPremium: true,
+      },
+    });
+  }
+
   getMe(userId: string) {
     return this.db.user.findUniqueOrThrow({
       where: { id: userId },

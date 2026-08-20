@@ -272,57 +272,64 @@ enum PlatformRole {
 }
 
 model User {
-  id             String    @id @default(cuid())
-  telegramUserId String?   @unique @db.VarChar(32)
-  username       String?   @db.VarChar(64)
-  firstName      String?   @db.VarChar(120)
-  lastName       String?   @db.VarChar(120)
-  photoUrl       String?
-  languageCode   String?   @db.VarChar(16)
-  isPremium      Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  deletedAt      DateTime?
+  id                  String    @id @default(cuid())
+  telegramUserId      String?   @unique @db.VarChar(32)
+  username            String?   @db.VarChar(64)
+  authName            String?   @db.VarChar(120)
+  email               String?   @unique @db.VarChar(320)
+  emailVerified       Boolean   @default(false)
+  authUsername        String?   @unique @db.VarChar(64)
+  displayAuthUsername String?   @db.VarChar(64)
+  firstName           String?   @db.VarChar(120)
+  lastName            String?   @db.VarChar(120)
+  photoUrl            String?
+  languageCode        String?   @db.VarChar(16)
+  isPremium           Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime?
 
   profile                 PlayerProfile?
   preference              UserPreference?
   memberships             Membership[]
-  createdCommunities      Community[]            @relation("CommunityCreator")
-  createdInvites          CommunityInvite[]      @relation("InviteCreator")
-  createdEvents           Event[]                @relation("EventCreator")
+  createdCommunities      Community[]              @relation("CommunityCreator")
+  createdInvites          CommunityInvite[]        @relation("InviteCreator")
+  createdEvents           Event[]                  @relation("EventCreator")
   rsvps                   EventRsvp[]
-  createdRequests         Request[]              @relation("RequestCreator")
+  createdRequests         Request[]                @relation("RequestCreator")
   requestClaims           RequestClaim[]
-  rideOffers              RideOffer[]            @relation("RideDriver")
-  rideRequests            RideRequest[]          @relation("RideRequester")
-  rideMatches             RideMatch[]            @relation("RideMatchRider")
+  rideOffers              RideOffer[]              @relation("RideDriver")
+  rideRequests            RideRequest[]            @relation("RideRequester")
+  rideMatches             RideMatch[]              @relation("RideMatchRider")
   rideLocationPings       RideLocationPing[]
-  rideRatingsGiven        RideRating[]           @relation("RideRatingRater")
-  rideRatingsReceived     RideRating[]           @relation("RideRatingRatee")
-  fundraisers             Fundraiser[]           @relation("FundOrganizer")
+  rideRatingsGiven        RideRating[]             @relation("RideRatingRater")
+  rideRatingsReceived     RideRating[]             @relation("RideRatingRatee")
+  fundraisers             Fundraiser[]             @relation("FundOrganizer")
   fundContributions       FundContribution[]
   paymentIntents          PaymentIntent[]
-  cashSettlementsReceived CashSettlement[]       @relation("CashReceiver")
-  cashSettlementsVoided   CashSettlement[]       @relation("CashVoider")
-  formations              Formation[]            @relation("FormationCreator")
+  cashSettlementsReceived CashSettlement[]         @relation("CashReceiver")
+  cashSettlementsVoided   CashSettlement[]         @relation("CashVoider")
+  formations              Formation[]              @relation("FormationCreator")
   formationSlots          FormationSlot[]
-  fanHubs                 FanHub[]               @relation("FanHubCreator")
-  createdPlaces           Place[]                @relation("PlaceCreator")
-  placeOwnerClaims        PlaceOwnerClaim[]      @relation("PlaceOwnerClaimUser")
-  venueDeals              VenueDeal[]            @relation("VenueDealCreator")
+  fanHubs                 FanHub[]                 @relation("FanHubCreator")
+  createdPlaces           Place[]                  @relation("PlaceCreator")
+  placeOwnerClaims        PlaceOwnerClaim[]        @relation("PlaceOwnerClaimUser")
+  venueDeals              VenueDeal[]              @relation("VenueDealCreator")
   checkIns                CheckIn[]
   eventChatMessages       EventChatMessage[]
   digitalEntitlements     DigitalEntitlement[]
-  auditLogs               AuditLog[]             @relation("AuditActor")
+  auditLogs               AuditLog[]               @relation("AuditActor")
   idempotencyRecords      IdempotencyRecord[]
-  createdTeams            Team[]                 @relation("TeamCreator")
+  createdTeams            Team[]                   @relation("TeamCreator")
   teamPlayers             TeamPlayer[]
-  createdTeamLineups      TeamLineup[]           @relation("TeamLineupCreator")
-  acceptedTeamChallenges  TeamChallenge[]        @relation("TeamChallengeAccepter")
-  declinedTeamChallenges  TeamChallenge[]        @relation("TeamChallengeDecliner")
-  cancelledTeamChallenges TeamChallenge[]        @relation("TeamChallengeCanceller")
+  createdTeamLineups      TeamLineup[]             @relation("TeamLineupCreator")
+  acceptedTeamChallenges  TeamChallenge[]          @relation("TeamChallengeAccepter")
+  declinedTeamChallenges  TeamChallenge[]          @relation("TeamChallengeDecliner")
+  cancelledTeamChallenges TeamChallenge[]          @relation("TeamChallengeCanceller")
   teamChallengeMessages   TeamChallengeMessage[]
   platformRoleAssignments PlatformRoleAssignment[]
+  authSessions            AuthSession[]
+  authAccounts            AuthAccount[]
 
   @@index([createdAt])
   @@index([deletedAt])
@@ -1439,5 +1446,54 @@ model IdempotencyRecord {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, scope, key])
+  @@index([expiresAt])
+}
+
+model AuthSession {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?  @db.VarChar(64)
+  userAgent String?  @db.VarChar(500)
+  userId    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AuthAccount {
+  id                    String    @id
+  accountId             String    @db.VarChar(255)
+  providerId            String    @db.VarChar(120)
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model AuthVerification {
+  id         String   @id
+  identifier String   @db.VarChar(320)
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
   @@index([expiresAt])
 }
