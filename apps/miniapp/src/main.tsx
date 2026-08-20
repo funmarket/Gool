@@ -35,7 +35,8 @@ async function start() {
   await bootTelegram();
 
   const telegramEntry =
-    window.location.pathname === '/telegram' || window.location.pathname.startsWith('/telegram/');
+    window.location.pathname === '/telegram' ||
+    window.location.pathname.startsWith('/telegram/');
   const telegramReady = !telegramEntry || hasTelegramLaunchData();
 
   ReactDOM.createRoot(document.getElementById('root')!).render(
