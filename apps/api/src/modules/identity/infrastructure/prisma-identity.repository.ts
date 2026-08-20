@@ -101,11 +101,7 @@ export class PrismaIdentityRepository implements IdentityRepository {
     }
   }
 
-  async linkWebCredentials(
-    userId: string,
-    input: WebCredentialsLinkInput,
-    hashedPassword: string,
-  ) {
+  async linkWebCredentials(userId: string, input: WebCredentialsLinkInput, hashedPassword: string) {
     const email = input.email.toLowerCase();
     const authUsername = input.username.toLowerCase();
 
@@ -141,7 +137,10 @@ export class PrismaIdentityRepository implements IdentityRepository {
             return { status: 'current-username-conflict' as const };
           }
 
-          const emailOwner = await tx.user.findUnique({ where: { email }, select: { id: true } });
+          const emailOwner = await tx.user.findUnique({
+            where: { email },
+            select: { id: true },
+          });
           if (emailOwner && emailOwner.id !== userId) {
             return { status: 'email-already-linked' as const };
           }
