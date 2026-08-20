@@ -27,7 +27,10 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['communities'] }),
   });
 
-  const communities = useMemo(() => query.data?.communities ?? [], [query.data?.communities]);
+  const communities = useMemo(
+    () => (isAuthenticated ? query.data?.communities ?? [] : []),
+    [isAuthenticated, query.data?.communities],
+  );
   const active = useMemo(
     () =>
       communities.find((item) => item.id === query.data?.activeCommunityId) ??
