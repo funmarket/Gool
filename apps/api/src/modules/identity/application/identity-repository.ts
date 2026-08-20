@@ -1,7 +1,8 @@
 import type { ProfileUpdateInput } from '@hooma/contracts';
-import type { IdentityUser, TelegramIdentityInput } from '../domain/types.js';
+import type { IdentityMeData, IdentityUser, TelegramIdentityInput } from '../domain/types.js';
+
 export interface IdentityRepository {
   upsertTelegramUser(input: TelegramIdentityInput): Promise<IdentityUser>;
-  getMe(userId: string): Promise<unknown>;
+  getMe(userId: string): Promise<IdentityMeData>;
   updateProfile(userId: string, input: ProfileUpdateInput): Promise<unknown>;
 }
