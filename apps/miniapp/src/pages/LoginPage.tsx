@@ -56,7 +56,7 @@ export function LoginPage() {
         Telegram Mini App, and both methods can belong to the same canonical account.
       </p>
 
-      <section className="surface-card mt-5 mx-auto grid max-w-xl gap-4 p-5">
+      <section className="surface-card mx-auto mt-5 grid max-w-xl gap-4 p-5">
         <div className="grid grid-cols-2 gap-2">
           <button
             className={mode === 'sign-in' ? 'accent-button' : 'ghost-button'}
