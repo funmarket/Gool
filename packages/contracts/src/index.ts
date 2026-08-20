@@ -1,5 +1,6 @@
 export * from './common.js';
 export * from './identity.js';
+export * from './profile-personas.js';
 export * from './communities.js';
 export * from './events.js';
 export * from './requests.js';
