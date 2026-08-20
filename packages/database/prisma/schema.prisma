@@ -273,7 +273,7 @@ enum PlatformRole {
 
 model User {
   id             String    @id @default(cuid())
-  telegramUserId String    @unique @db.VarChar(32)
+  telegramUserId String?   @unique @db.VarChar(32)
   username       String?   @db.VarChar(64)
   firstName      String?   @db.VarChar(120)
   lastName       String?   @db.VarChar(120)

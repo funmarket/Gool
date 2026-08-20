@@ -73,7 +73,7 @@ export interface StarsRefundContext {
   paymentIntentId: string;
   communityId: string;
   userId: string;
-  telegramUserId: string;
+  telegramUserId: string | null;
   telegramPaymentChargeId: string;
   status: 'PAID' | 'REFUNDED';
   alreadyRefunded: boolean;
