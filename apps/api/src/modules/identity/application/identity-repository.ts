@@ -9,7 +9,10 @@ export type TelegramIdentityLinkResult =
 
 export interface IdentityRepository {
   upsertTelegramUser(input: TelegramIdentityInput): Promise<IdentityUser>;
-  linkTelegramIdentity(userId: string, input: TelegramIdentityInput): Promise<TelegramIdentityLinkResult>;
+  linkTelegramIdentity(
+    userId: string,
+    input: TelegramIdentityInput,
+  ): Promise<TelegramIdentityLinkResult>;
   getIdentityUser(userId: string): Promise<IdentityUser | null>;
   getMe(userId: string): Promise<unknown>;
   updateProfile(userId: string, input: ProfileUpdateInput): Promise<unknown>;
