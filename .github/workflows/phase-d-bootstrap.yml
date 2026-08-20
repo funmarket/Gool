@@ -59,7 +59,6 @@ jobs:
           apps/api/src/modules/identity/application/identity.service.ts
           apps/api/src/modules/identity/infrastructure/prisma-identity.repository.ts
           tests/hybrid-auth-schema.test.ts
-          .github/workflows/ci.yml
           apps/api/package.json
           package-lock.json
       - name: Format Prisma schema
@@ -80,8 +79,6 @@ jobs:
           NODE_ENV: test
       - name: Validate migration from clean database
         run: npm run db:migrate:deploy
-      - name: Remove temporary bootstrap files
-        run: rm scripts/phase-d-apply.mjs scripts/phase-d-bootstrap-fix.mjs .github/workflows/phase-d-bootstrap.yml
       - name: Commit generated Phase D implementation
         run: |
           git config user.name "github-actions[bot]"
