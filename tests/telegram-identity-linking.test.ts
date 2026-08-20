@@ -5,7 +5,10 @@ import type {
   IdentityRepository,
   TelegramIdentityLinkResult,
 } from '../apps/api/src/modules/identity/application/identity-repository.js';
-import type { IdentityUser, TelegramIdentityInput } from '../apps/api/src/modules/identity/domain/types.js';
+import type {
+  IdentityUser,
+  TelegramIdentityInput,
+} from '../apps/api/src/modules/identity/domain/types.js';
 
 const identityUser: IdentityUser = {
   id: 'user-1',
