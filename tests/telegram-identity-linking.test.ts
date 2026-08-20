@@ -65,21 +65,24 @@ test('Telegram identity already linked to the same canonical user is idempotent'
   assert.deepEqual(user, identityUser);
 });
 
-test('linking refuses to overwrite a user that already has a different Telegram identity', async () => {
-  const service = serviceWithLinkResult({ status: 'user-already-linked' });
+test(
+  'linking refuses to overwrite a user that already has a different Telegram identity',
+  async () => {
+    const service = serviceWithLinkResult({ status: 'user-already-linked' });
 
-  await assert.rejects(
-    () => service.linkTelegramIdentity('user-1', telegramIdentity),
-    (error: unknown) => {
-      assert.equal((error as { status?: number }).status, 409);
-      assert.equal(
-        (error as { code?: string }).code,
-        'USER_ALREADY_HAS_TELEGRAM_IDENTITY',
-      );
-      return true;
-    },
-  );
-});
+    await assert.rejects(
+      () => service.linkTelegramIdentity('user-1', telegramIdentity),
+      (error: unknown) => {
+        assert.equal((error as { status?: number }).status, 409);
+        assert.equal(
+          (error as { code?: string }).code,
+          'USER_ALREADY_HAS_TELEGRAM_IDENTITY',
+        );
+        return true;
+      },
+    );
+  },
+);
 
 test('linking refuses a Telegram identity already owned by another canonical user', async () => {
   const service = serviceWithLinkResult({ status: 'telegram-already-linked' });
