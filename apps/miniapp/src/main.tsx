@@ -23,8 +23,8 @@ function TelegramLaunchRequired() {
         <div className="section-kicker">Telegram Mini App</div>
         <h1 className="section-title mt-2">Open HOOMA from Telegram</h1>
         <p className="mt-3 muted">
-          This HOOMA entry requires a verified Telegram Mini App launch. Open HOOMA from the
-          bot menu button so Telegram can securely provide your account identity.
+          This HOOMA entry requires a verified Telegram Mini App launch. Open HOOMA from the bot
+          menu button so Telegram can securely provide your account identity.
         </p>
       </section>
     </main>
@@ -35,8 +35,7 @@ async function start() {
   await bootTelegram();
 
   const telegramEntry =
-    window.location.pathname === '/telegram' ||
-    window.location.pathname.startsWith('/telegram/');
+    window.location.pathname === '/telegram' || window.location.pathname.startsWith('/telegram/');
   const telegramReady = !telegramEntry || hasTelegramLaunchData();
 
   ReactDOM.createRoot(document.getElementById('root')!).render(
