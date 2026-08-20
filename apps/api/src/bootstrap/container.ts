@@ -45,8 +45,11 @@ export function buildContainer() {
   const rateLimitStore = new InMemoryRateLimitStore();
   const telegram = new HttpTelegramBotApi();
 
+  const platformAdminRepository = new PrismaPlatformAdminRepository(db);
+  const platformAdmin = new PlatformAdminService(platformAdminRepository);
+
   const identityRepository = new PrismaIdentityRepository(db);
-  const identity = new IdentityService(identityRepository);
+  const identity = new IdentityService(identityRepository, platformAdmin);
 
   const communityRepository = new PrismaCommunityRepository(db);
   const membershipAccessRepository = new PrismaMembershipAccessRepository(db);
@@ -98,9 +101,6 @@ export function buildContainer() {
 
   const adminReadRepository = new PrismaAdminReadRepository(db);
   const admin = new AdminService(adminReadRepository, communities, events);
-
-  const platformAdminRepository = new PrismaPlatformAdminRepository(db);
-  const platformAdmin = new PlatformAdminService(platformAdminRepository);
 
   const teamRepository = new PrismaTeamRepository(db);
   const teams = new TeamService(teamRepository);
