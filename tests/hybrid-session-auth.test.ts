@@ -3,10 +3,7 @@ import type { AddressInfo } from 'node:net';
 import test from 'node:test';
 import express, { type Request, type Response } from 'express';
 import type { HoomaAuth } from '../apps/api/src/auth/better-auth.js';
-import {
-  hybridAuth,
-  type AuthenticatedRequest,
-} from '../apps/api/src/http/middleware/auth.js';
+import { hybridAuth, type AuthenticatedRequest } from '../apps/api/src/http/middleware/auth.js';
 import type { IdentityService } from '../apps/api/src/modules/identity/application/identity.service.js';
 
 const canonicalUser = {
@@ -46,10 +43,7 @@ function fakeAuth(sessionUserId: string | null, onSession?: () => void) {
   } as unknown as HoomaAuth;
 }
 
-async function withServer(
-  auth: HoomaAuth,
-  run: (baseUrl: string) => Promise<void>,
-) {
+async function withServer(auth: HoomaAuth, run: (baseUrl: string) => Promise<void>) {
   const app = express();
   app.use(hybridAuth(fakeIdentity(), auth, { optional: true }));
   app.get('/whoami', (req: Request, res: Response) => {
@@ -110,17 +104,20 @@ test('session for a missing canonical user fails closed', async () => {
 
 test('supplied invalid Telegram Authorization never falls back to a web session', async () => {
   let sessionLookups = 0;
-  await withServer(fakeAuth(canonicalUser.id, () => (sessionLookups += 1)), async (baseUrl) => {
-    const response = await fetch(`${baseUrl}/whoami`, {
-      headers: {
-        authorization: 'Bearer invalid-telegram-proof',
-        cookie: 'better-auth.session_token=opaque-session',
-      },
-    });
-    const body = (await response.json()) as { error: { code: string } };
+  await withServer(
+    fakeAuth(canonicalUser.id, () => (sessionLookups += 1)),
+    async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/whoami`, {
+        headers: {
+          authorization: 'Bearer invalid-telegram-proof',
+          cookie: 'better-auth.session_token=opaque-session',
+        },
+      });
+      const body = (await response.json()) as { error: { code: string } };
 
-    assert.equal(response.status, 401);
-    assert.equal(body.error.code, 'AUTH_INVALID');
-    assert.equal(sessionLookups, 0);
-  });
+      assert.equal(response.status, 401);
+      assert.equal(body.error.code, 'AUTH_INVALID');
+      assert.equal(sessionLookups, 0);
+    },
+  );
 });
