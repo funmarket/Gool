@@ -4,7 +4,7 @@ import type {
   PitchUpdateRequest,
   PitchVenueType,
 } from '@hooma/contracts';
-import { patch, post } from '../../shared/api/http-client';
+import { patch, postIdempotent } from '../../shared/api/http-client';
 
 export type PitchOwnerItem = {
   id: string;
@@ -32,8 +32,8 @@ export type PitchOwnerItem = {
   updatedAt: string;
 };
 
-export function createPitchDraft(input: PitchCreateRequest) {
-  return post<PitchOwnerItem>('/api/v1/pitch', input);
+export function createPitchDraft(input: PitchCreateRequest, idempotencyKey: string) {
+  return postIdempotent<PitchOwnerItem>('/api/v1/pitch', input, idempotencyKey);
 }
 
 export function updatePitchDraft(pitchId: string, input: PitchUpdateRequest) {
