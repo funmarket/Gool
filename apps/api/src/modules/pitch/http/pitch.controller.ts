@@ -6,9 +6,15 @@ import {
 } from '@hooma/contracts';
 import { Router } from 'express';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';
+import { AppError } from '../../../http/errors/app-error.js';
 import { getAuth } from '../../../http/middleware/auth.js';
 import { parseBody } from '../../../http/middleware/parse.js';
 import type { PitchService } from '../application/pitch.service.js';
+
+function idempotencyKey(req: Parameters<ReturnType<typeof Router>['post']>[1] extends never ? never : never) {
+  void req;
+  return undefined;
+}
 
 export function pitchRouter(service: PitchService) {
   const router = Router();
@@ -22,11 +28,21 @@ export function pitchRouter(service: PitchService) {
 
   router.post(
     '/',
-    asyncHandler(async (req, res) =>
+    asyncHandler(async (req, res) => {
+      const rawIdempotencyKey = req.header('idempotency-key')?.trim();
+      if (rawIdempotencyKey && rawIdempotencyKey.length > 160) {
+        throw new AppError(400, 'INVALID_IDEMPOTENCY_KEY', 'Idempotency key is too long.');
+      }
       res
         .status(201)
-        .json(await service.create(getAuth(req).user.id, parseBody(pitchCreateSchema, req))),
-    ),
+        .json(
+          await service.create(
+            getAuth(req).user.id,
+            parseBody(pitchCreateSchema, req),
+            rawIdempotencyKey || undefined,
+          ),
+        );
+    }),
   );
 
   router.get(
