@@ -74,12 +74,16 @@ test('Profile update contract cannot create or replace a presentation username',
   assert.doesNotMatch(profileUpdateBlock[1], /\busername\s*:/);
 });
 
-test('Telegram presentation remains fallback and is not silently captured as a HOOMA override', () => {
+test('explicit presentation overrides remain separate from effective fallback values', () => {
   assert.match(profilePage, /useState\(me\.presentation\?\.displayName \|\| ''\)/);
   assert.match(profilePage, /useState\(me\.presentation\?\.photoUrl \|\| ''\)/);
-  assert.match(profilePage, /displayName\.trim\(\) \|\| telegramFallbackName\(me\)/);
-  assert.match(profilePage, /photoUrl\.trim\(\) \|\| me\.photoUrl \|\| ''/);
+  assert.match(profilePage, /displayName\.trim\(\) \|\| me\.effectiveDisplayName/);
+  assert.match(profilePage, /photoUrl\.trim\(\) \|\| me\.effectivePhotoUrl \|\| ''/);
   assert.match(profilePage, /const visibleUsername = me\.effectiveUsername \?\? ''/);
+  assert.match(profilePage, /placeholder=\{me\.effectiveDisplayName\}/);
+  assert.match(profilePage, /placeholder=\{me\.effectivePhotoUrl \|\|/);
+  assert.doesNotMatch(profilePage, /telegramFallbackName/);
+  assert.doesNotMatch(profilePage, /photoUrl\.trim\(\) \|\| me\.photoUrl/);
 });
 
 test('obsolete presentation username conflict mapping is removed', () => {
@@ -92,9 +96,26 @@ test('profile read model exposes one provider-owned effective username', () => {
   assert.match(identityRepository, /displayAuthUsername: true/);
   assert.match(
     identityRepository,
-    /const effectiveUsername = displayAuthUsername \?\? authUsername \?\? base\.username \?\? null/,
+    /nonBlank\(displayAuthUsername\) \?\? nonBlank\(authUsername\) \?\? nonBlank\(base\.username\)/,
   );
   assert.match(identityRepository, /effectiveUsername,/);
   assert.doesNotMatch(identityRepository, /displayUsername: true/);
   assert.doesNotMatch(identityRepository, /username: true,\n\s*displayUsername: true/);
+});
+
+test('profile read model centralizes effective display name and photo fallbacks', () => {
+  assert.match(profileTypes, /effectiveDisplayName: string/);
+  assert.match(profileTypes, /effectivePhotoUrl\?: string \| null/);
+  assert.match(identityRepository, /authName: true/);
+  assert.match(identityRepository, /nonBlank\(presentation\?\.displayName\)/);
+  assert.match(identityRepository, /nonBlank\(authName\)/);
+  assert.match(identityRepository, /telegramDisplayName/);
+  assert.match(identityRepository, /effectiveUsername \?\?/);
+  assert.match(identityRepository, /'HOOMA member'/);
+  assert.match(
+    identityRepository,
+    /const effectivePhotoUrl = nonBlank\(presentation\?\.photoUrl\) \?\? nonBlank\(base\.photoUrl\)/,
+  );
+  assert.match(identityRepository, /effectiveDisplayName,/);
+  assert.match(identityRepository, /effectivePhotoUrl,/);
 });
