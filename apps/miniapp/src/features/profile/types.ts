@@ -3,7 +3,8 @@ import type { Me } from '../../types/domain';
 export type SelectedProfileIdentity = 'PLAYER' | 'FAN' | 'GAMER';
 export type EffectiveProfileIdentity = SelectedProfileIdentity | 'ULTRAFAN' | 'GHOST_RIDER';
 
-export type ProfileMe = Omit<Me, 'profile'> & {
+export type ProfileMe = Omit<Me, 'profile' | 'telegramUserId'> & {
+  telegramUserId: string | null;
   telegramUsername?: string | null;
   presentation?: {
     displayName?: string | null;
