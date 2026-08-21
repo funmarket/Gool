@@ -29,7 +29,9 @@ export function PitchDetailPage() {
       <div className="page-shell vintage-page">
         <div className="vintage-empty" role="alert">
           <strong>Pitch not found.</strong>
-          <p className="vintage-copy mt-2">This venue is not available in the public Pitch feed.</p>
+          <p className="vintage-copy mt-2">
+            This venue is not available in the public Pitch feed.
+          </p>
           <button type="button" className="ghost-button mt-3" onClick={() => navigate('/pitch')}>
             Back to Pitch
           </button>
