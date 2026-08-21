@@ -1,0 +1,16 @@
+name: Format Preview
+on:
+  pull_request:
+jobs:
+  prettier-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - run: npm ci
+      - run: npm run format
+      - name: Print formatting diff
+        run: git diff -- apps/api/src/modules/auth apps/api/src/modules/identity/infrastructure/prisma-identity.repository.ts apps/miniapp/src/features/auth apps/miniapp/src/features/profile/types.ts apps/miniapp/src/pages/LoginPage.tsx apps/miniapp/src/pages/RegisterPage.tsx apps/miniapp/src/pages/ProfilePage.tsx packages/contracts/src/identity.ts tests/profile-ui-identity.test.ts tests/profile-read-model.test.ts
