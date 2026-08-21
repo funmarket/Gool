@@ -1,5 +1,5 @@
-import type { TeamChallengeCreateInput } from '@hooma/contracts';
-import { get, post } from '../../shared/api/http-client';
+import type { TeamChallengeCreateInput, TeamUpdateInput } from '@hooma/contracts';
+import { get, patch, post } from '../../shared/api/http-client';
 import type {
   TeamChallengeDetailItem,
   TeamChallengeItem,
@@ -45,6 +45,10 @@ export function getTeam(teamId: string) {
 
 export function listManagedTeams() {
   return get<TeamManagedPage>('/api/v1/teams/managed');
+}
+
+export function updateTeam(teamId: string, input: TeamUpdateInput) {
+  return patch<TeamDetailItem>(`/api/v1/teams/${teamId}`, input);
 }
 
 export function listIncomingChallenges() {

@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import type { DatabaseClient } from '../apps/api/src/infrastructure/database/prisma.js';
 import { PrismaTeamRepository } from '../apps/api/src/modules/teams/infrastructure/prisma-team.repository.js';
+
+const teamProfilePage = readFileSync('apps/miniapp/src/pages/TeamProfilePage.tsx', 'utf8');
+const teamApi = readFileSync('apps/miniapp/src/features/teams/api.ts', 'utf8');
 
 test('public Team detail only selects published lineups', async () => {
   let findFirstArgs: unknown;
@@ -30,4 +34,12 @@ test('public Team detail only selects published lineups', async () => {
   });
   assert.equal(args.select.lineups.where.isPublished, true);
   assert.equal(args.select.lineups.where.deletedAt, null);
+});
+
+test('Team edit UI is gated by the managed Teams source and writes through the protected PATCH route', () => {
+  assert.match(teamProfilePage, /queryFn: listManagedTeams/);
+  assert.match(teamProfilePage, /managedTeamsQuery\.data\?\.items\.some/);
+  assert.match(teamProfilePage, /Edit Team/);
+  assert.match(teamProfilePage, /editing && canManage/);
+  assert.match(teamApi, /patch<TeamDetailItem>\(`\/api\/v1\/teams\/\$\{teamId\}`/);
 });
