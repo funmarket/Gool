@@ -11,6 +11,8 @@ const identityUserSelect = {
   id: true,
   telegramUserId: true,
   username: true,
+  authUsername: true,
+  displayAuthUsername: true,
   firstName: true,
   lastName: true,
   photoUrl: true,
@@ -22,6 +24,8 @@ type IdentityUserRecord = {
   id: string;
   telegramUserId: string | null;
   username: string | null;
+  authUsername: string | null;
+  displayAuthUsername: string | null;
   firstName: string | null;
   lastName: string | null;
   photoUrl: string | null;
@@ -33,7 +37,7 @@ function toIdentityUser(user: IdentityUserRecord) {
   return {
     id: user.id,
     telegramUserId: user.telegramUserId,
-    username: user.username,
+    username: user.displayAuthUsername ?? user.authUsername ?? user.username,
     firstName: user.firstName,
     lastName: user.lastName,
     photoUrl: user.photoUrl,
@@ -89,7 +93,7 @@ export class PrismaAuthRepository implements AuthRepository {
             });
           }
 
-          return { status: 'created' as const, user };
+          return { status: 'created' as const, user: toIdentityUser(user) };
         },
         { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
       );
