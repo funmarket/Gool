@@ -14,8 +14,12 @@ import type {
   TeamGamePage,
   TeamManagedPage,
   TeamPage,
-  TeamPlayerItem,
 } from '../../types/domain';
+
+type TeamPlayerItem = NonNullable<TeamDetailItem['players']>[number] & {
+  userId?: string | null;
+  isActive?: boolean;
+};
 
 export const teamQueryKeys = {
   all: ['teams'] as const,
