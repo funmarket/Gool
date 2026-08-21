@@ -6,6 +6,9 @@ export type EffectiveProfileIdentity = SelectedProfileIdentity | 'ULTRAFAN' | 'G
 export type ProfileMe = Omit<Me, 'profile' | 'telegramUserId'> & {
   telegramUserId: string | null;
   telegramUsername?: string | null;
+  effectiveDisplayName: string;
+  effectiveUsername?: string | null;
+  effectivePhotoUrl?: string | null;
   presentation?: {
     displayName?: string | null;
     photoUrl?: string | null;
