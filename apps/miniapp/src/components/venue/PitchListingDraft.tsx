@@ -187,7 +187,10 @@ export function PitchListingDraft({ onClose }: PitchListingDraftProps) {
         </label>
         <label className="pitch-listing-wide">
           <span>Full address</span>
-          <input value={draft.address} onChange={(event) => update('address', event.target.value)} />
+          <input
+            value={draft.address}
+            onChange={(event) => update('address', event.target.value)}
+          />
         </label>
         <label>
           <span>Hourly rate</span>
@@ -229,7 +232,9 @@ export function PitchListingDraft({ onClose }: PitchListingDraftProps) {
           >
             {saveDraft.isPending ? 'Saving…' : 'Save for later'}
           </button>
-          {saveDraft.isSuccess ? <span role="status">Draft saved to your HOOMA account.</span> : null}
+          {saveDraft.isSuccess ? (
+            <span role="status">Draft saved to your HOOMA account.</span>
+          ) : null}
           {saveDraft.isError ? (
             <span role="alert" className="pitch-listing-error">
               {saveDraft.error instanceof Error ? saveDraft.error.message : 'Unable to save draft.'}
