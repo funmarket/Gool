@@ -11,11 +11,6 @@ import { getAuth } from '../../../http/middleware/auth.js';
 import { parseBody } from '../../../http/middleware/parse.js';
 import type { PitchService } from '../application/pitch.service.js';
 
-function idempotencyKey(req: Parameters<ReturnType<typeof Router>['post']>[1] extends never ? never : never) {
-  void req;
-  return undefined;
-}
-
 export function pitchRouter(service: PitchService) {
   const router = Router();
 
