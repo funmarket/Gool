@@ -14,7 +14,9 @@ export interface AuthSessionMetadata {
 }
 
 export interface AuthRepository {
-  registerCredential(input: RegisterCredentialInput): Promise<
+  registerCredential(
+    input: RegisterCredentialInput,
+  ): Promise<
     | { status: 'created'; user: IdentityUser }
     | { status: 'username-taken' }
     | { status: 'email-taken' }
