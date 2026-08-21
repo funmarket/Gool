@@ -48,3 +48,20 @@ test('me read and profile update responses use the same identity and presentatio
     /async updateProfile\(userId: string,[\s\S]*?select: meSelect,[\s\S]*?select: presentationSelect,[\s\S]*?return toMeView\(user, presentation\);/,
   );
 });
+
+test('me read model exposes one effective username while preserving Telegram metadata', () => {
+  const repository = readFileSync(
+    'apps/api/src/modules/identity/infrastructure/prisma-identity.repository.ts',
+    'utf8',
+  );
+
+  assert.match(repository, /authUsername: true/);
+  assert.match(repository, /displayAuthUsername: true/);
+  assert.match(repository, /username: telegramUsername/);
+  assert.match(
+    repository,
+    /const username = displayAuthUsername \?\? authUsername \?\? telegramUsername/,
+  );
+  assert.match(repository, /username,/);
+  assert.match(repository, /telegramUsername,/);
+});
