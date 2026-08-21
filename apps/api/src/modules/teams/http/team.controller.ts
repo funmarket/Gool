@@ -6,6 +6,7 @@ import {
   teamLineupCreateSchema,
   teamListQuerySchema,
   teamPlayerCreateSchema,
+  teamPlayerUpdateSchema,
   teamUpdateSchema,
 } from '@hooma/contracts';
 import type { TeamService } from '../application/team.service.js';
@@ -178,6 +179,33 @@ export function teamRouter(service: TeamService) {
             parseBody(teamPlayerCreateSchema, req),
           ),
         ),
+    ),
+  );
+
+  router.patch(
+    '/:teamId/players/:playerId',
+    asyncHandler(async (req, res) =>
+      res.json(
+        await service.updatePlayer(
+          getAuth(req).user.id,
+          String(req.params.teamId),
+          String(req.params.playerId),
+          parseBody(teamPlayerUpdateSchema, req),
+        ),
+      ),
+    ),
+  );
+
+  router.delete(
+    '/:teamId/players/:playerId',
+    asyncHandler(async (req, res) =>
+      res.json(
+        await service.deactivatePlayer(
+          getAuth(req).user.id,
+          String(req.params.teamId),
+          String(req.params.playerId),
+        ),
+      ),
     ),
   );
 
