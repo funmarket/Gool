@@ -6,6 +6,7 @@ const profilePage = readFileSync('apps/miniapp/src/pages/ProfilePage.tsx', 'utf8
 const morePage = readFileSync('apps/miniapp/src/pages/MorePage.tsx', 'utf8');
 const profileApi = readFileSync('apps/miniapp/src/features/profile/api.ts', 'utf8');
 const profileTypes = readFileSync('apps/miniapp/src/features/profile/types.ts', 'utf8');
+const identityContracts = readFileSync('packages/contracts/src/identity.ts', 'utf8');
 const identityRepository = readFileSync(
   'apps/api/src/modules/identity/infrastructure/prisma-identity.repository.ts',
   'utf8',
@@ -53,29 +54,47 @@ test('More exposes the multi-identity HOOMA profile instead of a player-only pro
   assert.match(morePage, /navigate\('\/profile'\)/);
 });
 
-test('HOOMA presentation is editable and stored separately from Telegram identity metadata', () => {
+test('HOOMA presentation keeps editable display name and photo without a competing username', () => {
   assert.match(profilePage, /HOOMA display name/);
-  assert.match(profilePage, /HOOMA username/);
   assert.match(profilePage, /HOOMA profile photo URL/);
+  assert.doesNotMatch(profilePage, /HOOMA username/);
   assert.match(profilePage, /me\.presentation\?\.displayName/);
-  assert.match(profilePage, /me\.presentation\?\.username/);
   assert.match(profilePage, /me\.presentation\?\.photoUrl/);
+  assert.doesNotMatch(profilePage, /me\.presentation\?\.username/);
   assert.match(presentationSchema, /model UserProfilePresentation/);
   assert.match(identityRepository, /tx\.userProfilePresentation\.upsert/);
-  assert.doesNotMatch(identityRepository, /data: \{ photoUrl \}/);
+  assert.doesNotMatch(identityRepository, /displayUsername:/);
+});
+
+test('Profile update contract cannot create or replace a presentation username', () => {
+  const profileUpdateBlock = identityContracts.match(
+    /export const profileUpdateSchema = z\.object\(\{([\s\S]*?)\n\}\);/,
+  );
+  assert.ok(profileUpdateBlock);
+  assert.doesNotMatch(profileUpdateBlock[1], /\busername\s*:/);
 });
 
 test('Telegram presentation remains fallback and is not silently captured as a HOOMA override', () => {
   assert.match(profilePage, /useState\(me\.presentation\?\.displayName \|\| ''\)/);
-  assert.match(profilePage, /useState\(me\.presentation\?\.username \|\| ''\)/);
   assert.match(profilePage, /useState\(me\.presentation\?\.photoUrl \|\| ''\)/);
   assert.match(profilePage, /displayName\.trim\(\) \|\| telegramFallbackName\(me\)/);
-  assert.match(profilePage, /username\.trim\(\) \|\| me\.username \|\| ''/);
   assert.match(profilePage, /photoUrl\.trim\(\) \|\| me\.photoUrl \|\| ''/);
+  assert.match(profilePage, /const visibleUsername = me\.effectiveUsername \?\? ''/);
 });
 
-test('duplicate HOOMA username is a controlled conflict instead of an internal error', () => {
-  assert.match(errorHandler, /UserProfilePresentation/);
-  assert.match(errorHandler, /PROFILE_USERNAME_TAKEN/);
-  assert.match(errorHandler, /status\(409\)/);
+test('obsolete presentation username conflict mapping is removed', () => {
+  assert.doesNotMatch(errorHandler, /PROFILE_USERNAME_TAKEN/);
+  assert.doesNotMatch(errorHandler, /UserProfilePresentation/);
+});
+
+test('profile read model exposes one provider-owned effective username', () => {
+  assert.match(identityRepository, /authUsername: true/);
+  assert.match(identityRepository, /displayAuthUsername: true/);
+  assert.match(
+    identityRepository,
+    /const effectiveUsername = displayAuthUsername \?\? authUsername \?\? base\.username \?\? null/,
+  );
+  assert.match(identityRepository, /effectiveUsername,/);
+  assert.doesNotMatch(identityRepository, /displayUsername: true/);
+  assert.doesNotMatch(identityRepository, /username: true,\n\s*displayUsername: true/);
 });

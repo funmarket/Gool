@@ -24,6 +24,8 @@ const meSelect = {
   id: true,
   telegramUserId: true,
   username: true,
+  authUsername: true,
+  displayAuthUsername: true,
   firstName: true,
   lastName: true,
   photoUrl: true,
@@ -36,8 +38,6 @@ const meSelect = {
 
 const presentationSelect = {
   displayName: true,
-  username: true,
-  displayUsername: true,
   photoUrl: true,
 } as const;
 
@@ -47,18 +47,19 @@ type PresentationRecord = Prisma.UserProfilePresentationGetPayload<{
 }>;
 
 function toMeView(user: MeRecord, presentation: PresentationRecord | null) {
-  const { profileIdentities, ...base } = user;
+  const { profileIdentities, authUsername, displayAuthUsername, ...base } = user;
   const selectedIdentities = normalizeSelectedProfileIdentities(
     profileIdentities.map((identity) => identity.type),
   );
   const effectiveIdentities = resolveEffectiveProfileIdentities(selectedIdentities);
+  const effectiveUsername = displayAuthUsername ?? authUsername ?? base.username ?? null;
 
   return {
     ...base,
+    effectiveUsername,
     presentation: presentation
       ? {
           displayName: presentation.displayName,
-          username: presentation.displayUsername ?? presentation.username,
           photoUrl: presentation.photoUrl,
         }
       : null,
@@ -279,15 +280,8 @@ export class PrismaIdentityRepository implements IdentityRepository {
   }
 
   async updateProfile(userId: string, input: ProfileUpdateInput) {
-    const {
-      themeOverride,
-      displayName,
-      username,
-      photoUrl,
-      favoriteClubId,
-      selectedIdentities,
-      ...profile
-    } = input;
+    const { themeOverride, displayName, photoUrl, favoriteClubId, selectedIdentities, ...profile } =
+      input;
     const profileUpdate = {
       ...(profile.skillLevel !== undefined ? { skillLevel: profile.skillLevel } : {}),
       ...(profile.skillRating !== undefined ? { skillRating: profile.skillRating } : {}),
@@ -322,8 +316,7 @@ export class PrismaIdentityRepository implements IdentityRepository {
           }
         : {}),
     };
-    const presentationChanged =
-      displayName !== undefined || username !== undefined || photoUrl !== undefined;
+    const presentationChanged = displayName !== undefined || photoUrl !== undefined;
 
     return this.db.$transaction(async (tx) => {
       if (presentationChanged) {
@@ -332,22 +325,10 @@ export class PrismaIdentityRepository implements IdentityRepository {
           create: {
             userId,
             ...(displayName !== undefined ? { displayName } : {}),
-            ...(username !== undefined
-              ? {
-                  username: username === null ? null : username.toLowerCase(),
-                  displayUsername: username,
-                }
-              : {}),
             ...(photoUrl !== undefined ? { photoUrl } : {}),
           },
           update: {
             ...(displayName !== undefined ? { displayName } : {}),
-            ...(username !== undefined
-              ? {
-                  username: username === null ? null : username.toLowerCase(),
-                  displayUsername: username,
-                }
-              : {}),
             ...(photoUrl !== undefined ? { photoUrl } : {}),
           },
         });
