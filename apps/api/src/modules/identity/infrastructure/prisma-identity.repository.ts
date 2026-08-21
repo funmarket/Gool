@@ -60,9 +60,7 @@ function toMeView(user: MeRecord, presentation: PresentationRecord | null) {
   const effectiveIdentities = resolveEffectiveProfileIdentities(selectedIdentities);
   const effectiveUsername =
     nonBlank(displayAuthUsername) ?? nonBlank(authUsername) ?? nonBlank(base.username);
-  const telegramDisplayName = nonBlank(
-    [base.firstName, base.lastName].filter(Boolean).join(' '),
-  );
+  const telegramDisplayName = nonBlank([base.firstName, base.lastName].filter(Boolean).join(' '));
   const effectiveDisplayName =
     nonBlank(presentation?.displayName) ??
     nonBlank(authName) ??
