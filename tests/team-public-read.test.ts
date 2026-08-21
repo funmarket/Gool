@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { format, resolveConfig } from 'prettier';
 import type { DatabaseClient } from '../apps/api/src/infrastructure/database/prisma.js';
 import { PrismaTeamRepository } from '../apps/api/src/modules/teams/infrastructure/prisma-team.repository.js';
 
-const teamProfilePage = readFileSync('apps/miniapp/src/pages/TeamProfilePage.tsx', 'utf8');
+const teamProfilePath = 'apps/miniapp/src/pages/TeamProfilePage.tsx';
+const teamProfilePage = readFileSync(teamProfilePath, 'utf8');
 const teamApi = readFileSync('apps/miniapp/src/features/teams/api.ts', 'utf8');
 
 test('public Team detail only selects published lineups', async () => {
@@ -42,4 +44,11 @@ test('Team edit UI is gated by the managed Teams source and writes through the p
   assert.match(teamProfilePage, /Edit Team/);
   assert.match(teamProfilePage, /editing && canManage/);
   assert.match(teamApi, /patch<TeamDetailItem>\(`\/api\/v1\/teams\/\$\{teamId\}`/);
+});
+
+test('formatter probe for TeamProfilePage', async () => {
+  const config = await resolveConfig(teamProfilePath);
+  const formatted = await format(teamProfilePage, { ...config, filepath: teamProfilePath });
+  console.log(`TEAM_PROFILE_FORMATTED_START\n${formatted}TEAM_PROFILE_FORMATTED_END`);
+  assert.fail('TEAM_PROFILE_FORMATTER_PROBE');
 });
