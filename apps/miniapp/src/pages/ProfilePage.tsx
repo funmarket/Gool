@@ -46,7 +46,7 @@ const IDENTITY_LABELS: Record<EffectiveProfileIdentity, string> = {
   GHOST_RIDER: 'Ghost Rider',
 };
 
-function telegramFallbackName(me: ProfileMe) {
+function fallbackName(me: ProfileMe) {
   const name = [me.firstName, me.lastName].filter(Boolean).join(' ').trim();
   return name || me.username || 'HOOMA member';
 }
@@ -75,7 +75,6 @@ function previewEffectiveIdentities(
 function ProfileCard({
   me,
   displayName,
-  username,
   photoUrl,
   selectedIdentities,
   photoBroken,
@@ -83,15 +82,14 @@ function ProfileCard({
 }: {
   me: ProfileMe;
   displayName: string;
-  username: string;
   photoUrl: string;
   selectedIdentities: SelectedProfileIdentity[];
   photoBroken: boolean;
   onPhotoError: () => void;
 }) {
   const profile = me.profile;
-  const name = displayName.trim() || telegramFallbackName(me);
-  const visibleUsername = username.trim() || me.username || '';
+  const name = displayName.trim() || fallbackName(me);
+  const visibleUsername = me.username || '';
   const visiblePhotoUrl = photoUrl.trim() || me.photoUrl || '';
   const isPlayer = selectedIdentities.includes('PLAYER');
   const effectiveIdentities = previewEffectiveIdentities(
@@ -211,7 +209,6 @@ function ProfileCard({
 function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
   const queryClient = useQueryClient();
   const [displayName, setDisplayName] = useState(me.presentation?.displayName || '');
-  const [username, setUsername] = useState(me.presentation?.username || '');
   const [photoUrl, setPhotoUrl] = useState(me.presentation?.photoUrl || '');
   const [photoBroken, setPhotoBroken] = useState(false);
   const [skill, setSkill] = useState(me.profile?.skillLevel || 'MIXED');
@@ -246,7 +243,6 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
     mutationFn: () =>
       updateCurrentProfile({
         displayName: displayName.trim() || null,
-        username: username.trim() || null,
         photoUrl: photoUrl.trim() || null,
         favoriteClubId: favoriteClubId || null,
         selectedIdentities,
@@ -265,7 +261,6 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
       <ProfileCard
         me={me}
         displayName={displayName}
-        username={username}
         photoUrl={photoUrl}
         selectedIdentities={selectedIdentities}
         photoBroken={photoBroken}
@@ -277,8 +272,8 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
           <div className="section-kicker">Edit profile</div>
           <h2 className="section-title">Your HOOMA identity</h2>
           <p className="mt-2 text-[17px] leading-7 muted">
-            Your HOOMA name, username, and photo are yours to control. Telegram details remain
-            fallback values until you explicitly enter HOOMA overrides here.
+            Your Display Name and profile photo are yours to control. Your username comes from your
+            HOOMA web login when you have one, otherwise from Telegram.
           </p>
         </div>
 
@@ -288,20 +283,28 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
             className="hooma-input"
             value={displayName}
             onChange={(event) => setDisplayName(event.target.value)}
-            placeholder={telegramFallbackName(me)}
+            placeholder={fallbackName(me)}
           />
         </label>
 
-        <label className="grid gap-2 text-[17px] font-semibold text-[#f4efe2]">
-          HOOMA username
-          <input
-            className="hooma-input"
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-            placeholder={me.username || 'Hannibal10'}
-            autoCapitalize="none"
-          />
-        </label>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="text-[0.78rem] font-black uppercase tracking-[0.24em] text-[#d6ff38]">
+            Username
+          </div>
+          <div className="mt-2 text-[17px] font-semibold text-[#f4efe2]">
+            {me.username ? `@${me.username}` : 'Not set'}
+          </div>
+          <p className="mt-1 text-[15px] leading-6 text-[#d2ccbc]">
+            {me.telegramUserId
+              ? 'Telegram stays connected without overwriting web credentials.'
+              : 'This is the username used to sign in on the webapp.'}
+          </p>
+          {me.telegramUserId && me.telegramUsername ? (
+            <p className="mt-2 text-[15px] leading-6 text-[#d2ccbc]">
+              Connected Telegram: @{me.telegramUsername}
+            </p>
+          ) : null}
+        </div>
 
         <label className="grid gap-2 text-[17px] font-semibold text-[#f4efe2]">
           HOOMA profile photo URL
