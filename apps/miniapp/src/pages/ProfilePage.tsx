@@ -75,7 +75,6 @@ function previewEffectiveIdentities(
 function ProfileCard({
   me,
   displayName,
-  username,
   photoUrl,
   selectedIdentities,
   photoBroken,
@@ -83,7 +82,6 @@ function ProfileCard({
 }: {
   me: ProfileMe;
   displayName: string;
-  username: string;
   photoUrl: string;
   selectedIdentities: SelectedProfileIdentity[];
   photoBroken: boolean;
@@ -91,7 +89,7 @@ function ProfileCard({
 }) {
   const profile = me.profile;
   const name = displayName.trim() || telegramFallbackName(me);
-  const visibleUsername = username.trim() || me.username || '';
+  const visibleUsername = me.effectiveUsername ?? '';
   const visiblePhotoUrl = photoUrl.trim() || me.photoUrl || '';
   const isPlayer = selectedIdentities.includes('PLAYER');
   const effectiveIdentities = previewEffectiveIdentities(
@@ -211,7 +209,6 @@ function ProfileCard({
 function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
   const queryClient = useQueryClient();
   const [displayName, setDisplayName] = useState(me.presentation?.displayName || '');
-  const [username, setUsername] = useState(me.presentation?.username || '');
   const [photoUrl, setPhotoUrl] = useState(me.presentation?.photoUrl || '');
   const [photoBroken, setPhotoBroken] = useState(false);
   const [skill, setSkill] = useState(me.profile?.skillLevel || 'MIXED');
@@ -246,7 +243,6 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
     mutationFn: () =>
       updateCurrentProfile({
         displayName: displayName.trim() || null,
-        username: username.trim() || null,
         photoUrl: photoUrl.trim() || null,
         favoriteClubId: favoriteClubId || null,
         selectedIdentities,
@@ -265,7 +261,6 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
       <ProfileCard
         me={me}
         displayName={displayName}
-        username={username}
         photoUrl={photoUrl}
         selectedIdentities={selectedIdentities}
         photoBroken={photoBroken}
@@ -277,8 +272,8 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
           <div className="section-kicker">Edit profile</div>
           <h2 className="section-title">Your HOOMA identity</h2>
           <p className="mt-2 text-[17px] leading-7 muted">
-            Your HOOMA name, username, and photo are yours to control. Telegram details remain
-            fallback values until you explicitly enter HOOMA overrides here.
+            Your HOOMA display name and profile photo are yours to control. Your username comes
+            from your authenticated account or Telegram identity.
           </p>
         </div>
 
@@ -289,17 +284,6 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
             value={displayName}
             onChange={(event) => setDisplayName(event.target.value)}
             placeholder={telegramFallbackName(me)}
-          />
-        </label>
-
-        <label className="grid gap-2 text-[17px] font-semibold text-[#f4efe2]">
-          HOOMA username
-          <input
-            className="hooma-input"
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-            placeholder={me.username || 'Hannibal10'}
-            autoCapitalize="none"
           />
         </label>
 
