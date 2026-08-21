@@ -191,28 +191,41 @@ export class PrismaPitchRepository implements PitchRepository {
     return row ? mapOwner(row) : null;
   }
 
-  async create(userId: string, input: PitchCreateInput) {
-    const row = await this.db.pitchListing.create({
-      data: {
-        ownerUserId: userId,
-        name: input.name,
-        description: input.description ?? null,
-        photoUrl: input.photoUrl ?? null,
-        venueType: input.venueType ?? null,
-        city: input.city ?? null,
-        houma: input.houma ?? null,
-        fullAddress: input.fullAddress ?? null,
-        latitude: input.latitude ?? null,
-        longitude: input.longitude ?? null,
-        hourlyRateMinor: input.hourlyRateMinor ?? null,
-        currency: input.currency ?? null,
-        publicPhone: input.publicPhone ?? null,
-        publicEmail: input.publicEmail ?? null,
-        status: 'DRAFT',
-      },
-      select: ownerSelect,
-    });
-    return mapOwner(row);
+  async create(userId: string, input: PitchCreateInput, pitchId?: string) {
+    try {
+      const row = await this.db.pitchListing.create({
+        data: {
+          ...(pitchId ? { id: pitchId } : {}),
+          ownerUserId: userId,
+          name: input.name,
+          description: input.description ?? null,
+          photoUrl: input.photoUrl ?? null,
+          venueType: input.venueType ?? null,
+          city: input.city ?? null,
+          houma: input.houma ?? null,
+          fullAddress: input.fullAddress ?? null,
+          latitude: input.latitude ?? null,
+          longitude: input.longitude ?? null,
+          hourlyRateMinor: input.hourlyRateMinor ?? null,
+          currency: input.currency ?? null,
+          publicPhone: input.publicPhone ?? null,
+          publicEmail: input.publicEmail ?? null,
+          status: 'DRAFT',
+        },
+        select: ownerSelect,
+      });
+      return mapOwner(row);
+    } catch (error) {
+      if (
+        pitchId &&
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        const existing = await this.getOwned(userId, pitchId);
+        if (existing) return existing;
+      }
+      throw error;
+    }
   }
 
   async updateOwned(
