@@ -6,6 +6,14 @@ const profilePage = readFileSync('apps/miniapp/src/pages/ProfilePage.tsx', 'utf8
 const morePage = readFileSync('apps/miniapp/src/pages/MorePage.tsx', 'utf8');
 const profileApi = readFileSync('apps/miniapp/src/features/profile/api.ts', 'utf8');
 const profileTypes = readFileSync('apps/miniapp/src/features/profile/types.ts', 'utf8');
+const identityRepository = readFileSync(
+  'apps/api/src/modules/identity/infrastructure/prisma-identity.repository.ts',
+  'utf8',
+);
+const presentationSchema = readFileSync(
+  'packages/database/prisma/profile-presentation.prisma',
+  'utf8',
+);
 
 test('Profile UI exposes only self-selectable Player, Fan, and Gamer identities', () => {
   assert.match(profilePage, /value: 'PLAYER'/);
@@ -42,4 +50,16 @@ test('More exposes the multi-identity HOOMA profile instead of a player-only pro
   assert.match(morePage, /Create or edit your HOOMA identity/);
   assert.doesNotMatch(morePage, /My player profile/);
   assert.match(morePage, /navigate\('\/profile'\)/);
+});
+
+test('HOOMA presentation is editable and stored separately from Telegram identity metadata', () => {
+  assert.match(profilePage, /HOOMA display name/);
+  assert.match(profilePage, /HOOMA username/);
+  assert.match(profilePage, /HOOMA profile photo URL/);
+  assert.match(profilePage, /me\.presentation\?\.displayName/);
+  assert.match(profilePage, /me\.presentation\?\.username/);
+  assert.match(profilePage, /me\.presentation\?\.photoUrl/);
+  assert.match(presentationSchema, /model UserProfilePresentation/);
+  assert.match(identityRepository, /tx\.userProfilePresentation\.upsert/);
+  assert.doesNotMatch(identityRepository, /data: \{ photoUrl \}/);
 });
