@@ -17,7 +17,11 @@ export function PitchDetailPage() {
   if (pitchQuery.isPending) {
     return (
       <div className="page-shell vintage-page">
-        <div className="vintage-empty h-72 animate-pulse" role="status" aria-live="polite">
+        <div
+          className="vintage-empty h-72 animate-pulse"
+          role="status"
+          aria-live="polite"
+        >
           Loading pitch…
         </div>
       </div>
@@ -32,7 +36,11 @@ export function PitchDetailPage() {
           <p className="vintage-copy mt-2">
             This venue is not available in the public Pitch feed.
           </p>
-          <button type="button" className="ghost-button mt-3" onClick={() => navigate('/pitch')}>
+          <button
+            type="button"
+            className="ghost-button mt-3"
+            onClick={() => navigate('/pitch')}
+          >
             Back to Pitch
           </button>
         </div>
@@ -49,7 +57,11 @@ export function PitchDetailPage() {
 
   return (
     <div className="page-shell vintage-page">
-      <button type="button" className="ghost-button mb-3" onClick={() => navigate('/pitch')}>
+      <button
+        type="button"
+        className="ghost-button mb-3"
+        onClick={() => navigate('/pitch')}
+      >
         <ChevronLeft size={18} aria-hidden="true" />
         Back to Pitch
       </button>
