@@ -1,14 +1,15 @@
-import { Router } from 'express';
+import { Router, type Request } from 'express';
 import { webLoginSchema, webRegisterSchema } from '@hooma/contracts';
 import type { AuthService } from '../application/auth.service.js';
 import { asyncHandler } from '../../../http/middleware/async-handler.js';
 import { parseBody } from '../../../http/middleware/parse.js';
 import { getAuth } from '../../../http/middleware/auth.js';
 
-function sessionMetadata(req: Parameters<ReturnType<typeof Router>['post']>[1] extends never ? never : any) {
+function sessionMetadata(req: Request) {
+  const userAgent = req.header('user-agent');
   return {
-    ...(req.ip ? { ipAddress: String(req.ip) } : {}),
-    ...(req.header('user-agent') ? { userAgent: String(req.header('user-agent')) } : {}),
+    ...(req.ip ? { ipAddress: req.ip } : {}),
+    ...(userAgent ? { userAgent } : {}),
   };
 }
 
@@ -20,12 +21,18 @@ export function authRouter(service: AuthService) {
     asyncHandler(async (req, res) => {
       const result = await service.register(parseBody(webRegisterSchema, req), sessionMetadata(req));
       if (result.status === 'username-taken') {
-        return res.status(409).json({ error: { code: 'USERNAME_TAKEN', message: 'That username is already in use.' } });
+        return res.status(409).json({
+          error: { code: 'USERNAME_TAKEN', message: 'That username is already in use.' },
+        });
       }
       if (result.status === 'email-taken') {
-        return res.status(409).json({ error: { code: 'EMAIL_TAKEN', message: 'That email is already in use.' } });
+        return res.status(409).json({
+          error: { code: 'EMAIL_TAKEN', message: 'That email is already in use.' },
+        });
       }
-      return res.status(201).json({ user: result.user, token: result.token, expiresAt: result.expiresAt });
+      return res
+        .status(201)
+        .json({ user: result.user, token: result.token, expiresAt: result.expiresAt });
     }),
   );
 
@@ -34,7 +41,9 @@ export function authRouter(service: AuthService) {
     asyncHandler(async (req, res) => {
       const result = await service.login(parseBody(webLoginSchema, req), sessionMetadata(req));
       if (result.status === 'invalid-credentials') {
-        return res.status(401).json({ error: { code: 'INVALID_CREDENTIALS', message: 'Invalid username or password.' } });
+        return res.status(401).json({
+          error: { code: 'INVALID_CREDENTIALS', message: 'Invalid username or password.' },
+        });
       }
       return res.json({ user: result.user, token: result.token, expiresAt: result.expiresAt });
     }),
