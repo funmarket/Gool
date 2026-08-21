@@ -62,16 +62,32 @@ test('Display Name and profile photo remain editable presentation fields', () =>
   assert.doesNotMatch(identityRepository, /data: \{ photoUrl \}/);
 });
 
-test('username comes from account identity and is not an editable Profile override', () => {
+test('username comes from canonical account identity and is not an editable Profile override', () => {
   assert.match(profilePage, /Username/);
-  assert.match(profilePage, /me\.username \? `@\$\{me\.username\}` : 'Not set'/);
+  assert.match(
+    profilePage,
+    /me\.effectiveUsername \? `@\$\{me\.effectiveUsername\}` : 'Not set'/,
+  );
+  assert.match(profilePage, /const visibleUsername = me\.effectiveUsername \?\? ''/);
   assert.doesNotMatch(profilePage, /HOOMA username/);
   assert.doesNotMatch(profilePage, /setUsername/);
   assert.doesNotMatch(profilePage, /username: username\.trim/);
   assert.match(
     identityRepository,
-    /const username = displayAuthUsername \?\? authUsername \?\? telegramUsername/,
+    /const effectiveUsername =[\s\S]*?nonBlank\(displayAuthUsername\) \?\? nonBlank\(authUsername\) \?\? nonBlank\(telegramUsername\)/,
   );
+});
+
+test('explicit presentation overrides stay separate from effective fallback values', () => {
+  assert.match(profileTypes, /effectiveDisplayName: string/);
+  assert.match(profileTypes, /effectiveUsername\?: string \| null/);
+  assert.match(profileTypes, /effectivePhotoUrl\?: string \| null/);
+  assert.match(profilePage, /useState\(me\.presentation\?\.displayName \|\| ''\)/);
+  assert.match(profilePage, /useState\(me\.presentation\?\.photoUrl \|\| ''\)/);
+  assert.match(profilePage, /displayName\.trim\(\) \|\| me\.effectiveDisplayName/);
+  assert.match(profilePage, /photoUrl\.trim\(\) \|\| me\.effectivePhotoUrl \|\| ''/);
+  assert.match(profilePage, /placeholder=\{me\.effectiveDisplayName\}/);
+  assert.match(profilePage, /placeholder=\{me\.effectivePhotoUrl \|\|/);
 });
 
 test('Telegram source username remains visible metadata without overwriting web credentials', () => {
