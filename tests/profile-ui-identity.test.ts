@@ -79,3 +79,17 @@ test('duplicate HOOMA username is a controlled conflict instead of an internal e
   assert.match(errorHandler, /PROFILE_USERNAME_TAKEN/);
   assert.match(errorHandler, /status\(409\)/);
 });
+
+test('profile read model exposes one provider-owned effective username', () => {
+  assert.match(identityRepository, /authUsername: true/);
+  assert.match(identityRepository, /displayAuthUsername: true/);
+  assert.match(
+    identityRepository,
+    /const effectiveUsername = displayAuthUsername \?\? authUsername \?\? base\.username \?\? null/,
+  );
+  assert.match(identityRepository, /effectiveUsername,/);
+  assert.doesNotMatch(
+    identityRepository,
+    /presentation:\s*presentation\s*\?\s*\{[\s\S]*?username:\s*presentation\.displayUsername/,
+  );
+});
