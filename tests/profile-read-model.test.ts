@@ -31,16 +31,20 @@ test('UltraFan is derived and keeps the canonical effective identity order', () 
   ]);
 });
 
-test('me read and profile update responses use the same identity projector', () => {
+test('me read and profile update responses use the same identity and presentation projector', () => {
   const repository = readFileSync(
     'apps/api/src/modules/identity/infrastructure/prisma-identity.repository.ts',
     'utf8',
   );
 
   assert.match(repository, /profileIdentities: \{ select: \{ type: true \} \}/);
-  assert.match(repository, /async getMe\(userId: string\)[\s\S]*?return toMeView\(user\);/);
+  assert.match(repository, /const presentationSelect = \{/);
   assert.match(
     repository,
-    /async updateProfile\(userId: string,[\s\S]*?select: meSelect,[\s\S]*?return toMeView\(user\);/,
+    /async getMe\(userId: string\)[\s\S]*?return toMeView\(user, presentation\);/,
+  );
+  assert.match(
+    repository,
+    /async updateProfile\(userId: string,[\s\S]*?select: meSelect,[\s\S]*?select: presentationSelect,[\s\S]*?return toMeView\(user, presentation\);/,
   );
 });
