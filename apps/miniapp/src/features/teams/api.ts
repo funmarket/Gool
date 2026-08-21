@@ -1,5 +1,10 @@
-import type { TeamChallengeCreateInput, TeamUpdateInput } from '@hooma/contracts';
-import { get, patch, post } from '../../shared/api/http-client';
+import type {
+  TeamChallengeCreateInput,
+  TeamPlayerCreateInput,
+  TeamPlayerUpdateInput,
+  TeamUpdateInput,
+} from '@hooma/contracts';
+import { del, get, patch, post } from '../../shared/api/http-client';
 import type {
   TeamChallengeDetailItem,
   TeamChallengeItem,
@@ -9,6 +14,7 @@ import type {
   TeamGamePage,
   TeamManagedPage,
   TeamPage,
+  TeamPlayerItem,
 } from '../../types/domain';
 
 export const teamQueryKeys = {
@@ -49,6 +55,22 @@ export function listManagedTeams() {
 
 export function updateTeam(teamId: string, input: TeamUpdateInput) {
   return patch<TeamDetailItem>(`/api/v1/teams/${teamId}`, input);
+}
+
+export function addTeamPlayer(teamId: string, input: TeamPlayerCreateInput) {
+  return post<TeamPlayerItem>(`/api/v1/teams/${teamId}/players`, input);
+}
+
+export function updateTeamPlayer(
+  teamId: string,
+  playerId: string,
+  input: TeamPlayerUpdateInput,
+) {
+  return patch<TeamPlayerItem>(`/api/v1/teams/${teamId}/players/${playerId}`, input);
+}
+
+export function removeTeamPlayer(teamId: string, playerId: string) {
+  return del<TeamPlayerItem>(`/api/v1/teams/${teamId}/players/${playerId}`);
 }
 
 export function listIncomingChallenges() {
