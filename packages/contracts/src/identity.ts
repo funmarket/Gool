@@ -15,6 +15,18 @@ export const selectedProfileIdentitiesSchema = z
   .refine((values) => new Set(values).size === values.length, 'Profile identities must be unique.');
 
 export const profileUpdateSchema = z.object({
+  displayName: z.string().trim().min(2).max(120).nullable().optional(),
+  username: z
+    .string()
+    .trim()
+    .min(3)
+    .max(64)
+    .regex(
+      /^[A-Za-z0-9_.]+$/,
+      'Username may only contain letters, numbers, underscores, and dots.',
+    )
+    .nullable()
+    .optional(),
   photoUrl: z.string().trim().url().max(1000).nullable().optional(),
   skillLevel: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'MIXED']).optional(),
   skillRating: z.number().int().min(1).max(100).optional(),
