@@ -61,6 +61,8 @@ export async function http<T>(path: string, options: HttpOptions = {}): Promise<
           ...(requestOptions.headers || {}),
         },
       });
+      if (response.ok && response.status === 204) return undefined as T;
+
       const contentType = response.headers.get('content-type') || '';
       const expectsJson = path.startsWith('/api/');
       if (response.ok && expectsJson && !contentType.includes('application/json')) {
