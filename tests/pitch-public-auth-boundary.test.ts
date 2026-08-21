@@ -58,7 +58,10 @@ function buildApp() {
   return app;
 }
 
-async function withServer(app: ReturnType<typeof buildApp>, run: (baseUrl: string) => Promise<void>) {
+async function withServer(
+  app: ReturnType<typeof buildApp>,
+  run: (baseUrl: string) => Promise<void>,
+) {
   const server = app.listen(0, '127.0.0.1');
   await new Promise<void>((resolve, reject) => {
     server.once('listening', resolve);
