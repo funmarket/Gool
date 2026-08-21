@@ -38,8 +38,6 @@ const meSelect = {
 
 const presentationSelect = {
   displayName: true,
-  username: true,
-  displayUsername: true,
   photoUrl: true,
 } as const;
 
@@ -282,15 +280,8 @@ export class PrismaIdentityRepository implements IdentityRepository {
   }
 
   async updateProfile(userId: string, input: ProfileUpdateInput) {
-    const {
-      themeOverride,
-      displayName,
-      username,
-      photoUrl,
-      favoriteClubId,
-      selectedIdentities,
-      ...profile
-    } = input;
+    const { themeOverride, displayName, photoUrl, favoriteClubId, selectedIdentities, ...profile } =
+      input;
     const profileUpdate = {
       ...(profile.skillLevel !== undefined ? { skillLevel: profile.skillLevel } : {}),
       ...(profile.skillRating !== undefined ? { skillRating: profile.skillRating } : {}),
@@ -325,8 +316,7 @@ export class PrismaIdentityRepository implements IdentityRepository {
           }
         : {}),
     };
-    const presentationChanged =
-      displayName !== undefined || username !== undefined || photoUrl !== undefined;
+    const presentationChanged = displayName !== undefined || photoUrl !== undefined;
 
     return this.db.$transaction(async (tx) => {
       if (presentationChanged) {
@@ -335,22 +325,10 @@ export class PrismaIdentityRepository implements IdentityRepository {
           create: {
             userId,
             ...(displayName !== undefined ? { displayName } : {}),
-            ...(username !== undefined
-              ? {
-                  username: username === null ? null : username.toLowerCase(),
-                  displayUsername: username,
-                }
-              : {}),
             ...(photoUrl !== undefined ? { photoUrl } : {}),
           },
           update: {
             ...(displayName !== undefined ? { displayName } : {}),
-            ...(username !== undefined
-              ? {
-                  username: username === null ? null : username.toLowerCase(),
-                  displayUsername: username,
-                }
-              : {}),
             ...(photoUrl !== undefined ? { photoUrl } : {}),
           },
         });
