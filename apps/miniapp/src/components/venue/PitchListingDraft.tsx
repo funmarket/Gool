@@ -94,11 +94,12 @@ export type PitchListingDraftProps = {
 
 export function PitchListingDraft({ onClose }: PitchListingDraftProps) {
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
+  const [createKey] = useState(() => crypto.randomUUID());
   const [savedPitchId, setSavedPitchId] = useState<string | null>(null);
 
   const saveDraft = useMutation({
     mutationFn: async () => {
-      if (!savedPitchId) return createPitchDraft(createRequest(draft));
+      if (!savedPitchId) return createPitchDraft(createRequest(draft), createKey);
       return updatePitchDraft(savedPitchId, updateRequest(draft));
     },
     onSuccess: (saved) => {
