@@ -4,7 +4,9 @@ export type SelectedProfileIdentity = 'PLAYER' | 'FAN' | 'GAMER';
 export type EffectiveProfileIdentity = SelectedProfileIdentity | 'ULTRAFAN' | 'GHOST_RIDER';
 
 export type ProfileMe = Omit<Me, 'profile'> & {
+  effectiveDisplayName: string;
   effectiveUsername?: string | null;
+  effectivePhotoUrl?: string | null;
   presentation?: {
     displayName?: string | null;
     photoUrl?: string | null;
