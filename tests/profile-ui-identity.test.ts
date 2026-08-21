@@ -1,10 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import prettier from 'prettier';
 
 const profilePage = readFileSync('apps/miniapp/src/pages/ProfilePage.tsx', 'utf8');
-const identityContract = readFileSync('packages/contracts/src/identity.ts', 'utf8');
 const morePage = readFileSync('apps/miniapp/src/pages/MorePage.tsx', 'utf8');
 const profileApi = readFileSync('apps/miniapp/src/features/profile/api.ts', 'utf8');
 const profileTypes = readFileSync('apps/miniapp/src/features/profile/types.ts', 'utf8');
@@ -64,20 +62,4 @@ test('HOOMA presentation is editable and stored separately from Telegram identit
   assert.match(presentationSchema, /model UserProfilePresentation/);
   assert.match(identityRepository, /tx\.userProfilePresentation\.upsert/);
   assert.doesNotMatch(identityRepository, /data: \{ photoUrl \}/);
-});
-
-test('formatter diagnostic for profile ownership files', async () => {
-  const options = {
-    singleQuote: true,
-    semi: true,
-    trailingComma: 'all' as const,
-    printWidth: 100,
-  };
-  console.log('PROFILE_FORMATTED_START');
-  console.log(await prettier.format(profilePage, { ...options, parser: 'typescript' }));
-  console.log('PROFILE_FORMATTED_END');
-  console.log('IDENTITY_FORMATTED_START');
-  console.log(await prettier.format(identityContract, { ...options, parser: 'typescript' }));
-  console.log('IDENTITY_FORMATTED_END');
-  assert.fail('PROFILE_FORMATTER_DIAGNOSTIC');
 });
