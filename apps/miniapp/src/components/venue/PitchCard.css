@@ -1,163 +1,295 @@
 .pitch-card-pro {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 2.3rem;
+  grid-template-columns: minmax(6.8rem, 38%) minmax(0, 1fr) 1.9rem;
   overflow: hidden;
   border: 1px solid var(--hv-gold-line);
   border-radius: 12px;
   background: linear-gradient(145deg, #0c0d0a, #060705);
   color: var(--hv-white);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+  cursor: pointer;
+  outline: none;
 }
+
+.pitch-card-pro:focus-visible {
+  box-shadow:
+    0 0 0 2px rgba(183, 227, 29, 0.75),
+    0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
 .pitch-card-pro-photo {
   position: relative;
   grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  min-height: 12.5rem;
+  overflow: hidden;
   background: #050604;
-  border-bottom: 1px solid var(--hv-gold-line);
-  display: grid;
-  place-items: center;
-  min-height: 10rem;
+  border-right: 1px solid var(--hv-gold-line);
 }
+
 .pitch-card-pro-photo img {
   display: block;
   width: 100%;
-  height: auto;
-  max-height: 18rem;
-  object-fit: contain;
+  height: 100%;
+  min-height: 12.5rem;
+  object-fit: cover;
 }
+
 .pitch-card-pro-photo-fallback {
-  min-height: 10rem;
+  min-height: 12.5rem;
   width: 100%;
+  height: 100%;
   display: grid;
   place-items: center;
   background:
     radial-gradient(circle at 50% 40%, rgba(183, 227, 29, 0.1), transparent 42%),
     linear-gradient(180deg, #11130d, #060705);
 }
+
 .pitch-card-pro-photo-fallback span {
   font-family: var(--hv-font-display);
   color: var(--hv-cream);
-  font-size: clamp(2rem, 10vw, 3.8rem);
+  font-size: clamp(1.7rem, 8vw, 3.5rem);
   opacity: 0.22;
 }
+
 .pitch-card-pro-stamp {
   position: absolute;
-  left: 0.65rem;
-  bottom: 0.65rem;
+  left: 0.45rem;
+  bottom: 0.45rem;
   color: var(--hv-lime);
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7));
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
 }
+
 .pitch-card-pro-body {
-  grid-column: 1;
-  padding: 1rem;
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  padding: 0.8rem 0.7rem 0.65rem;
+  display: flex;
+  flex-direction: column;
 }
+
 .pitch-card-pro-body h3 {
   margin: 0;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   font-family: var(--hv-font-display);
-  font-size: clamp(1.7rem, 7vw, 2.7rem);
-  line-height: 0.95;
+  font-size: clamp(1.45rem, 5.8vw, 2.7rem);
+  line-height: 0.94;
   text-transform: uppercase;
   color: var(--hv-cream);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.015em;
 }
+
 .pitch-card-pro-location {
   display: flex;
   align-items: center;
-  gap: 0.42rem;
-  margin-top: 0.6rem;
+  gap: 0.35rem;
+  margin-top: 0.55rem;
+  min-width: 0;
   color: var(--hv-muted);
-  font-size: 0.86rem;
+  font-size: clamp(0.78rem, 3.3vw, 0.95rem);
 }
-.pitch-card-pro-pin {
+
+.pitch-card-pro-location svg {
+  flex: 0 0 auto;
   color: var(--hv-lime);
-  font-size: 0.7rem;
 }
+
+.pitch-card-pro-location span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .pitch-card-pro-price {
   display: flex;
   align-items: flex-end;
-  gap: 0.55rem;
-  margin-top: 0.9rem;
-  padding: 0.8rem 0;
+  gap: 0.42rem;
+  margin-top: auto;
+  padding: 0.75rem 0 0.68rem;
   border-top: 1px dashed rgba(199, 154, 43, 0.28);
   border-bottom: 1px dashed rgba(199, 154, 43, 0.28);
 }
+
 .pitch-card-pro-price strong {
   font-family: var(--hv-font-display);
-  font-size: clamp(2.5rem, 10vw, 4.3rem);
-  line-height: 0.8;
+  font-size: clamp(2.35rem, 9.5vw, 4.3rem);
+  line-height: 0.78;
   color: var(--hv-lime);
 }
+
 .pitch-card-pro-price span {
-  padding-bottom: 0.15rem;
+  padding-bottom: 0.08rem;
   color: var(--hv-cream);
+  font-size: clamp(0.72rem, 2.8vw, 0.95rem);
   font-weight: 800;
+  white-space: nowrap;
 }
+
 .pitch-card-pro-actions {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.4rem;
-  margin-top: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 0.55rem;
+  min-width: 0;
 }
+
 .pitch-card-pro-actions button {
-  min-height: 2.2rem;
-  border: 1px solid rgba(232, 221, 196, 0.2);
-  background: #090a08;
-  color: var(--hv-white);
-  border-radius: 5px;
+  min-width: 0;
+  min-height: 2.1rem;
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.22rem;
+  padding: 0 0.3rem;
+  border: 0;
+  border-right: 1px solid rgba(232, 221, 196, 0.24);
+  background: transparent;
+  color: var(--hv-cream);
   font: inherit;
-  font-size: 0.72rem;
-  font-weight: 800;
+  font-size: clamp(0.66rem, 2.6vw, 0.78rem);
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
 }
+
+.pitch-card-pro-actions button:last-child {
+  border-right: 0;
+}
+
+.pitch-card-pro-actions button svg {
+  flex: 0 0 auto;
+  color: var(--hv-lime);
+}
+
+.pitch-card-pro-actions button span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pitch-card-pro-actions button:not(:disabled):active,
+.pitch-card-pro-actions button:not(:disabled):focus-visible {
+  color: var(--hv-lime);
+  outline: none;
+}
+
 .pitch-card-pro-actions button:disabled {
-  opacity: 0.45;
+  opacity: 0.42;
+  cursor: default;
 }
+
 .pitch-card-pro-stub {
-  grid-column: 2;
-  grid-row: 1 / span 2;
+  grid-column: 3;
+  grid-row: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 0.65rem 0.15rem;
+  padding: 0.55rem 0.1rem;
   background: linear-gradient(180deg, #bfdc2d, #879f16);
   color: #151905;
   border-left: 1.5px dashed rgba(22, 25, 7, 0.58);
 }
+
 .pitch-card-pro-stub span {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
   font-family: var(--hv-font-display);
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
+  font-size: 0.55rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pitch-card-pro-details {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  padding: 1rem;
+  border-top: 1px dashed rgba(199, 154, 43, 0.34);
+  background:
+    linear-gradient(rgba(8, 9, 7, 0.96), rgba(8, 9, 7, 0.96)),
+    radial-gradient(circle at top left, rgba(183, 227, 29, 0.08), transparent 38%);
+  cursor: default;
+}
+
+.pitch-card-pro-detail-block + .pitch-card-pro-detail-block {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(199, 154, 43, 0.18);
+}
+
+.pitch-card-pro-detail-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-family: var(--hv-font-display);
+  color: var(--hv-lime);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
+.pitch-card-pro-detail-block strong,
+.pitch-card-pro-detail-block p {
+  margin: 0;
+  color: var(--hv-white);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.pitch-card-pro-contact-owner {
+  width: 100%;
+  min-height: 2.9rem;
+  margin-top: 1rem;
+  border: 1px solid rgba(183, 227, 29, 0.75);
+  border-radius: 7px;
+  background: var(--hv-lime);
+  color: #111506;
+  font: inherit;
+  font-size: 1.0625rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
 @media (min-width: 640px) {
   .pitch-card-pro {
     grid-template-columns: minmax(13rem, 43%) minmax(0, 1fr) 2.6rem;
   }
-  .pitch-card-pro-photo {
-    grid-column: 1;
-    grid-row: 1;
-    border-bottom: 0;
-    border-right: 1px solid var(--hv-gold-line);
-    min-height: 13rem;
+
+  .pitch-card-pro-photo,
+  .pitch-card-pro-photo img,
+  .pitch-card-pro-photo-fallback {
+    min-height: 14rem;
   }
-  .pitch-card-pro-photo img {
-    max-height: 15rem;
-  }
+
   .pitch-card-pro-body {
-    grid-column: 2;
-    grid-row: 1;
+    padding: 1rem;
   }
-  .pitch-card-pro-stub {
-    grid-column: 3;
-    grid-row: 1;
+
+  .pitch-card-pro-stub span {
+    font-size: 0.62rem;
   }
 }
-.pitch-card-pro-actions button:not(:disabled) {
-  cursor: pointer;
-  touch-action: manipulation;
-}
-.pitch-card-pro-actions button:not(:disabled):active {
-  border-color: rgba(183, 227, 29, 0.65);
-  color: var(--hv-lime);
+
+@media (max-width: 340px) {
+  .pitch-card-pro {
+    grid-template-columns: minmax(6rem, 35%) minmax(0, 1fr) 1.7rem;
+  }
+
+  .pitch-card-pro-body {
+    padding-inline: 0.55rem;
+  }
+
+  .pitch-card-pro-actions button {
+    padding-inline: 0.15rem;
+  }
 }
