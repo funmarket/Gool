@@ -17,7 +17,10 @@ test('Pitch public detail route is registered and loads the canonical public Pit
 });
 
 test('Pitch frontend reuses canonical contract types instead of duplicating venue/status unions', () => {
-  assert.match(pitchApi, /import type \{ PitchListingStatus, PitchVenueType \} from '@hooma\/contracts'/);
+  assert.match(
+    pitchApi,
+    /import type \{ PitchListingStatus, PitchVenueType \} from '@hooma\/contracts'/,
+  );
   assert.doesNotMatch(pitchApi, /export type PitchVenueType\s*=/);
   assert.doesNotMatch(pitchApi, /status:\s*'DRAFT'\s*\|/);
 });
