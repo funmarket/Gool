@@ -29,6 +29,7 @@ export interface LoginInput {
   password: string;
 }
 
-export const register = (input: RegisterInput) => post<AuthResponse>('/api/v1/auth/register', input);
+export const register = (input: RegisterInput) =>
+  post<AuthResponse>('/api/v1/auth/register', input);
 export const login = (input: LoginInput) => post<AuthResponse>('/api/v1/auth/login', input);
 export const logout = () => post<void>('/api/v1/auth/logout');
