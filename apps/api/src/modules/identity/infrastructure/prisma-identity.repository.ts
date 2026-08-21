@@ -24,6 +24,8 @@ const meSelect = {
   id: true,
   telegramUserId: true,
   username: true,
+  authUsername: true,
+  displayAuthUsername: true,
   firstName: true,
   lastName: true,
   photoUrl: true,
@@ -47,18 +49,19 @@ type PresentationRecord = Prisma.UserProfilePresentationGetPayload<{
 }>;
 
 function toMeView(user: MeRecord, presentation: PresentationRecord | null) {
-  const { profileIdentities, ...base } = user;
+  const { profileIdentities, authUsername, displayAuthUsername, ...base } = user;
   const selectedIdentities = normalizeSelectedProfileIdentities(
     profileIdentities.map((identity) => identity.type),
   );
   const effectiveIdentities = resolveEffectiveProfileIdentities(selectedIdentities);
+  const effectiveUsername = displayAuthUsername ?? authUsername ?? base.username ?? null;
 
   return {
     ...base,
+    effectiveUsername,
     presentation: presentation
       ? {
           displayName: presentation.displayName,
-          username: presentation.displayUsername ?? presentation.username,
           photoUrl: presentation.photoUrl,
         }
       : null,
