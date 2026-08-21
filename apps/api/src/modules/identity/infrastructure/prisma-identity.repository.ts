@@ -324,7 +324,6 @@ export class PrismaIdentityRepository implements IdentityRepository {
     };
     const presentationChanged =
       displayName !== undefined || username !== undefined || photoUrl !== undefined;
-    const normalizedUsername = username ? username.toLowerCase() : username;
 
     return this.db.$transaction(async (tx) => {
       if (presentationChanged) {
@@ -334,14 +333,20 @@ export class PrismaIdentityRepository implements IdentityRepository {
             userId,
             ...(displayName !== undefined ? { displayName } : {}),
             ...(username !== undefined
-              ? { username: normalizedUsername, displayUsername: username }
+              ? {
+                  username: username === null ? null : username.toLowerCase(),
+                  displayUsername: username,
+                }
               : {}),
             ...(photoUrl !== undefined ? { photoUrl } : {}),
           },
           update: {
             ...(displayName !== undefined ? { displayName } : {}),
             ...(username !== undefined
-              ? { username: normalizedUsername, displayUsername: username }
+              ? {
+                  username: username === null ? null : username.toLowerCase(),
+                  displayUsername: username,
+                }
               : {}),
             ...(photoUrl !== undefined ? { photoUrl } : {}),
           },
