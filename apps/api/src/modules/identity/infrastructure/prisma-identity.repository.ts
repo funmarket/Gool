@@ -326,7 +326,8 @@ export class PrismaIdentityRepository implements IdentityRepository {
         ? { preferredPositions: profile.preferredPositions }
         : {}),
       ...(profile.profileAudience !== undefined
-        ? { profileAudience: profile.profileAudience } : {}),
+        ? { profileAudience: profile.profileAudience }
+        : {}),
       ...(profile.bio !== undefined ? { bio: profile.bio } : {}),
       ...(favoriteClubId
         ? {
