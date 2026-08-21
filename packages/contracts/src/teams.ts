@@ -61,6 +61,15 @@ export const teamPlayerCreateSchema = z.object({
   photoUrl: z.string().trim().url().max(1000).optional(),
 });
 
+export const teamPlayerUpdateSchema = z
+  .object({
+    displayName: z.string().trim().min(1).max(120).optional(),
+    shirtNumber: z.number().int().min(0).max(99).nullable().optional(),
+    position: teamPlayerPositionSchema.nullable().optional(),
+    photoUrl: z.string().trim().url().max(1000).nullable().optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, 'At least one player field is required.');
+
 export const teamLineupSlotSchema = z.object({
   playerId: idSchema.nullable().optional(),
   role: teamPlayerPositionSchema,
@@ -95,6 +104,7 @@ export const teamChallengeMessageCreateSchema = z.object({
 export type TeamCreateInput = z.infer<typeof teamCreateSchema>;
 export type TeamUpdateInput = z.infer<typeof teamUpdateSchema>;
 export type TeamPlayerCreateInput = z.infer<typeof teamPlayerCreateSchema>;
+export type TeamPlayerUpdateInput = z.infer<typeof teamPlayerUpdateSchema>;
 export type TeamLineupCreateInput = z.infer<typeof teamLineupCreateSchema>;
 export type TeamChallengeCreateInput = z.infer<typeof teamChallengeCreateSchema>;
 export type TeamChallengeMessageCreateInput = z.infer<typeof teamChallengeMessageCreateSchema>;
