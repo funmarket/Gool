@@ -18,6 +18,30 @@ const identityUserSelect = {
   isPremium: true,
 } as const;
 
+type IdentityUserRecord = {
+  id: string;
+  telegramUserId: string | null;
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  photoUrl: string | null;
+  languageCode: string | null;
+  isPremium: boolean;
+};
+
+function toIdentityUser(user: IdentityUserRecord) {
+  return {
+    id: user.id,
+    telegramUserId: user.telegramUserId,
+    username: user.username,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    photoUrl: user.photoUrl,
+    languageCode: user.languageCode,
+    isPremium: user.isPremium,
+  };
+}
+
 export class PrismaAuthRepository implements AuthRepository {
   constructor(private readonly db: DatabaseClient) {}
 
@@ -95,8 +119,7 @@ export class PrismaAuthRepository implements AuthRepository {
     });
     const passwordHash = user?.authAccounts[0]?.password;
     if (!user || !passwordHash) return null;
-    const { authAccounts: _authAccounts, ...identity } = user;
-    return { user: identity, passwordHash };
+    return { user: toIdentityUser(user), passwordHash };
   }
 
   async createSession(
@@ -126,8 +149,7 @@ export class PrismaAuthRepository implements AuthRepository {
       },
     });
     if (!session || session.expiresAt <= now || session.user.deletedAt) return null;
-    const { deletedAt: _deletedAt, ...user } = session.user;
-    return user;
+    return toIdentityUser(session.user);
   }
 
   async deleteSession(token: string) {
