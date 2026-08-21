@@ -278,8 +278,8 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
           <div className="section-kicker">Edit profile</div>
           <h2 className="section-title">Your HOOMA identity</h2>
           <p className="mt-2 text-[17px] leading-7 muted">
-            Your HOOMA name, username, and photo are yours to control. Telegram details are used only
-            as fallback until you save your HOOMA presentation.
+            Your HOOMA name, username, and photo are yours to control. Telegram details are used
+            only as fallback until you save your HOOMA presentation.
           </p>
         </div>
 
