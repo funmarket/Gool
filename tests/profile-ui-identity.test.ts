@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const profilePage = readFileSync('apps/miniapp/src/pages/ProfilePage.tsx', 'utf8');
+const morePage = readFileSync('apps/miniapp/src/pages/MorePage.tsx', 'utf8');
 const profileApi = readFileSync('apps/miniapp/src/features/profile/api.ts', 'utf8');
 const profileTypes = readFileSync('apps/miniapp/src/features/profile/types.ts', 'utf8');
 
@@ -34,4 +35,11 @@ test('UltraFan and Ghost Rider remain effective identities, not user-selected id
   assert.match(profilePage, /current\.includes\('ULTRAFAN'\)/);
   assert.match(profilePage, /\['GHOST_RIDER'\]/);
   assert.match(profilePage, /cannot be selected manually/);
+});
+
+test('More exposes the multi-identity HOOMA profile instead of a player-only profile entry', () => {
+  assert.match(morePage, /title="My HOOMA profile"/);
+  assert.match(morePage, /Create or edit your HOOMA identity/);
+  assert.doesNotMatch(morePage, /My player profile/);
+  assert.match(morePage, /navigate\('\/profile'\)/);
 });
