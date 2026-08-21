@@ -19,7 +19,10 @@ export function authRouter(service: AuthService) {
   router.post(
     '/register',
     asyncHandler(async (req, res) => {
-      const result = await service.register(parseBody(webRegisterSchema, req), sessionMetadata(req));
+      const result = await service.register(
+        parseBody(webRegisterSchema, req),
+        sessionMetadata(req),
+      );
       if (result.status === 'username-taken') {
         return res.status(409).json({
           error: { code: 'USERNAME_TAKEN', message: 'That username is already in use.' },
