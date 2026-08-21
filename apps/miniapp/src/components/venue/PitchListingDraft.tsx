@@ -1,9 +1,15 @@
+import { useMutation } from '@tanstack/react-query';
+import type { PitchCreateRequest, PitchUpdateRequest, PitchVenueType } from '@hooma/contracts';
 import { FormEvent, useState } from 'react';
+import { createPitchDraft, updatePitchDraft } from '../../features/pitch/api';
+import { majorToMinor } from '../../lib/format';
 import './PitchListingDraft.css';
 
 type Draft = {
   name: string;
+  description: string;
   photoUrl: string;
+  venueType: PitchVenueType | '';
   city: string;
   houma: string;
   address: string;
@@ -13,10 +19,11 @@ type Draft = {
   email: string;
 };
 
-const STORAGE_KEY = 'hooma:pitch-listing-draft';
 const EMPTY_DRAFT: Draft = {
   name: '',
+  description: '',
   photoUrl: '',
+  venueType: '',
   city: '',
   houma: '',
   address: '',
@@ -26,15 +33,59 @@ const EMPTY_DRAFT: Draft = {
   email: '',
 };
 
-function loadDraft(): Draft {
-  if (typeof window === 'undefined') return EMPTY_DRAFT;
+const venueTypeOptions: Array<{ value: PitchVenueType; label: string }> = [
+  { value: 'FOOTBALL_PITCH', label: 'Football pitch' },
+  { value: 'MINI_PITCH', label: 'Mini pitch' },
+  { value: 'FUTSAL', label: 'Futsal' },
+  { value: 'PRIVATE_STADIUM', label: 'Private stadium' },
+  { value: 'INDOOR_FOOTBALL', label: 'Indoor football' },
+  { value: 'OUTDOOR_FOOTBALL', label: 'Outdoor football' },
+  { value: 'OTHER_FOOTBALL', label: 'Other football venue' },
+];
 
-  try {
-    const value = window.localStorage.getItem(STORAGE_KEY);
-    return value ? { ...EMPTY_DRAFT, ...(JSON.parse(value) as Partial<Draft>) } : EMPTY_DRAFT;
-  } catch {
-    return EMPTY_DRAFT;
-  }
+function optional(value: string) {
+  const trimmed = value.trim();
+  return trimmed || undefined;
+}
+
+function optionalRate(hourlyRate: string, currency: string) {
+  const trimmed = hourlyRate.trim();
+  if (!trimmed) return undefined;
+  const rate = Number(trimmed);
+  if (!Number.isFinite(rate) || rate < 0) return undefined;
+  return majorToMinor(rate, currency);
+}
+
+function createRequest(draft: Draft): PitchCreateRequest {
+  return {
+    name: draft.name.trim(),
+    description: optional(draft.description),
+    photoUrl: optional(draft.photoUrl),
+    venueType: draft.venueType || undefined,
+    city: optional(draft.city),
+    houma: optional(draft.houma),
+    fullAddress: optional(draft.address),
+    hourlyRateMinor: optionalRate(draft.hourlyRate, draft.currency),
+    currency: optional(draft.currency),
+    publicPhone: optional(draft.phone),
+    publicEmail: optional(draft.email),
+  };
+}
+
+function updateRequest(draft: Draft): PitchUpdateRequest {
+  return {
+    name: draft.name.trim(),
+    description: optional(draft.description) ?? null,
+    photoUrl: optional(draft.photoUrl) ?? null,
+    venueType: draft.venueType || null,
+    city: optional(draft.city) ?? null,
+    houma: optional(draft.houma) ?? null,
+    fullAddress: optional(draft.address) ?? null,
+    hourlyRateMinor: optionalRate(draft.hourlyRate, draft.currency) ?? null,
+    currency: optional(draft.currency) ?? null,
+    publicPhone: optional(draft.phone) ?? null,
+    publicEmail: optional(draft.email) ?? null,
+  };
 }
 
 export type PitchListingDraftProps = {
@@ -42,18 +93,28 @@ export type PitchListingDraftProps = {
 };
 
 export function PitchListingDraft({ onClose }: PitchListingDraftProps) {
-  const [draft, setDraft] = useState<Draft>(loadDraft);
-  const [saved, setSaved] = useState(false);
+  const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
+  const [savedPitchId, setSavedPitchId] = useState<string | null>(null);
+
+  const saveDraft = useMutation({
+    mutationFn: async () => {
+      if (!savedPitchId) return createPitchDraft(createRequest(draft));
+      return updatePitchDraft(savedPitchId, updateRequest(draft));
+    },
+    onSuccess: (saved) => {
+      setSavedPitchId(saved.id);
+    },
+  });
 
   const update = (key: keyof Draft, value: string) => {
-    setSaved(false);
+    saveDraft.reset();
     setDraft((current) => ({ ...current, [key]: value }));
   };
 
-  const saveDraft = (event: FormEvent<HTMLFormElement>) => {
+  const handleSave = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
-    setSaved(true);
+    if (draft.name.trim().length < 2 || saveDraft.isPending) return;
+    saveDraft.mutate();
   };
 
   return (
@@ -71,23 +132,45 @@ export function PitchListingDraft({ onClose }: PitchListingDraftProps) {
       </div>
 
       <p className="pitch-listing-note">
-        Save the required venue details as a draft on this device. Publishing is intentionally not
-        faked here because this frontend bundle does not contain a Pitch listing API endpoint.
+        Save this venue as a private draft in your HOOMA account. You can complete the publication
+        details before submitting it for review.
       </p>
 
-      <form onSubmit={saveDraft} className="pitch-listing-grid">
+      <form onSubmit={handleSave} className="pitch-listing-grid">
         <label>
-          <span>Venue name</span>
+          <span>Venue name *</span>
           <input
             required
+            minLength={2}
             value={draft.name}
             onChange={(event) => update('name', event.target.value)}
           />
         </label>
         <label>
+          <span>Venue type</span>
+          <select
+            value={draft.venueType}
+            onChange={(event) => update('venueType', event.target.value)}
+          >
+            <option value="">Choose later</option>
+            {venueTypeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="pitch-listing-wide">
+          <span>Description</span>
+          <textarea
+            maxLength={1200}
+            value={draft.description}
+            onChange={(event) => update('description', event.target.value)}
+          />
+        </label>
+        <label>
           <span>Real photo URL</span>
           <input
-            required
             type="url"
             value={draft.photoUrl}
             onChange={(event) => update('photoUrl', event.target.value)}
@@ -96,32 +179,19 @@ export function PitchListingDraft({ onClose }: PitchListingDraftProps) {
         </label>
         <label>
           <span>City</span>
-          <input
-            required
-            value={draft.city}
-            onChange={(event) => update('city', event.target.value)}
-          />
+          <input value={draft.city} onChange={(event) => update('city', event.target.value)} />
         </label>
         <label>
           <span>Houma</span>
-          <input
-            required
-            value={draft.houma}
-            onChange={(event) => update('houma', event.target.value)}
-          />
+          <input value={draft.houma} onChange={(event) => update('houma', event.target.value)} />
         </label>
         <label className="pitch-listing-wide">
           <span>Full address</span>
-          <input
-            required
-            value={draft.address}
-            onChange={(event) => update('address', event.target.value)}
-          />
+          <input value={draft.address} onChange={(event) => update('address', event.target.value)} />
         </label>
         <label>
           <span>Hourly rate</span>
           <input
-            required
             inputMode="decimal"
             value={draft.hourlyRate}
             onChange={(event) => update('hourlyRate', event.target.value)}
@@ -130,7 +200,6 @@ export function PitchListingDraft({ onClose }: PitchListingDraftProps) {
         <label>
           <span>Currency</span>
           <input
-            required
             maxLength={3}
             value={draft.currency}
             onChange={(event) => update('currency', event.target.value.toUpperCase())}
@@ -153,10 +222,19 @@ export function PitchListingDraft({ onClose }: PitchListingDraftProps) {
           />
         </label>
         <div className="pitch-listing-wide pitch-listing-actions">
-          <button type="submit" className="accent-button">
-            Save draft
+          <button
+            type="submit"
+            className="accent-button"
+            disabled={draft.name.trim().length < 2 || saveDraft.isPending}
+          >
+            {saveDraft.isPending ? 'Saving…' : 'Save for later'}
           </button>
-          {saved ? <span role="status">Draft saved on this device.</span> : null}
+          {saveDraft.isSuccess ? <span role="status">Draft saved to your HOOMA account.</span> : null}
+          {saveDraft.isError ? (
+            <span role="alert" className="pitch-listing-error">
+              {saveDraft.error instanceof Error ? saveDraft.error.message : 'Unable to save draft.'}
+            </span>
+          ) : null}
         </div>
       </form>
     </section>
