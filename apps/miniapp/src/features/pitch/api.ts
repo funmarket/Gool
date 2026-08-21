@@ -1,5 +1,10 @@
-import type { PitchListingStatus, PitchVenueType } from '@hooma/contracts';
-import { get } from '../../shared/api/http-client';
+import type {
+  PitchCreateRequest,
+  PitchListingStatus,
+  PitchUpdateRequest,
+  PitchVenueType,
+} from '@hooma/contracts';
+import { get, patch, post } from '../../shared/api/http-client';
 
 export type PitchListingItem = {
   id: string;
@@ -21,6 +26,13 @@ export type PitchListingItem = {
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
+};
+
+export type PitchOwnerItem = PitchListingItem & {
+  ownerUserId: string;
+  reviewedAt: string | null;
+  reviewedByUserId: string | null;
+  rejectionReason: string | null;
 };
 
 export type PitchPageResponse = {
@@ -50,4 +62,12 @@ function publicPitchListPath(filters: PitchListFilters) {
 
 export function listPublicPitches(filters: PitchListFilters) {
   return get<PitchPageResponse>(publicPitchListPath(filters));
+}
+
+export function createPitchDraft(input: PitchCreateRequest) {
+  return post<PitchOwnerItem>('/api/v1/pitch', input);
+}
+
+export function updatePitchDraft(pitchId: string, input: PitchUpdateRequest) {
+  return patch<PitchOwnerItem>(`/api/v1/pitch/mine/${encodeURIComponent(pitchId)}`, input);
 }
