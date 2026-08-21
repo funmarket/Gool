@@ -66,10 +66,7 @@ test(
   'username comes from canonical account identity and is not an editable Profile override',
   () => {
     assert.match(profilePage, /Username/);
-    assert.match(
-      profilePage,
-      /me\.effectiveUsername \? `@\$\{me\.effectiveUsername\}` : 'Not set'/,
-    );
+    assert.match(profilePage, /me\.effectiveUsername \? `@\$\{me\.effectiveUsername\}` : 'Not set'/);
     assert.match(profilePage, /const visibleUsername = me\.effectiveUsername \?\? ''/);
     assert.doesNotMatch(profilePage, /HOOMA username/);
     assert.doesNotMatch(profilePage, /setUsername/);
