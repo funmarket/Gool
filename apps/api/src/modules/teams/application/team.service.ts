@@ -4,6 +4,7 @@ import type {
   TeamCreateInput,
   TeamLineupCreateInput,
   TeamPlayerCreateInput,
+  TeamPlayerUpdateInput,
   TeamUpdateInput,
 } from '@hooma/contracts';
 import { AppError } from '../../../http/errors/app-error.js';
@@ -49,6 +50,21 @@ export class TeamService {
   async addPlayer(userId: string, teamId: string, input: TeamPlayerCreateInput) {
     await this.requireTeamCapability(userId, teamId, 'MANAGE_ROSTER');
     return this.repo.addPlayer(teamId, input);
+  }
+
+  async updatePlayer(
+    userId: string,
+    teamId: string,
+    playerId: string,
+    input: TeamPlayerUpdateInput,
+  ) {
+    await this.requireTeamCapability(userId, teamId, 'MANAGE_ROSTER');
+    return this.repo.updatePlayer(teamId, playerId, input);
+  }
+
+  async deactivatePlayer(userId: string, teamId: string, playerId: string) {
+    await this.requireTeamCapability(userId, teamId, 'MANAGE_ROSTER');
+    return this.repo.deactivatePlayer(teamId, playerId);
   }
 
   async createLineup(userId: string, teamId: string, input: TeamLineupCreateInput) {
