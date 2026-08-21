@@ -10,6 +10,7 @@ const identityRepository = readFileSync(
   'apps/api/src/modules/identity/infrastructure/prisma-identity.repository.ts',
   'utf8',
 );
+const errorHandler = readFileSync('apps/api/src/http/middleware/error-handler.ts', 'utf8');
 const presentationSchema = readFileSync(
   'packages/database/prisma/profile-presentation.prisma',
   'utf8',
@@ -62,4 +63,19 @@ test('HOOMA presentation is editable and stored separately from Telegram identit
   assert.match(presentationSchema, /model UserProfilePresentation/);
   assert.match(identityRepository, /tx\.userProfilePresentation\.upsert/);
   assert.doesNotMatch(identityRepository, /data: \{ photoUrl \}/);
+});
+
+test('Telegram presentation remains fallback and is not silently captured as a HOOMA override', () => {
+  assert.match(profilePage, /useState\(me\.presentation\?\.displayName \|\| ''\)/);
+  assert.match(profilePage, /useState\(me\.presentation\?\.username \|\| ''\)/);
+  assert.match(profilePage, /useState\(me\.presentation\?\.photoUrl \|\| ''\)/);
+  assert.match(profilePage, /displayName\.trim\(\) \|\| telegramFallbackName\(me\)/);
+  assert.match(profilePage, /username\.trim\(\) \|\| me\.username \|\| ''/);
+  assert.match(profilePage, /photoUrl\.trim\(\) \|\| me\.photoUrl \|\| ''/);
+});
+
+test('duplicate HOOMA username is a controlled conflict instead of an internal error', () => {
+  assert.match(errorHandler, /UserProfilePresentation/);
+  assert.match(errorHandler, /PROFILE_USERNAME_TAKEN/);
+  assert.match(errorHandler, /status\(409\)/);
 });

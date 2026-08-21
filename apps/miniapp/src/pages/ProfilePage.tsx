@@ -92,6 +92,7 @@ function ProfileCard({
   const profile = me.profile;
   const name = displayName.trim() || telegramFallbackName(me);
   const visibleUsername = username.trim() || me.username || '';
+  const visiblePhotoUrl = photoUrl.trim() || me.photoUrl || '';
   const isPlayer = selectedIdentities.includes('PLAYER');
   const effectiveIdentities = previewEffectiveIdentities(
     selectedIdentities,
@@ -144,9 +145,9 @@ function ProfileCard({
             <div className="relative overflow-hidden rounded-[1.5rem] border border-[#d6ff38]/20 bg-[#0a0a0a]">
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(214,255,56,0.06),rgba(0,0,0,0.85))]" />
               <div className="relative aspect-[3/4]">
-                {!photoBroken && photoUrl ? (
+                {!photoBroken && visiblePhotoUrl ? (
                   <img
-                    src={photoUrl}
+                    src={visiblePhotoUrl}
                     alt={name}
                     className="h-full w-full object-cover"
                     onError={onPhotoError}
@@ -209,11 +210,9 @@ function ProfileCard({
 
 function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
   const queryClient = useQueryClient();
-  const [displayName, setDisplayName] = useState(
-    me.presentation?.displayName || telegramFallbackName(me),
-  );
-  const [username, setUsername] = useState(me.presentation?.username || me.username || '');
-  const [photoUrl, setPhotoUrl] = useState(me.presentation?.photoUrl || me.photoUrl || '');
+  const [displayName, setDisplayName] = useState(me.presentation?.displayName || '');
+  const [username, setUsername] = useState(me.presentation?.username || '');
+  const [photoUrl, setPhotoUrl] = useState(me.presentation?.photoUrl || '');
   const [photoBroken, setPhotoBroken] = useState(false);
   const [skill, setSkill] = useState(me.profile?.skillLevel || 'MIXED');
   const [favoriteClubId, setFavoriteClubId] = useState(me.profile?.favoriteClubId || '');
@@ -267,7 +266,7 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
         me={me}
         displayName={displayName}
         username={username}
-        photoUrl={photoUrl.trim()}
+        photoUrl={photoUrl}
         selectedIdentities={selectedIdentities}
         photoBroken={photoBroken}
         onPhotoError={() => setPhotoBroken(true)}
@@ -278,8 +277,8 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
           <div className="section-kicker">Edit profile</div>
           <h2 className="section-title">Your HOOMA identity</h2>
           <p className="mt-2 text-[17px] leading-7 muted">
-            Your HOOMA name, username, and photo are yours to control. Telegram details are used
-            only as fallback until you save your HOOMA presentation.
+            Your HOOMA name, username, and photo are yours to control. Telegram details remain
+            fallback values until you explicitly enter HOOMA overrides here.
           </p>
         </div>
 
@@ -289,7 +288,7 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
             className="hooma-input"
             value={displayName}
             onChange={(event) => setDisplayName(event.target.value)}
-            placeholder="Your name in HOOMA"
+            placeholder={telegramFallbackName(me)}
           />
         </label>
 
@@ -299,7 +298,7 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
             className="hooma-input"
             value={username}
             onChange={(event) => setUsername(event.target.value)}
-            placeholder="Hannibal10"
+            placeholder={me.username || 'Hannibal10'}
             autoCapitalize="none"
           />
         </label>
@@ -314,7 +313,7 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
               setPhotoBroken(false);
               setPhotoUrl(event.target.value);
             }}
-            placeholder="https://example.com/profile-photo.jpg"
+            placeholder={me.photoUrl || 'https://example.com/profile-photo.jpg'}
           />
         </label>
 
