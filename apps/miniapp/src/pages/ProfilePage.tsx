@@ -46,11 +46,6 @@ const IDENTITY_LABELS: Record<EffectiveProfileIdentity, string> = {
   GHOST_RIDER: 'Ghost Rider',
 };
 
-function telegramFallbackName(me: ProfileMe) {
-  const name = [me.firstName, me.lastName].filter(Boolean).join(' ').trim();
-  return name || me.username || 'HOOMA member';
-}
-
 function initials(name: string) {
   return name
     .split(/\s+/)
@@ -88,9 +83,9 @@ function ProfileCard({
   onPhotoError: () => void;
 }) {
   const profile = me.profile;
-  const name = displayName.trim() || telegramFallbackName(me);
+  const name = displayName.trim() || me.effectiveDisplayName;
   const visibleUsername = me.effectiveUsername ?? '';
-  const visiblePhotoUrl = photoUrl.trim() || me.photoUrl || '';
+  const visiblePhotoUrl = photoUrl.trim() || me.effectivePhotoUrl || '';
   const isPlayer = selectedIdentities.includes('PLAYER');
   const effectiveIdentities = previewEffectiveIdentities(
     selectedIdentities,
@@ -283,7 +278,7 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
             className="hooma-input"
             value={displayName}
             onChange={(event) => setDisplayName(event.target.value)}
-            placeholder={telegramFallbackName(me)}
+            placeholder={me.effectiveDisplayName}
           />
         </label>
 
@@ -297,7 +292,7 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
               setPhotoBroken(false);
               setPhotoUrl(event.target.value);
             }}
-            placeholder={me.photoUrl || 'https://example.com/profile-photo.jpg'}
+            placeholder={me.effectivePhotoUrl || 'https://example.com/profile-photo.jpg'}
           />
         </label>
 
