@@ -272,8 +272,8 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
           <div className="section-kicker">Edit profile</div>
           <h2 className="section-title">Your HOOMA identity</h2>
           <p className="mt-2 text-[17px] leading-7 muted">
-            Your HOOMA display name and profile photo are yours to control. Your username comes
-            from your authenticated account or Telegram identity.
+            Your HOOMA display name and profile photo are yours to control. Your username comes from
+            your authenticated account or Telegram identity.
           </p>
         </div>
 
