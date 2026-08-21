@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import type { AddressInfo } from 'node:net';
 import test from 'node:test';
 import express, { type NextFunction, type Request, type Response } from 'express';
+import { buildApp } from '../apps/api/src/bootstrap/app.js';
+import { buildContainer } from '../apps/api/src/bootstrap/container.js';
 import { errorHandler } from '../apps/api/src/http/middleware/error-handler.js';
 import {
   type AuthContext,
@@ -107,6 +109,27 @@ async function withServer(
   }
 }
 
+async function withRealApp(run: (baseUrl: string) => Promise<void>) {
+  const container = buildContainer();
+  const app = buildApp(container);
+  const server = app.listen(0, '127.0.0.1');
+
+  await new Promise<void>((resolve, reject) => {
+    server.once('listening', resolve);
+    server.once('error', reject);
+  });
+
+  const address = server.address() as AddressInfo;
+  try {
+    await run(`http://127.0.0.1:${address.port}`);
+  } finally {
+    await new Promise<void>((resolve, reject) => {
+      server.close((error) => (error ? reject(error) : resolve()));
+    });
+    await container.db.$disconnect();
+  }
+}
+
 test('anonymous public Team read succeeds without Telegram credentials', async () => {
   await withServer(buildBoundaryApp(), async (baseUrl) => {
     const response = await fetch(`${baseUrl}/api/v1/teams`);
@@ -162,5 +185,78 @@ test('optional authentication does not downgrade supplied invalid bearer credent
 
     assert.equal(response.status, 401);
     assert.equal(body.error.code, 'AUTH_INVALID');
+  });
+});
+
+test('real web auth lifecycle works through Express, Prisma, and disposable Postgres', async () => {
+  const username = `ci_web_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const password = 'correct-horse-battery-staple';
+
+  await withRealApp(async (baseUrl) => {
+    const registerResponse = await fetch(`${baseUrl}/api/v1/auth/register`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ username, password, displayName: 'CI Web User' }),
+    });
+    const registered = (await registerResponse.json()) as {
+      user: { id: string; telegramUserId: string | null };
+      token: string;
+      expiresAt: string;
+    };
+
+    assert.equal(registerResponse.status, 201);
+    assert.equal(registered.user.telegramUserId, null);
+    assert.ok(registered.user.id);
+    assert.ok(registered.token);
+    assert.ok(registered.expiresAt);
+
+    const duplicateResponse = await fetch(`${baseUrl}/api/v1/auth/register`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const duplicate = (await duplicateResponse.json()) as { error: { code: string } };
+    assert.equal(duplicateResponse.status, 409);
+    assert.equal(duplicate.error.code, 'USERNAME_TAKEN');
+
+    const meFromRegistrationResponse = await fetch(`${baseUrl}/api/v1/me`, {
+      headers: { authorization: `Bearer ${registered.token}` },
+    });
+    const meFromRegistration = (await meFromRegistrationResponse.json()) as {
+      id: string;
+      telegramUserId: string | null;
+    };
+    assert.equal(meFromRegistrationResponse.status, 200);
+    assert.equal(meFromRegistration.id, registered.user.id);
+    assert.equal(meFromRegistration.telegramUserId, null);
+
+    const loginResponse = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const loggedIn = (await loginResponse.json()) as {
+      user: { id: string; telegramUserId: string | null };
+      token: string;
+      expiresAt: string;
+    };
+
+    assert.equal(loginResponse.status, 200);
+    assert.equal(loggedIn.user.id, registered.user.id);
+    assert.equal(loggedIn.user.telegramUserId, null);
+    assert.ok(loggedIn.token);
+
+    const logoutResponse = await fetch(`${baseUrl}/api/v1/auth/logout`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${loggedIn.token}` },
+    });
+    assert.equal(logoutResponse.status, 204);
+
+    const afterLogoutResponse = await fetch(`${baseUrl}/api/v1/me`, {
+      headers: { authorization: `Bearer ${loggedIn.token}` },
+    });
+    const afterLogout = (await afterLogoutResponse.json()) as { error: { code: string } };
+    assert.equal(afterLogoutResponse.status, 401);
+    assert.equal(afterLogout.error.code, 'AUTH_INVALID');
   });
 });
