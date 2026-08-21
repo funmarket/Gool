@@ -12,7 +12,8 @@ export function MorePage() {
       <div className="mt-5 grid gap-3">
         <ActionRow
           icon={<UserRound />}
-          title="My player profile"
+          title="My HOOMA profile"
+          subtitle="Create or edit your HOOMA identity"
           onClick={() => navigate('/profile')}
           variant="vintage"
         />
