@@ -3,12 +3,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronRight, MapPin, Pencil, Shield, Users } from 'lucide-react';
 import { TeamLineupPitch } from '../components/teams/TeamLineupPitch';
-import {
-  getTeam,
-  listManagedTeams,
-  teamQueryKeys,
-  updateTeam,
-} from '../features/teams/api';
+import { getTeam, listManagedTeams, teamQueryKeys, updateTeam } from '../features/teams/api';
 import { notify } from '../lib/telegram';
 import type { TeamDetailItem } from '../types/domain';
 
@@ -193,9 +188,7 @@ export function TeamProfilePage() {
         ) : null}
       </section>
 
-      {editing && canManage ? (
-        <TeamEditForm team={team} onDone={() => setEditing(false)} />
-      ) : null}
+      {editing && canManage ? <TeamEditForm team={team} onDone={() => setEditing(false)} /> : null}
 
       <section className="teams-section">
         <div className="vintage-section-heading">
