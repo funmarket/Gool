@@ -30,15 +30,23 @@ test('Pitch owner draft reuses the existing create and owned-update routes', asy
     readFile(repositoryPath, 'utf8'),
   ]);
 
-  assert.match(apiSource, /post<PitchOwnerItem>\('\/api\/v1\/pitch', input\)/);
+  assert.match(
+    apiSource,
+    /postIdempotent<PitchOwnerItem>\('\/api\/v1\/pitch', input, idempotencyKey\)/,
+  );
   assert.match(
     apiSource,
     /patch<PitchOwnerItem>\(`\/api\/v1\/pitch\/mine\/\$\{encodeURIComponent\(pitchId\)\}`, input\)/,
   );
-  assert.match(controllerSource, /service\.create\(getAuth\(req\)\.user\.id/);
+  assert.match(controllerSource, /req\.header\('idempotency-key'\)/);
+  assert.match(controllerSource, /service\.create\(/);
+  assert.match(controllerSource, /getAuth\(req\)\.user\.id/);
   assert.match(repositorySource, /this\.db\.pitchListing\.create\(/);
   assert.match(repositorySource, /status: 'DRAFT'/);
-  assert.match(formSource, /createPitchDraft\(createRequest\(draft\)\)/);
+  assert.match(repositorySource, /error\.code === 'P2002'/);
+  assert.match(repositorySource, /this\.getOwned\(userId, pitchId\)/);
+  assert.match(formSource, /const \[createKey\] = useState\(\(\) => crypto\.randomUUID\(\)\)/);
+  assert.match(formSource, /createPitchDraft\(createRequest\(draft\), createKey\)/);
   assert.match(formSource, /updatePitchDraft\(savedPitchId, updateRequest\(draft\)\)/);
   assert.match(formSource, /setSavedPitchId\(saved\.id\)/);
   assert.doesNotMatch(formSource, /localStorage/);
