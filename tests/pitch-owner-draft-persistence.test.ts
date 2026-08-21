@@ -4,7 +4,10 @@ import test from 'node:test';
 import { pitchCreateSchema } from '@hooma/contracts';
 
 const apiPath = new URL('../apps/miniapp/src/features/pitch/api.ts', import.meta.url);
-const formPath = new URL('../apps/miniapp/src/components/venue/PitchListingDraft.tsx', import.meta.url);
+const formPath = new URL(
+  '../apps/miniapp/src/components/venue/PitchListingDraft.tsx',
+  import.meta.url,
+);
 const controllerPath = new URL(
   '../apps/api/src/modules/pitch/http/pitch.controller.ts',
   import.meta.url,
