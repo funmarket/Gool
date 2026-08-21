@@ -46,7 +46,7 @@ const IDENTITY_LABELS: Record<EffectiveProfileIdentity, string> = {
   GHOST_RIDER: 'Ghost Rider',
 };
 
-function fullName(me: ProfileMe) {
+function telegramFallbackName(me: ProfileMe) {
   const name = [me.firstName, me.lastName].filter(Boolean).join(' ').trim();
   return name || me.username || 'HOOMA member';
 }
@@ -74,19 +74,24 @@ function previewEffectiveIdentities(
 
 function ProfileCard({
   me,
+  displayName,
+  username,
   photoUrl,
   selectedIdentities,
   photoBroken,
   onPhotoError,
 }: {
   me: ProfileMe;
+  displayName: string;
+  username: string;
   photoUrl: string;
   selectedIdentities: SelectedProfileIdentity[];
   photoBroken: boolean;
   onPhotoError: () => void;
 }) {
   const profile = me.profile;
-  const name = fullName(me);
+  const name = displayName.trim() || telegramFallbackName(me);
+  const visibleUsername = username.trim() || me.username || '';
   const isPlayer = selectedIdentities.includes('PLAYER');
   const effectiveIdentities = previewEffectiveIdentities(
     selectedIdentities,
@@ -108,7 +113,7 @@ function ProfileCard({
                 {name}
               </div>
               <div className="mt-2 text-[17px] font-medium text-[#d2ccbc]">
-                {me.username ? `@${me.username}` : 'Football passport'}
+                {visibleUsername ? `@${visibleUsername}` : 'Football passport'}
               </div>
             </div>
 
@@ -204,7 +209,11 @@ function ProfileCard({
 
 function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
   const queryClient = useQueryClient();
-  const [photoUrl, setPhotoUrl] = useState(me.photoUrl || '');
+  const [displayName, setDisplayName] = useState(
+    me.presentation?.displayName || telegramFallbackName(me),
+  );
+  const [username, setUsername] = useState(me.presentation?.username || me.username || '');
+  const [photoUrl, setPhotoUrl] = useState(me.presentation?.photoUrl || me.photoUrl || '');
   const [photoBroken, setPhotoBroken] = useState(false);
   const [skill, setSkill] = useState(me.profile?.skillLevel || 'MIXED');
   const [favoriteClubId, setFavoriteClubId] = useState(me.profile?.favoriteClubId || '');
@@ -237,6 +246,8 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
   const mutation = useMutation({
     mutationFn: () =>
       updateCurrentProfile({
+        displayName: displayName.trim() || null,
+        username: username.trim() || null,
         photoUrl: photoUrl.trim() || null,
         favoriteClubId: favoriteClubId || null,
         selectedIdentities,
@@ -254,6 +265,8 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
       <ProfileCard
         me={me}
+        displayName={displayName}
+        username={username}
         photoUrl={photoUrl.trim()}
         selectedIdentities={selectedIdentities}
         photoBroken={photoBroken}
@@ -265,13 +278,34 @@ function ProfileForm({ me, clubs }: { me: ProfileMe; clubs: Club[] }) {
           <div className="section-kicker">Edit profile</div>
           <h2 className="section-title">Your HOOMA identity</h2>
           <p className="mt-2 text-[17px] leading-7 muted">
-            Choose every identity that describes you. These are profile identities, not management
-            permissions.
+            Your HOOMA name, username, and photo are yours to control. Telegram details are used
+            only as fallback until you save your HOOMA presentation.
           </p>
         </div>
 
         <label className="grid gap-2 text-[17px] font-semibold text-[#f4efe2]">
-          Profile photo URL
+          HOOMA display name
+          <input
+            className="hooma-input"
+            value={displayName}
+            onChange={(event) => setDisplayName(event.target.value)}
+            placeholder="Your name in HOOMA"
+          />
+        </label>
+
+        <label className="grid gap-2 text-[17px] font-semibold text-[#f4efe2]">
+          HOOMA username
+          <input
+            className="hooma-input"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+            placeholder="Hannibal10"
+            autoCapitalize="none"
+          />
+        </label>
+
+        <label className="grid gap-2 text-[17px] font-semibold text-[#f4efe2]">
+          HOOMA profile photo URL
           <input
             className="hooma-input"
             type="url"

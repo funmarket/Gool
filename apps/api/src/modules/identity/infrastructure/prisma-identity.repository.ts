@@ -34,9 +34,19 @@ const meSelect = {
   profileIdentities: { select: { type: true } },
 } satisfies Prisma.UserSelect;
 
-type MeRecord = Prisma.UserGetPayload<{ select: typeof meSelect }>;
+const presentationSelect = {
+  displayName: true,
+  username: true,
+  displayUsername: true,
+  photoUrl: true,
+} as const;
 
-function toMeView(user: MeRecord) {
+type MeRecord = Prisma.UserGetPayload<{ select: typeof meSelect }>;
+type PresentationRecord = Prisma.UserProfilePresentationGetPayload<{
+  select: typeof presentationSelect;
+}>;
+
+function toMeView(user: MeRecord, presentation: PresentationRecord | null) {
   const { profileIdentities, ...base } = user;
   const selectedIdentities = normalizeSelectedProfileIdentities(
     profileIdentities.map((identity) => identity.type),
@@ -45,6 +55,13 @@ function toMeView(user: MeRecord) {
 
   return {
     ...base,
+    presentation: presentation
+      ? {
+          displayName: presentation.displayName,
+          username: presentation.displayUsername ?? presentation.username,
+          photoUrl: presentation.photoUrl,
+        }
+      : null,
     profile: base.profile
       ? {
           ...base.profile,
@@ -248,15 +265,29 @@ export class PrismaIdentityRepository implements IdentityRepository {
   }
 
   async getMe(userId: string) {
-    const user = await this.db.user.findUniqueOrThrow({
-      where: { id: userId },
-      select: meSelect,
-    });
-    return toMeView(user);
+    const [user, presentation] = await Promise.all([
+      this.db.user.findUniqueOrThrow({
+        where: { id: userId },
+        select: meSelect,
+      }),
+      this.db.userProfilePresentation.findUnique({
+        where: { userId },
+        select: presentationSelect,
+      }),
+    ]);
+    return toMeView(user, presentation);
   }
 
   async updateProfile(userId: string, input: ProfileUpdateInput) {
-    const { themeOverride, photoUrl, favoriteClubId, selectedIdentities, ...profile } = input;
+    const {
+      themeOverride,
+      displayName,
+      username,
+      photoUrl,
+      favoriteClubId,
+      selectedIdentities,
+      ...profile
+    } = input;
     const profileUpdate = {
       ...(profile.skillLevel !== undefined ? { skillLevel: profile.skillLevel } : {}),
       ...(profile.skillRating !== undefined ? { skillRating: profile.skillRating } : {}),
@@ -291,12 +322,34 @@ export class PrismaIdentityRepository implements IdentityRepository {
           }
         : {}),
     };
+    const presentationChanged =
+      displayName !== undefined || username !== undefined || photoUrl !== undefined;
 
     return this.db.$transaction(async (tx) => {
-      if (photoUrl !== undefined) {
-        await tx.user.update({
-          where: { id: userId },
-          data: { photoUrl },
+      if (presentationChanged) {
+        await tx.userProfilePresentation.upsert({
+          where: { userId },
+          create: {
+            userId,
+            ...(displayName !== undefined ? { displayName } : {}),
+            ...(username !== undefined
+              ? {
+                  username: username === null ? null : username.toLowerCase(),
+                  displayUsername: username,
+                }
+              : {}),
+            ...(photoUrl !== undefined ? { photoUrl } : {}),
+          },
+          update: {
+            ...(displayName !== undefined ? { displayName } : {}),
+            ...(username !== undefined
+              ? {
+                  username: username === null ? null : username.toLowerCase(),
+                  displayUsername: username,
+                }
+              : {}),
+            ...(photoUrl !== undefined ? { photoUrl } : {}),
+          },
         });
       }
 
@@ -342,11 +395,17 @@ export class PrismaIdentityRepository implements IdentityRepository {
         }
       }
 
-      const user = await tx.user.findUniqueOrThrow({
-        where: { id: userId },
-        select: meSelect,
-      });
-      return toMeView(user);
+      const [user, presentation] = await Promise.all([
+        tx.user.findUniqueOrThrow({
+          where: { id: userId },
+          select: meSelect,
+        }),
+        tx.userProfilePresentation.findUnique({
+          where: { userId },
+          select: presentationSelect,
+        }),
+      ]);
+      return toMeView(user, presentation);
     });
   }
 }
