@@ -6,8 +6,10 @@ import { errorHandler } from '../apps/api/src/http/middleware/error-handler.js';
 import {
   type AuthContext,
   type AuthenticatedRequest,
+  sessionAuth,
   telegramAuth,
 } from '../apps/api/src/http/middleware/auth.js';
+import type { AuthService } from '../apps/api/src/modules/auth/application/auth.service.js';
 import type { IdentityService } from '../apps/api/src/modules/identity/application/identity.service.js';
 import type { TeamService } from '../apps/api/src/modules/teams/application/team.service.js';
 import { teamRouter } from '../apps/api/src/modules/teams/http/team.controller.js';
@@ -17,6 +19,23 @@ const fakeIdentity = {
     throw new Error('Telegram identity should not be resolved for an anonymous request');
   },
 } as unknown as IdentityService;
+
+const webIdentity = {
+  id: 'web-user-1',
+  telegramUserId: null,
+  username: null,
+  firstName: null,
+  lastName: null,
+  photoUrl: null,
+  languageCode: null,
+  isPremium: false,
+};
+
+const fakeAuth = {
+  resolveSession(token: string) {
+    return Promise.resolve(token === 'valid-web-session' ? webIdentity : null);
+  },
+} as unknown as AuthService;
 
 const fakeTeams = {
   listPublic() {
@@ -61,6 +80,7 @@ function buildBoundaryApp(authenticated = false) {
     });
   }
 
+  app.use(sessionAuth(fakeAuth));
   app.use(telegramAuth(fakeIdentity, { optional: true }));
   app.use('/api/v1/teams', teamRouter(fakeTeams));
   app.use(errorHandler);
@@ -107,7 +127,7 @@ test('anonymous protected Team management route returns AUTH_REQUIRED', async ()
   });
 });
 
-test('authenticated Team management request preserves existing behavior', async () => {
+test('authenticated Telegram Team management request preserves existing behavior', async () => {
   await withServer(buildBoundaryApp(true), async (baseUrl) => {
     const response = await fetch(`${baseUrl}/api/v1/teams/managed`);
     const body = (await response.json()) as {
@@ -119,7 +139,21 @@ test('authenticated Team management request preserves existing behavior', async 
   });
 });
 
-test('optional authentication does not downgrade supplied invalid credentials to Guest', async () => {
+test('valid bearer session authenticates a web-only canonical user without Telegram', async () => {
+  await withServer(buildBoundaryApp(), async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/v1/teams/managed`, {
+      headers: { authorization: 'Bearer valid-web-session' },
+    });
+    const body = (await response.json()) as {
+      items: Array<{ id: string; managerUserId: string }>;
+    };
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(body.items[0], { id: 'managed-team', managerUserId: 'web-user-1' });
+  });
+});
+
+test('optional authentication does not downgrade supplied invalid bearer credentials to Guest', async () => {
   await withServer(buildBoundaryApp(), async (baseUrl) => {
     const response = await fetch(`${baseUrl}/api/v1/teams`, {
       headers: { authorization: 'Bearer not-a-hooma-session' },
