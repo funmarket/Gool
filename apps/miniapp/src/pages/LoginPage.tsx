@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../features/auth/api';
 import { setWebSession } from '../features/auth/session';
@@ -36,7 +36,7 @@ export function LoginPage() {
           <label className="block">
             <span className="mb-1 block text-sm">Username</span>
             <input
-              className="input-field w-full"
+              className="hooma-input"
               autoComplete="username"
               value={username}
               onChange={(event) => setUsername(event.target.value)}
@@ -48,7 +48,7 @@ export function LoginPage() {
           <label className="block">
             <span className="mb-1 block text-sm">Password</span>
             <input
-              className="input-field w-full"
+              className="hooma-input"
               type="password"
               autoComplete="current-password"
               value={password}
@@ -65,7 +65,7 @@ export function LoginPage() {
             </p>
           ) : null}
 
-          <button className="primary-button w-full" type="submit" disabled={submitting}>
+          <button className="accent-button w-full" type="submit" disabled={submitting}>
             {submitting ? 'Logging in…' : 'Log in'}
           </button>
         </form>
