@@ -62,21 +62,24 @@ test('Display Name and profile photo remain editable presentation fields', () =>
   assert.doesNotMatch(identityRepository, /data: \{ photoUrl \}/);
 });
 
-test('username comes from canonical account identity and is not an editable Profile override', () => {
-  assert.match(profilePage, /Username/);
-  assert.match(
-    profilePage,
-    /me\.effectiveUsername \? `@\$\{me\.effectiveUsername\}` : 'Not set'/,
-  );
-  assert.match(profilePage, /const visibleUsername = me\.effectiveUsername \?\? ''/);
-  assert.doesNotMatch(profilePage, /HOOMA username/);
-  assert.doesNotMatch(profilePage, /setUsername/);
-  assert.doesNotMatch(profilePage, /username: username\.trim/);
-  assert.match(
-    identityRepository,
-    /const effectiveUsername =[\s\S]*?nonBlank\(displayAuthUsername\) \?\? nonBlank\(authUsername\) \?\? nonBlank\(telegramUsername\)/,
-  );
-});
+test(
+  'username comes from canonical account identity and is not an editable Profile override',
+  () => {
+    assert.match(profilePage, /Username/);
+    assert.match(
+      profilePage,
+      /me\.effectiveUsername \? `@\$\{me\.effectiveUsername\}` : 'Not set'/,
+    );
+    assert.match(profilePage, /const visibleUsername = me\.effectiveUsername \?\? ''/);
+    assert.doesNotMatch(profilePage, /HOOMA username/);
+    assert.doesNotMatch(profilePage, /setUsername/);
+    assert.doesNotMatch(profilePage, /username: username\.trim/);
+    assert.match(
+      identityRepository,
+      /const effectiveUsername =[\s\S]*?nonBlank\(displayAuthUsername\) \?\? nonBlank\(authUsername\) \?\? nonBlank\(telegramUsername\)/,
+    );
+  },
+);
 
 test('explicit presentation overrides stay separate from effective fallback values', () => {
   assert.match(profileTypes, /effectiveDisplayName: string/);
@@ -90,12 +93,15 @@ test('explicit presentation overrides stay separate from effective fallback valu
   assert.match(profilePage, /placeholder=\{me\.effectivePhotoUrl \|\|/);
 });
 
-test('Telegram source username remains visible metadata without overwriting web credentials', () => {
-  assert.match(profileTypes, /telegramUsername\?: string \| null/);
-  assert.match(identityRepository, /telegramUsername,/);
-  assert.match(profilePage, /Connected Telegram:/);
-  assert.match(profilePage, /Telegram stays connected without overwriting web credentials/);
-});
+test(
+  'Telegram source username remains visible metadata without overwriting web credentials',
+  () => {
+    assert.match(profileTypes, /telegramUsername\?: string \| null/);
+    assert.match(identityRepository, /telegramUsername,/);
+    assert.match(profilePage, /Connected Telegram:/);
+    assert.match(profilePage, /Telegram stays connected without overwriting web credentials/);
+  },
+);
 
 test('presentation username columns remain dormant rather than destructively removed', () => {
   assert.match(presentationSchema, /username\s+String\?/);
