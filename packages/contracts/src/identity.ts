@@ -35,10 +35,7 @@ const classicUsernameSchema = z
   .trim()
   .min(3)
   .max(30)
-  .regex(
-    /^[A-Za-z0-9_.]+$/,
-    'Username may only contain letters, numbers, underscores, and dots.',
-  );
+  .regex(/^[A-Za-z0-9_.]+$/, 'Username may only contain letters, numbers, underscores, and dots.');
 
 const classicPasswordSchema = z.string().min(8).max(128);
 
