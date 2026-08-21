@@ -21,10 +21,7 @@ export const profileUpdateSchema = z.object({
     .trim()
     .min(3)
     .max(64)
-    .regex(
-      /^[A-Za-z0-9_.]+$/,
-      'Username may only contain letters, numbers, underscores, and dots.',
-    )
+    .regex(/^[A-Za-z0-9_.]+$/, 'Username may only contain letters, numbers, underscores, and dots.')
     .nullable()
     .optional(),
   photoUrl: z.string().trim().url().max(1000).nullable().optional(),
