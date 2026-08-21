@@ -24,6 +24,7 @@ const meSelect = {
   id: true,
   telegramUserId: true,
   username: true,
+  authName: true,
   authUsername: true,
   displayAuthUsername: true,
   firstName: true,
@@ -46,17 +47,35 @@ type PresentationRecord = Prisma.UserProfilePresentationGetPayload<{
   select: typeof presentationSelect;
 }>;
 
+function nonBlank(value: string | null | undefined) {
+  const normalized = value?.trim();
+  return normalized ? normalized : null;
+}
+
 function toMeView(user: MeRecord, presentation: PresentationRecord | null) {
-  const { profileIdentities, authUsername, displayAuthUsername, ...base } = user;
+  const { profileIdentities, authName, authUsername, displayAuthUsername, ...base } = user;
   const selectedIdentities = normalizeSelectedProfileIdentities(
     profileIdentities.map((identity) => identity.type),
   );
   const effectiveIdentities = resolveEffectiveProfileIdentities(selectedIdentities);
-  const effectiveUsername = displayAuthUsername ?? authUsername ?? base.username ?? null;
+  const effectiveUsername =
+    nonBlank(displayAuthUsername) ?? nonBlank(authUsername) ?? nonBlank(base.username);
+  const telegramDisplayName = nonBlank(
+    [base.firstName, base.lastName].filter(Boolean).join(' '),
+  );
+  const effectiveDisplayName =
+    nonBlank(presentation?.displayName) ??
+    nonBlank(authName) ??
+    telegramDisplayName ??
+    effectiveUsername ??
+    'HOOMA member';
+  const effectivePhotoUrl = nonBlank(presentation?.photoUrl) ?? nonBlank(base.photoUrl);
 
   return {
     ...base,
+    effectiveDisplayName,
     effectiveUsername,
+    effectivePhotoUrl,
     presentation: presentation
       ? {
           displayName: presentation.displayName,
@@ -307,8 +326,7 @@ export class PrismaIdentityRepository implements IdentityRepository {
         ? { preferredPositions: profile.preferredPositions }
         : {}),
       ...(profile.profileAudience !== undefined
-        ? { profileAudience: profile.profileAudience }
-        : {}),
+        ? { profileAudience: profile.profileAudience } : {}),
       ...(profile.bio !== undefined ? { bio: profile.bio } : {}),
       ...(favoriteClubId
         ? {
