@@ -5,12 +5,27 @@ import type {
   TeamCreateInput,
   TeamLineupCreateInput,
   TeamPlayerCreateInput,
+  TeamPlayerUpdateInput,
   TeamUpdateInput,
 } from '@hooma/contracts';
 import type { DatabaseClient } from '../../../infrastructure/database/prisma.js';
 import { AppError } from '../../../http/errors/app-error.js';
 import { decodeTimeIdCursor, encodeTimeIdCursor } from '../../../infrastructure/database/cursor.js';
 import type { TeamListInput, TeamRepository } from '../application/team-repository.js';
+
+const publicTeamPlayerSelect = {
+  id: true,
+  displayName: true,
+  shirtNumber: true,
+  position: true,
+  photoUrl: true,
+} as const;
+
+const managedTeamPlayerSelect = {
+  ...publicTeamPlayerSelect,
+  userId: true,
+  isActive: true,
+} as const;
 
 const publicTeamSelect = {
   id: true,
@@ -27,13 +42,7 @@ const publicTeamSelect = {
   players: {
     where: { isActive: true },
     take: 8,
-    select: {
-      id: true,
-      displayName: true,
-      shirtNumber: true,
-      position: true,
-      photoUrl: true,
-    },
+    select: publicTeamPlayerSelect,
     orderBy: [{ createdAt: 'asc' as const }, { id: 'asc' as const }],
   },
   lineups: {
@@ -63,20 +72,21 @@ const teamDetailSelect = {
           y: true,
           isStarter: true,
           sortOrder: true,
-          player: {
-            select: {
-              id: true,
-              displayName: true,
-              shirtNumber: true,
-              position: true,
-              photoUrl: true,
-            },
-          },
+          player: { select: publicTeamPlayerSelect },
         },
         orderBy: [{ sortOrder: 'asc' as const }, { id: 'asc' as const }],
       },
     },
     orderBy: [{ isCurrent: 'desc' as const }, { updatedAt: 'desc' as const }],
+  },
+} satisfies Prisma.TeamSelect;
+
+const managedTeamSelect = {
+  ...teamDetailSelect,
+  players: {
+    where: { isActive: true },
+    select: managedTeamPlayerSelect,
+    orderBy: [{ createdAt: 'asc' as const }, { id: 'asc' as const }],
   },
 } satisfies Prisma.TeamSelect;
 
@@ -99,12 +109,8 @@ const challengeInclude = {
 } satisfies Prisma.TeamChallengeInclude;
 
 const challengeDetailInclude = {
-  challengerTeam: {
-    select: teamDetailSelect,
-  },
-  challengedTeam: {
-    select: teamDetailSelect,
-  },
+  challengerTeam: { select: teamDetailSelect },
+  challengedTeam: { select: teamDetailSelect },
   game: {
     include: {
       homeTeam: { select: teamDetailSelect },
@@ -186,7 +192,7 @@ export class PrismaTeamRepository implements TeamRepository {
           },
         },
       },
-      select: teamDetailSelect,
+      select: managedTeamSelect,
       orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
     });
     return { items };
@@ -325,6 +331,46 @@ export class PrismaTeamRepository implements TeamRepository {
         position: input.position ?? null,
         photoUrl: input.photoUrl || null,
       },
+      select: managedTeamPlayerSelect,
+    });
+  }
+
+  async updatePlayer(teamId: string, playerId: string, input: TeamPlayerUpdateInput) {
+    const result = await this.db.teamPlayer.updateMany({
+      where: { id: playerId, teamId, isActive: true },
+      data: {
+        ...(input.displayName !== undefined ? { displayName: input.displayName } : {}),
+        ...(input.shirtNumber !== undefined ? { shirtNumber: input.shirtNumber } : {}),
+        ...(input.position !== undefined ? { position: input.position } : {}),
+        ...(input.photoUrl !== undefined ? { photoUrl: input.photoUrl } : {}),
+      },
+    });
+    if (!result.count) {
+      throw new AppError(404, 'TEAM_PLAYER_NOT_FOUND', 'Roster player not found.');
+    }
+    return this.db.teamPlayer.findFirstOrThrow({
+      where: { id: playerId, teamId, isActive: true },
+      select: managedTeamPlayerSelect,
+    });
+  }
+
+  deactivatePlayer(teamId: string, playerId: string) {
+    return this.db.$transaction(async (tx) => {
+      const result = await tx.teamPlayer.updateMany({
+        where: { id: playerId, teamId, isActive: true },
+        data: { isActive: false },
+      });
+      if (!result.count) {
+        throw new AppError(404, 'TEAM_PLAYER_NOT_FOUND', 'Roster player not found.');
+      }
+      await tx.teamLineupSlot.updateMany({
+        where: { playerId, lineup: { teamId, deletedAt: null } },
+        data: { playerId: null },
+      });
+      return tx.teamPlayer.findFirstOrThrow({
+        where: { id: playerId, teamId },
+        select: managedTeamPlayerSelect,
+      });
     });
   }
 
@@ -383,14 +429,8 @@ export class PrismaTeamRepository implements TeamRepository {
           where: {
             status: 'PENDING',
             OR: [
-              {
-                challengerTeamId: challenger.id,
-                challengedTeamId: challenged.id,
-              },
-              {
-                challengerTeamId: challenged.id,
-                challengedTeamId: challenger.id,
-              },
+              { challengerTeamId: challenger.id, challengedTeamId: challenged.id },
+              { challengerTeamId: challenged.id, challengedTeamId: challenger.id },
             ],
           },
           select: { id: true },
