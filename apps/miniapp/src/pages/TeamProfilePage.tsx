@@ -50,7 +50,11 @@ function TeamEditForm({ team, onDone }: { team: TeamDetailItem; onDone: () => vo
       <div className="mt-4 grid gap-4">
         <label className="grid gap-2 text-[17px] font-semibold">
           Team name
-          <input className="hooma-input" value={name} onChange={(event) => setName(event.target.value)} />
+          <input
+            className="hooma-input"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
         </label>
         <label className="grid gap-2 text-[17px] font-semibold">
           Badge / photo URL
@@ -65,16 +69,28 @@ function TeamEditForm({ team, onDone }: { team: TeamDetailItem; onDone: () => vo
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="grid gap-2 text-[17px] font-semibold">
             City
-            <input className="hooma-input" value={city} onChange={(event) => setCity(event.target.value)} />
+            <input
+              className="hooma-input"
+              value={city}
+              onChange={(event) => setCity(event.target.value)}
+            />
           </label>
           <label className="grid gap-2 text-[17px] font-semibold">
             Houma
-            <input className="hooma-input" value={houma} onChange={(event) => setHouma(event.target.value)} />
+            <input
+              className="hooma-input"
+              value={houma}
+              onChange={(event) => setHouma(event.target.value)}
+            />
           </label>
         </div>
         <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 p-3 text-[17px] font-semibold">
           Public Team
-          <input type="checkbox" checked={isPublic} onChange={(event) => setIsPublic(event.target.checked)} />
+          <input
+            type="checkbox"
+            checked={isPublic}
+            onChange={(event) => setIsPublic(event.target.checked)}
+          />
         </label>
         <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 p-3 text-[17px] font-semibold">
           Accept challenges
@@ -88,7 +104,12 @@ function TeamEditForm({ team, onDone }: { team: TeamDetailItem; onDone: () => vo
           <div className="vintage-empty">Team changes could not be saved.</div>
         ) : null}
         <div className="grid grid-cols-2 gap-3">
-          <button type="button" className="ghost-button" onClick={onDone} disabled={mutation.isPending}>
+          <button
+            type="button"
+            className="ghost-button"
+            onClick={onDone}
+            disabled={mutation.isPending}
+          >
             Cancel
           </button>
           <button
@@ -121,7 +142,8 @@ export function TeamProfilePage() {
   });
   const team = teamQuery.data;
   const lineup = team?.lineups?.[0] ?? null;
-  const canManage = managedTeamsQuery.data?.items.some((managedTeam) => managedTeam.id === teamId) ?? false;
+  const canManage =
+    managedTeamsQuery.data?.items.some((managedTeam) => managedTeam.id === teamId) ?? false;
 
   if (teamQuery.isLoading) {
     return (
@@ -161,13 +183,19 @@ export function TeamProfilePage() {
           </p>
         </div>
         {canManage ? (
-          <button type="button" className="ghost-button shrink-0 px-3 py-2.5" onClick={() => setEditing((value) => !value)}>
+          <button
+            type="button"
+            className="ghost-button shrink-0 px-3 py-2.5"
+            onClick={() => setEditing((value) => !value)}
+          >
             <Pencil size={17} /> {editing ? 'Close' : 'Edit Team'}
           </button>
         ) : null}
       </section>
 
-      {editing && canManage ? <TeamEditForm team={team} onDone={() => setEditing(false)} /> : null}
+      {editing && canManage ? (
+        <TeamEditForm team={team} onDone={() => setEditing(false)} />
+      ) : null}
 
       <section className="teams-section">
         <div className="vintage-section-heading">
