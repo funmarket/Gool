@@ -47,7 +47,9 @@
   text-transform: uppercase;
   letter-spacing: 0.045em;
 }
-.pitch-listing-grid input {
+.pitch-listing-grid input,
+.pitch-listing-grid select,
+.pitch-listing-grid textarea {
   min-height: 2.75rem;
   width: 100%;
   padding: 0 0.7rem;
@@ -58,7 +60,14 @@
   color: var(--hv-white);
   font: inherit;
 }
-.pitch-listing-grid input:focus {
+.pitch-listing-grid textarea {
+  min-height: 6rem;
+  padding-block: 0.7rem;
+  resize: vertical;
+}
+.pitch-listing-grid input:focus,
+.pitch-listing-grid select:focus,
+.pitch-listing-grid textarea:focus {
   border-color: rgba(183, 227, 29, 0.58);
 }
 .pitch-listing-wide {
@@ -77,6 +86,9 @@
   color: var(--hv-lime);
   font-size: 0.75rem;
   font-weight: 800;
+}
+.pitch-listing-actions .pitch-listing-error {
+  color: #f4a4a4;
 }
 @media (max-width: 560px) {
   .pitch-listing-grid {

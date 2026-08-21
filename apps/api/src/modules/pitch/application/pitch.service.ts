@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import {
   pitchPublicationSchema,
   type PitchCreateInput,
@@ -28,6 +29,16 @@ function publicationCandidate(listing: PitchOwnerRecord) {
   };
 }
 
+function idempotentPitchId(userId: string, idempotencyKey: string) {
+  const digest = createHash('sha256')
+    .update('pitch-create\0')
+    .update(userId)
+    .update('\0')
+    .update(idempotencyKey)
+    .digest('hex');
+  return `pitch_${digest.slice(0, 32)}`;
+}
+
 export class PitchService {
   constructor(private readonly repo: PitchRepository) {}
 
@@ -51,8 +62,12 @@ export class PitchService {
     return pitch;
   }
 
-  create(userId: string, input: PitchCreateInput) {
-    return this.repo.create(userId, input);
+  create(userId: string, input: PitchCreateInput, idempotencyKey?: string) {
+    return this.repo.create(
+      userId,
+      input,
+      idempotencyKey ? idempotentPitchId(userId, idempotencyKey) : undefined,
+    );
   }
 
   async update(userId: string, pitchId: string, input: PitchUpdateInput) {

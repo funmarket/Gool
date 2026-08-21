@@ -43,6 +43,8 @@ function listing(status: PitchListingStatus): PitchOwnerRecord {
 }
 
 class FakePitchRepository implements PitchRepository {
+  public createdPitchIds: Array<string | undefined> = [];
+
   constructor(public current: PitchOwnerRecord) {}
 
   listPublic(input: PitchListQuery) {
@@ -66,10 +68,14 @@ class FakePitchRepository implements PitchRepository {
     );
   }
 
-  create(userId: string, input: PitchCreateInput) {
-    void userId;
+  create(userId: string, input: PitchCreateInput, pitchId?: string) {
     void input;
-    return Promise.resolve(this.current);
+    this.createdPitchIds.push(pitchId);
+    return Promise.resolve({
+      ...this.current,
+      id: pitchId ?? this.current.id,
+      ownerUserId: userId,
+    });
   }
 
   updateOwned(
@@ -108,6 +114,22 @@ class FakePitchRepository implements PitchRepository {
     return Promise.resolve(this.current);
   }
 }
+
+test('Pitch create derives the same owner-scoped id from the same idempotency key', async () => {
+  const repo = new FakePitchRepository(listing('DRAFT'));
+  const service = new PitchService(repo);
+
+  const first = await service.create('user-1', { name: 'Arena Football' }, 'request-1');
+  const second = await service.create('user-1', { name: 'Arena Football' }, 'request-1');
+  const otherKey = await service.create('user-1', { name: 'Arena Football' }, 'request-2');
+  const otherOwner = await service.create('user-2', { name: 'Arena Football' }, 'request-1');
+
+  assert.equal(first.id, second.id);
+  assert.notEqual(first.id, otherKey.id);
+  assert.notEqual(first.id, otherOwner.id);
+  assert.match(first.id, /^pitch_[0-9a-f]{32}$/);
+  assert.deepEqual(repo.createdPitchIds, [first.id, first.id, otherKey.id, otherOwner.id]);
+});
 
 test('Pitch submit moves a complete draft to pending review', async () => {
   const repo = new FakePitchRepository(listing('DRAFT'));

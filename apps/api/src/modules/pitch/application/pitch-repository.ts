@@ -46,7 +46,7 @@ export interface PitchRepository {
     input: PitchOwnerListQuery,
   ): Promise<{ items: PitchOwnerRecord[]; nextCursor: string | null }>;
   getOwned(userId: string, pitchId: string): Promise<PitchOwnerRecord | null>;
-  create(userId: string, input: PitchCreateInput): Promise<PitchOwnerRecord>;
+  create(userId: string, input: PitchCreateInput, pitchId?: string): Promise<PitchOwnerRecord>;
   updateOwned(
     userId: string,
     pitchId: string,
