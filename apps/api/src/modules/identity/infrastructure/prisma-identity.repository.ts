@@ -24,6 +24,7 @@ const meSelect = {
   id: true,
   telegramUserId: true,
   username: true,
+  authName: true,
   authUsername: true,
   displayAuthUsername: true,
   firstName: true,
@@ -46,9 +47,15 @@ type PresentationRecord = Prisma.UserProfilePresentationGetPayload<{
   select: typeof presentationSelect;
 }>;
 
+function nonBlank(value: string | null | undefined) {
+  const normalized = value?.trim();
+  return normalized ? normalized : null;
+}
+
 function toMeView(user: MeRecord, presentation: PresentationRecord | null) {
   const {
     profileIdentities,
+    authName,
     authUsername,
     displayAuthUsername,
     username: telegramUsername,
@@ -58,12 +65,23 @@ function toMeView(user: MeRecord, presentation: PresentationRecord | null) {
     profileIdentities.map((identity) => identity.type),
   );
   const effectiveIdentities = resolveEffectiveProfileIdentities(selectedIdentities);
-  const username = displayAuthUsername ?? authUsername ?? telegramUsername;
+  const effectiveUsername =
+    nonBlank(displayAuthUsername) ?? nonBlank(authUsername) ?? nonBlank(telegramUsername);
+  const telegramDisplayName = nonBlank([base.firstName, base.lastName].filter(Boolean).join(' '));
+  const effectiveDisplayName =
+    nonBlank(presentation?.displayName) ??
+    nonBlank(authName) ??
+    telegramDisplayName ??
+    effectiveUsername ??
+    'HOOMA member';
+  const effectivePhotoUrl = nonBlank(presentation?.photoUrl) ?? nonBlank(base.photoUrl);
 
   return {
     ...base,
-    username,
     telegramUsername,
+    effectiveDisplayName,
+    effectiveUsername,
+    effectivePhotoUrl,
     presentation: presentation
       ? {
           displayName: presentation.displayName,
